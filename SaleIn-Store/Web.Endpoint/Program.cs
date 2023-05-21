@@ -1,5 +1,5 @@
+using Domain.Models;
 using Microsoft.EntityFrameworkCore;
-using persistent.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +19,7 @@ builder.Services.ConfigureApplicationCookie(option =>
 #region connection string
 
 var connection = configuration.GetConnectionString("SaleInConnection");
-builder.Services.AddDbContext<DatabaseContext>(option => option.UseSqlServer(connection));
+builder.Services.AddDbContext<SaleInContext>(option => option.UseSqlServer(connection));
 
 #endregion
 var app = builder.Build();
