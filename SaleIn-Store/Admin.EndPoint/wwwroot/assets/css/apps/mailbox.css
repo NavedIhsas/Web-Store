@@ -143,7 +143,7 @@
     padding: 0 30px; }
   .tab-title #btn-compose-mail {
     transform: none;
-    background: #5c1ac3;
+    background: #3b3f5c;
     border: none !important;
     padding: 7px 9px;
     font-size: 14px;
@@ -655,7 +655,7 @@
     .mailbox-inbox .mail-content-container .attachment svg {
       font-size: 18px;
       margin-left: 13px;
-      color: #5c1ac3;
+      color: #3b3f5c;
       align-self: center; }
     .mailbox-inbox .mail-content-container .attachment .file-name {
       color: #3b3f5c;

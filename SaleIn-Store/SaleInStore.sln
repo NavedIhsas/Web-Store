@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "infrastructure", "infrastru
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaleIn-Store", "Web.Endpoint\SaleIn-Store.csproj", "{6890382C-095E-456F-97C5-19C5305815A0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaleIn-Admin", "Admin.EndPoint\SaleIn-Admin.csproj", "{192173A8-EE05-4844-B407-B89F2DCE1AB3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaleInAdmin", "Admin.EndPoint\SaleInAdmin.csproj", "{192173A8-EE05-4844-B407-B89F2DCE1AB3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

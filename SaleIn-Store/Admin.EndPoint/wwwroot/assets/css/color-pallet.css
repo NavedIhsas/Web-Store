@@ -53,7 +53,7 @@
 }
 #colorPallet .p-colors [class*="color-scheme-"]:not(:last-child) { margin-left: 18px; }
 #colorPallet .p-colors .color-scheme-default {
-    background: #5c1ac3;
+    background: #3b3f5c;
 }
 #colorPallet .p-colors .color-scheme-minimal {
     background: #f1f2f3;

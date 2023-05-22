@@ -10,7 +10,7 @@
 }
 
 .sidebar-theme #compactSidebar {
-  background: #5c1ac3;
+  background: #3b3f5c;
 }
 
 .sidebar-closed #content {
@@ -168,7 +168,7 @@
           &.active a {
             font-weight: 600;
             padding: 6px 8px;
-            color: #5c1ac3;
+            color: #3b3f5c;
             transition: .300s;
             border-radius: 5px;
             background-color: #fafafa;
@@ -214,7 +214,7 @@
             }
 
             &:hover {
-              color: #5c1ac3;
+              color: #3b3f5c;
               font-weight: 600;
               padding: 6px 14px;
               transition: .300s;
@@ -234,7 +234,7 @@
             a {
               &[aria-expanded="true"] {
                 font-weight: 600;
-                color: #5c1ac3;
+                color: #3b3f5c;
                 transition: .300s;
                 border-radius: 5px;
                 padding: 7px 14px;
@@ -269,10 +269,10 @@
                 }
 
                 &.active a {
-                  color: #5c1ac3;
+                  color: #3b3f5c;
 
                   &:before {
-                    background-color: #5c1ac3;
+                    background-color: #3b3f5c;
                   }
                 }
 
@@ -293,7 +293,7 @@
                   }
 
                   &:hover:before {
-                    background-color: #5c1ac3;
+                    background-color: #3b3f5c;
                   }
                 }
               }

@@ -86,7 +86,7 @@
         svg {
           position: relative;
           display: inline-block;
-          color: #5c1ac3;
+          color: #3b3f5c;
           vertical-align: middle;
           width: 46px;
           height: 46px;
@@ -99,7 +99,7 @@
         font-size: 14px;
         margin-top: 8px;
         display: inline-block;
-        color: #5c1ac3;
+        color: #3b3f5c;
         font-weight: 500;
       }
 
@@ -108,13 +108,13 @@
           text-align: center;
 
           svg {
-            color: #5c1ac3;
+            color: #3b3f5c;
           }
         }
 
         .base-menu span {
           font-weight: 600;
-          color: #5c1ac3;
+          color: #3b3f5c;
           font-size: 15px;
         }
       }
@@ -218,10 +218,10 @@
             }
 
             &:hover {
-              color: #5c1ac3;
+              color: #3b3f5c;
               font-weight: 600;
               padding: 6px 14px;
-              color: #5c1ac3;
+              color: #3b3f5c;
               transition: .300s;
               border-radius: 5px;
               background-color: rgba(92, 26, 195, 0.14);
@@ -237,7 +237,7 @@
               &[aria-expanded="true"] {
                 font-weight: 600;
                 padding: 7px 14px;
-                color: #5c1ac3;
+                color: #3b3f5c;
                 transition: .300s;
                 border-radius: 5px;
                 background-color: rgba(92, 26, 195, 0.14);
@@ -265,10 +265,10 @@
                 }
 
                 &.active a {
-                  color: #5c1ac3;
+                  color: #3b3f5c;
 
                   &:before {
-                    background-color: #5c1ac3;
+                    background-color: #3b3f5c;
                   }
                 }
 
@@ -297,7 +297,7 @@
                   }
 
                   &:hover:before {
-                    background-color: #5c1ac3;
+                    background-color: #3b3f5c;
                   }
                 }
               }

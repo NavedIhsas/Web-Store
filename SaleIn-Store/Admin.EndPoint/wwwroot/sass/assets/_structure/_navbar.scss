@@ -35,7 +35,7 @@
 }
 
 .header-container .sidebarCollapse {
-  color: #5c1ac3;
+  color: #3b3f5c;
 
   svg {
     width: 27px;
@@ -55,7 +55,7 @@
     stroke-width: 1.0px;
     width: 26px;
     height: 26px;
-    color: #5c1ac3;
+    color: #3b3f5c;
   }
 
   .dropdown-menu {
@@ -72,7 +72,7 @@
 
   .navbar-item .nav-item {
     &.dropdown.show a.nav-link span {
-      color: #5c1ac3 !important;
+      color: #3b3f5c !important;
 
       &.badge {
         background-color: #888ea8 !important;
@@ -88,7 +88,7 @@
 
     &.dropdown {
       .nav-link:hover span {
-        color: #5c1ac3 !important;
+        color: #3b3f5c !important;
       }
 
       .dropdown-menu {
@@ -178,7 +178,7 @@
           position: absolute;
           left: 0;
           top: 8px;
-          color: #5c1ac3;
+          color: #3b3f5c;
           width: 12px;
           height: 12px;
           stroke-width: 2px;
@@ -211,7 +211,7 @@
 
           &:hover {
             background-color: #ebedf2;
-            color: #5c1ac3;
+            color: #3b3f5c;
             border-radius: 0 !important;
           }
         }
@@ -319,7 +319,7 @@
                 width: 100%;
                 height: 100%;
                 background-color: #dccff7;
-                color: #5c1ac3;
+                color: #3b3f5c;
                 font-weight: 600;
               }
             }

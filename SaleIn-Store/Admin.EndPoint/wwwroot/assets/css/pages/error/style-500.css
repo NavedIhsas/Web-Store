@@ -53,8 +53,8 @@ body.error500 {
   width: 134px;
   padding: 6px;
   font-size: 17px;
-  background-image: linear-gradient(135deg, #1b55e2 0%, #5c1ac3 100%);
+  background-image: linear-gradient(135deg, #1b55e2 0%, #3b3f5c 100%);
   border: none;
   letter-spacing: 2px; }
   .error500 a.btn:hover, .error500 a.btn:not(:disabled):not(.disabled):active {
-    background-image: linear-gradient(to left, #1b55e2 0%, #5c1ac3 100%); }
+    background-image: linear-gradient(to left, #1b55e2 0%, #3b3f5c 100%); }

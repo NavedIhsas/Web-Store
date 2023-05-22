@@ -232,7 +232,7 @@ try {
               opacity: 0.7,
           }
       },
-      colors: ['#5c1ac3', '#ffbb44'],
+      colors: ['#3b3f5c', '#ffbb44'],
       plotOptions: {
           bar: {
               horizontal: false,
@@ -923,7 +923,7 @@ var options = {
         type: 'donut',
         width: 380
     },
-    colors: ['#5c1ac3', '#e2a03f', '#e7515a', '#e2a03f'],
+    colors: ['#3b3f5c', '#e2a03f', '#e7515a', '#e2a03f'],
     dataLabels: {
       enabled: false
     },

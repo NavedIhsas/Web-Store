@@ -130,7 +130,7 @@
     border: 1px solid #e2a03f; }
   .tab-title .nav-pills.group-list .nav-item a.g-dot-success:before {
     background: #dccff7;
-    border: 1px solid #5c1ac3; }
+    border: 1px solid #3b3f5c; }
 
 .tab-title .nav-pills .nav-item .dropdown-menu {
   box-shadow: 0px 0px 15px 1px rgba(113, 106, 202, 0.2);
@@ -261,7 +261,7 @@
           border: 2px solid #e2a03f; }
         .note-container.note-grid .note-item .note-inner-content .note-footer .tags .g-dot-social {
           background: #dccff7;
-          border: 2px solid #5c1ac3; }
+          border: 2px solid #3b3f5c; }
         .note-container.note-grid .note-item .note-inner-content .note-footer .tags .g-dot-important {
           background: #ffe1e2;
           border: 2px solid #e7515a; }
@@ -299,7 +299,7 @@
           border: 1px solid #e2a03f; }
         .note-container.note-grid .note-item .note-inner-content .note-footer .tags-selector .dropdown-menu a.g-dot-social:before {
           background: #dccff7;
-          border: 1px solid #5c1ac3; }
+          border: 1px solid #3b3f5c; }
     .note-container.note-grid .note-item .note-inner-content .note-footer .nav-link {
       padding: 0; }
       .note-container.note-grid .note-item .note-inner-content .note-footer .nav-link span {
