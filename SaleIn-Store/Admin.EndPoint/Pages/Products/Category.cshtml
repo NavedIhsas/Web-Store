@@ -80,7 +80,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content" style="width:700px !Important">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">افزودن گروه جدید</h5>
+                <h5 class="modal-title text-center" id="exampleModalLabel">  افزودن گروه جدید</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
@@ -89,26 +89,36 @@
                 <div class="widget-content">
                     <form method="post" class="needs-validation" novalidate action="javascript:void(0);">
                         <div class="form-row">
-                            <div class="col-md-4 mb-4">
-                                <label for="validationCustom01">نام گروه</label>
-                                <input type="text" class="form-control select2" id="validationCustom01" placeholder="نام گروه"  required>
+                            <div class="col-md-6 mb-4">
+                                <label for="validationCustom01">نام گروه <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control basic" id="validationCustom01" placeholder="نام گروه" required>
                             </div>
-                            <div class="col-md-4 mb-4">
-                                <label for="validationCustom02">وضعیت</label>
-                                <select type="text" class="form-control" id="validationCustom02" placeholder="وضعیت" value="شاپ" required>
+
+                            <div class="col-md-6 mb-4">
+                                <label for="code">کد گروه <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control basic" id="code" placeholder="کد گروه" required>
+                            </div>
+
+
+                        </div>
+
+                        <div class="form-row">
+                            <div class="col-md-6 mb-4">
+                                <label for="Group">گروه اصلی  </label>
+                                <select type="text" class="form-control pb-5" id="Group" asp-items="@(new SelectList(Model.SelectList,"Id","Name"))" placeholder="وضعیت" value="شاپ" required>
+                                    <option value="0">-- گروه اصلی --</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label for="validationCustom02"> وضعیت <span class="text-danger">*</span></label>
+                                <select type="text" class="form-control pb-5" id="validationCustom02" placeholder="وضعیت" value="شاپ" required>
                                     <option value="true">فعال</option>
                                     <option value="false"> غیر فعال</option>
                                 </select>
                             </div>
-
-                            <div class="col-md-4 mb-4">
-                                <label for="parent">گروه اصلی</label>
-                                <select type="text" class="form-control" id="parent" asp-items="@(new SelectList(Model.SelectList,"Id","Name"))" placeholder="وضعیت" value="شاپ" required>
-                                </select>
-                            </div>
-                           
                         </div>
-                      
+
                     </form>
 
 
@@ -116,21 +126,49 @@
             </div>
             <div class="modal-footer">
                 <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> انصراف</button>
-                <button type="button" class="btn btn-primary">ذخیره</button>
+                <button type="submit" id="submit" class="btn btn-primary">ذخیره</button>
             </div>
         </div>
     </div>
 </div>
 <!--  END CONTENT AREA  -->
 @section Scripts
-    {
+{
 
+    <script src="~/plugins/select2/custom-select2.js"></script>
 
     <script>
+
+       
         function addModal() {
             $("#add-category").modal("show");
-
         }
+        
+    
+
+        $("#submit").on('click', function (evn) {
+            evn.preventDefault();
+            debugger
+            var group = $("#Group").val();
+            var  code = parseInt($("#code").val());
+
+            if (group === "0") {
+                if (code > @Model.MainCodeCount ) {
+                    notify("top center", "کد گروه کالا باید @Model.MainCodeCount رقمی باشد", "error")
+                }
+
+            } else {
+                if (code > @Model.SubCodeCount ) {
+                    notify("top center", "کد زیر گروه کالا باید @Model.SubCodeCount رقمی باشد", "error")
+                }
+            }
+
+
+        })
+
+
+
+    
     </script>
 
 

@@ -22,7 +22,12 @@
     <link rel="stylesheet" type="text/css" href="~/plugins/table/datatable/datatables.css">
     <link rel="stylesheet" type="text/css" href="~/assets/css/forms/theme-checkbox-radio.css">
     <link rel="stylesheet" type="text/css" href="~/plugins/table/datatable/dt-global_style.css">
- 
+
+    <link href="~/assets/css/scrollspyNav.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="~/plugins/select2/select2.min.css">
+    <link href="~/assets/css/helper.css" rel="stylesheet" />
+    
+    <link rel="stylesheet" type="text/css" href="assets/css/elements/alert.css">
 </head>
 <body class="sidebar-noneoverflow dashboard-sales">
 <!-- BEGIN LOADER -->
@@ -277,6 +282,7 @@
             App.init();
         });
     </script>
+<script src="~/assets/js/notify.js"></script>
 <script src="~/assets/js/custom.js"></script>
 
 <script src="~/plugins/apex/apexcharts.min.js"></script>
@@ -284,6 +290,11 @@
   
 
 <script src="~/plugins/table/datatable/datatables.js"></script>
+
+
+
+<script src="~/assets/js/scrollspyNav.js"></script>
+<script src="~/plugins/select2/select2.min.js"></script>
 
 @await RenderSectionAsync("Scripts",false)
 </body>

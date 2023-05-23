@@ -1,4 +1,5 @@
 ﻿using Amazon.SecurityToken.Model.Internal.MarshallTransformations;
+using Application.SettingsDb;
 using AutoMapper;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -13,16 +14,19 @@ namespace Application.Product.Category
     {
         List<ProductLevelDto> GetLevelList();
         public List<ProductLevelDto> GetParentLevelList();
+        int GetSubCodeCount();
+        int GetMainCodeCount();
     }
 
     public class ProductCategory:IProductCategory
     {
         private readonly  SaleInContext _context;
-        private readonly IMapper _mappr;
-        public ProductCategory(SaleInContext context, IMapper mappr)
+        private readonly IMapper _mapper;
+        
+        public ProductCategory(SaleInContext context, IMapper mapper)
         {
             _context = context;
-            _mappr = mappr;
+            _mapper = mapper;
         }
 
 
@@ -44,10 +48,23 @@ namespace Application.Product.Category
             return result;
         }
 
+
+        public int GetMainCodeCount()
+        {
+            var result= _context.Settings.SingleOrDefault(x => x.SetKey == ConstantParameter.DigitCountMainGroupCode)
+                ?.SetValue;
+            return result != null ? int.Parse(result) : 0;
+        }
+        public int GetSubCodeCount()
+        {
+            var result= _context.Settings.SingleOrDefault(x => x.SetKey == ConstantParameter.DigitCountSubGroupCode)
+                ?.SetValue;
+            return result != null ? int.Parse(result) : 0;
+        }
         public List<ProductLevelDto> GetParentLevelList()
         {
             var parent = _context.ProductLevels.Where(x => x.PrdLvlParentUid == null).AsNoTracking().ToList();
-            return _mappr.Map<List<ProductLevelDto>>(parent).ToList();
+            return _mapper.Map<List<ProductLevelDto>>(parent).ToList();
         }
 
         public class ProductLevelDto

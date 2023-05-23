@@ -18,10 +18,14 @@ namespace SaleInAdmin.Pages.Products
 
         public List<ProductLevelDto> List;
         public List<ProductLevelDto> SelectList;
+        public int MainCodeCount;
+        public int SubCodeCount;
         public void OnGet()
         {
             List = _category.GetLevelList();
             SelectList = _category.GetParentLevelList();
+            MainCodeCount = _category.GetMainCodeCount();
+            SubCodeCount=_category.GetSubCodeCount();
         }
     }
 }
