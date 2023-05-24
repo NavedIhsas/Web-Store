@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Domain.Models;
+using Domain.ShopModels;
 using static Application.Product.Category.ProductCategory;
 
 namespace infrastructure.Mapping

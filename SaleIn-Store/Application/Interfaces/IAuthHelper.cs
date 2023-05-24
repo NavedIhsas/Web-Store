@@ -1,5 +1,5 @@
 ﻿using Application.SettingsDb;
-using Domain.Models;
+using Domain.SaleInModels;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Interfaces

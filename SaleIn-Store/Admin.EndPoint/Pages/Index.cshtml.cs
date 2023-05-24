@@ -1,6 +1,9 @@
+using Application.Interfaces;
+using Domain.SaleInModels;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Configuration.UserSecrets;
 
-namespace SaleInStore.Admin.Pages
+namespace SaleInAdmin.Pages
 {
     public class IndexModel : PageModel
     {

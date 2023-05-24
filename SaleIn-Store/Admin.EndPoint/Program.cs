@@ -1,12 +1,8 @@
-using Domain.Models;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Serilog;
-using System;
 using Application.Product.Category;
+using Domain.SaleInModels;
+using Domain.ShopModels;
 using infrastructure.Mapping;
 
 Log.Logger = new LoggerConfiguration()
@@ -30,8 +26,11 @@ try
 
     #region connection string
 
-    var connection = configuration.GetConnectionString("SaleInConnection");
-    builder.Services.AddDbContext<SaleInContext>(option => option.UseSqlServer(connection));
+    var saleInConnection = configuration.GetConnectionString("SaleInConnection");
+    builder.Services.AddDbContext<SaleInContext>(option => option.UseSqlServer(saleInConnection));
+    
+    var shopConnection = configuration.GetConnectionString("ShopConnection");
+    builder.Services.AddDbContext<ShopContext>(option => option.UseSqlServer(shopConnection));
 
     #endregion
 

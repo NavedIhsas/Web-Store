@@ -1,9 +1,6 @@
-using System.Collections.Generic;
 using Application.Product.Category;
-using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using static Application.Product.Category.ProductCategory;
 
 namespace SaleInAdmin.Pages.Products
 {
@@ -16,8 +13,8 @@ namespace SaleInAdmin.Pages.Products
             _category = category;
         }
 
-        public List<ProductLevelDto> List;
-        public List<ProductLevelDto> SelectList;
+        public List<ProductCategory.ProductLevelDto> List;
+        public List<ProductCategory.ProductLevelDto> SelectList;
         public int MainCodeCount;
         public int SubCodeCount;
         public void OnGet()
@@ -25,7 +22,18 @@ namespace SaleInAdmin.Pages.Products
             List = _category.GetLevelList();
             SelectList = _category.GetParentLevelList();
             MainCodeCount = _category.GetMainCodeCount();
-            SubCodeCount=_category.GetSubCodeCount();
+            SubCodeCount = _category.GetSubCodeCount();
+        }
+
+
+        public void OnPost(ProductCategory.ProductLevelDto command)
+        {
+            _category.CreatePrdCategory(command);
+        }
+        public IActionResult OnGetCode(string proLvlId)
+        {
+            var result = _category.GetPrdLvlCheck(proLvlId);
+            return new JsonResult(result);
         }
     }
 }

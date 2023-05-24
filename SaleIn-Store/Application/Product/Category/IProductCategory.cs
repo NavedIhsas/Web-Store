@@ -1,9 +1,8 @@
-﻿using Amazon.SecurityToken.Model.Internal.MarshallTransformations;
-using Application.SettingsDb;
+﻿using Application.SettingsDb;
 using AutoMapper;
-using Domain.Models;
+using Domain.SaleInModels;
+using Domain.ShopModels;
 using Microsoft.EntityFrameworkCore;
-using static Application.Product.Category.ProductCategory;
 
 namespace Application.Product.Category
 {
@@ -12,27 +11,40 @@ namespace Application.Product.Category
     /// </summary>
     public interface IProductCategory
     {
-        List<ProductLevelDto> GetLevelList();
-        public List<ProductLevelDto> GetParentLevelList();
+        List<ProductCategory.ProductLevelDto> GetLevelList();
+        public List<ProductCategory.ProductLevelDto> GetParentLevelList();
         int GetSubCodeCount();
         int GetMainCodeCount();
+        string GetPrdLvlCheck(string groupId);
+        void CreatePrdCategory(ProductCategory.ProductLevelDto command);
     }
 
-    public class ProductCategory:IProductCategory
+    public class ProductCategory : IProductCategory
     {
-        private readonly  SaleInContext _context;
+        private readonly ShopContext _context;
+        private readonly SaleInContext _saleInContext;
         private readonly IMapper _mapper;
-        
-        public ProductCategory(SaleInContext context, IMapper mapper)
+
+        public ProductCategory(IMapper mapper, SaleInContext saleInContext, ShopContext context)
         {
             _context = context;
             _mapper = mapper;
+            _saleInContext = saleInContext;
         }
 
+        public void CreatePrdCategory(ProductLevelDto command)
+        {
+
+        }
+        public string GetPrdLvlCheck(string groupId)
+        {
+            var result = _context.ProductLevels.SingleOrDefault(x => x.PrdLvlUid == new Guid(groupId));
+            return result?.PrdLvlCode;
+        }
 
         public List<ProductLevelDto> GetLevelList()
         {
-            var result = _context.ProductLevels.AsNoTracking().Select(x=>new ProductLevelDto
+            var result = _context.ProductLevels.AsNoTracking().Select(x => new ProductLevelDto
             {
                 Id = x.PrdLvlUid,
                 Name = x.PrdLvlName,
@@ -43,7 +55,7 @@ namespace Application.Product.Category
             foreach (var sub in result)
             {
                 sub.Sub = _context.ProductLevels.SingleOrDefault(x => x.PrdLvlUid == sub.ParentId)?.PrdLvlName;
-                
+
             }
             return result;
         }
@@ -51,13 +63,13 @@ namespace Application.Product.Category
 
         public int GetMainCodeCount()
         {
-            var result= _context.Settings.SingleOrDefault(x => x.SetKey == ConstantParameter.DigitCountMainGroupCode)
+            var result = _context.Settings.SingleOrDefault(x => x.SetKey == ConstantParameter.DigitCountMainGroupCode)
                 ?.SetValue;
             return result != null ? int.Parse(result) : 0;
         }
         public int GetSubCodeCount()
         {
-            var result= _context.Settings.SingleOrDefault(x => x.SetKey == ConstantParameter.DigitCountSubGroupCode)
+            var result = _context.Settings.SingleOrDefault(x => x.SetKey == ConstantParameter.DigitCountSubGroupCode)
                 ?.SetValue;
             return result != null ? int.Parse(result) : 0;
         }
@@ -74,6 +86,7 @@ namespace Application.Product.Category
             public bool? Status { get; set; }
             public Guid? ParentId { get; set; }
             public string Sub { get; set; }
+            public string Code { get; set; }
         }
     }
 }

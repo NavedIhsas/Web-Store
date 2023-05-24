@@ -87,16 +87,22 @@
             </div>
             <div class="modal-body">
                 <div class="widget-content">
-                    <form method="post" class="needs-validation" novalidate action="javascript:void(0);">
+                    <form method="post" class="needs-validation" name="submitForm" id="submitForm">
                         <div class="form-row">
                             <div class="col-md-6 mb-4">
-                                <label for="validationCustom01">نام گروه <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control basic" id="validationCustom01" placeholder="نام گروه" required>
+                                <label for="">
+                                    نام گروه
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control basic" name="name" placeholder="نام گروه" required>
                             </div>
 
                             <div class="col-md-6 mb-4">
-                                <label for="code">کد گروه <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control basic" id="code" placeholder="کد گروه" required>
+                                <label for="code">
+                                    کد گروه
+                                    <span id="codeValue" class="pull-left"></span>
+                                </label>
+                                <input oninput="getCode(this.value)" name="code"  type="number" class="form-control basic" id="code" placeholder="کد گروه" required>
                             </div>
 
 
@@ -105,14 +111,14 @@
                         <div class="form-row">
                             <div class="col-md-6 mb-4">
                                 <label for="Group">گروه اصلی  </label>
-                                <select type="text" class="form-control pb-5" id="Group" asp-items="@(new SelectList(Model.SelectList,"Id","Name"))" placeholder="وضعیت" value="شاپ" required>
+                                <select type="text" onchange="changeGroup()" name="parentId" class="form-control pb-5" id="Group" asp-items="@(new SelectList(Model.SelectList,"Id","Name"))" placeholder="وضعیت" value="شاپ" required>
                                     <option value="0">-- گروه اصلی --</option>
                                 </select>
                             </div>
 
                             <div class="col-md-6 mb-4">
                                 <label for="validationCustom02"> وضعیت <span class="text-danger">*</span></label>
-                                <select type="text" class="form-control pb-5" id="validationCustom02" placeholder="وضعیت" value="شاپ" required>
+                                <select name="status" type="text" class="form-control pb-5" id="validationCustom02" placeholder="وضعیت" value="شاپ" required>
                                     <option value="true">فعال</option>
                                     <option value="false"> غیر فعال</option>
                                 </select>
@@ -133,42 +139,96 @@
 </div>
 <!--  END CONTENT AREA  -->
 @section Scripts
-{
+    {
 
-    <script src="~/plugins/select2/custom-select2.js"></script>
-
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
     <script>
 
-       
+
         function addModal() {
             $("#add-category").modal("show");
         }
-        
-    
+
+
+        function getCode(value, type = false) {
+            var code = "";
+            debugger
+            if (!type) {
+                code = changeGroup();
+                if (code == false)
+                    $("#codeValue").text(value)
+                else
+                    $("#codeValue").text(code + value)
+            } else
+                $("#codeValue").text(value)
+            debugger
+        }
+
+        function changeGroup() {
+
+            var code = "";
+            var groupId = $("#Group").val();
+            var codeVal = $("#code").val();
+            if (groupId == 0) {
+                getCode(code + codeVal, true)
+                return false
+            };
+
+            $.ajax({
+                url: "/products/Category?proLvlId=" + groupId + "&handler=Code",
+                type: "GET",
+                async: false,
+                success: function (result) {
+                    code = result;
+                }
+            });
+            getCode(code + codeVal, true)
+            return code;
+        }
 
         $("#submit").on('click', function (evn) {
             evn.preventDefault();
             debugger
+
+            var form = $("#submitForm");
+            form.validate();
+            if (form.valid() === false) {
+                return false;
+            }
+
             var group = $("#Group").val();
-            var  code = parseInt($("#code").val());
+            var code = parseInt($("#code").val());
 
             if (group === "0") {
                 if (code > @Model.MainCodeCount ) {
-                    notify("top center", "کد گروه کالا باید @Model.MainCodeCount رقمی باشد", "error")
+                    notify("top center", "کد کالا باید @Model.MainCodeCount رقمی باشد", "error")
                 }
 
             } else {
                 if (code > @Model.SubCodeCount ) {
-                    notify("top center", "کد زیر گروه کالا باید @Model.SubCodeCount رقمی باشد", "error")
+                    notify("top center", "کد کالا باید @Model.SubCodeCount رقمی باشد", "error")
                 }
             }
 
+
+            $.ajax({
+                url: "",
+                type: "POST",
+                data: new FormData(document.forms.submitForm),
+                contentType: false,
+                processData: false,
+                success: function (result) {
+                    debugger
+                }
+            })
 
         })
 
 
 
-    
+
     </script>
 
 
