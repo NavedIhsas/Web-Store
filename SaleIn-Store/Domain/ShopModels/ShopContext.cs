@@ -193,8 +193,7 @@ public partial class ShopContext : DbContext
 
     public virtual DbSet<WorkStation> WorkStations { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("name=ShopConnection");
+ 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

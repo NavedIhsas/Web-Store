@@ -1,0 +1,37 @@
+﻿@model string
+@{
+    Layout = "_LateralLayout";
+    ViewData["Title"] = "خطای سرور داخلی";
+
+    var type = Model switch
+    {
+        "saleIn" => "سالین",
+        "branch" => "شعبه مورد نظر",
+        _ => ""
+        };
+}
+<body class="error500 text-center">
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4 mr-auto mt-5 text-md-left text-center">
+            <a asp-page="/" class="ml-md-5">
+                <img alt="image-500" src="~/assets/img/90x90.jpg" class="theme-logo">
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid error-content">
+    <div class="">
+        <h1 class="error-number">500</h1>
+        <p class="mini-text">وای!</p>
+        <p class="error-text">خطای سرور داخلی!</p>
+            <p class="error-text">
+            ارتباط با سرور مرکزی برقرار نشد<br/>
+                لطفا اتصال  با سرور <strong class="font-weight-bold">@type</strong> را بررسی کرده و دوباره سعی کنید.
+
+        </p>
+        <a asp-page="/" class="btn btn-secondary mt-5">امتحان مجدد</a>
+    </div>
+</div>
+</body>

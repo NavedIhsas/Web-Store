@@ -195,9 +195,6 @@ public partial class SaleInContext : DbContext
 
     public virtual DbSet<WorkStation> WorkStations { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("name=SaleInConnection");
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseCollation("Arabic_CI_AS");

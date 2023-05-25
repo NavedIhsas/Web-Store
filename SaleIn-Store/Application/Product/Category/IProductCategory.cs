@@ -2,6 +2,7 @@
 using AutoMapper;
 using Domain.SaleInModels;
 using Domain.ShopModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Product.Category
@@ -22,19 +23,20 @@ namespace Application.Product.Category
     public class ProductCategory : IProductCategory
     {
         private readonly ShopContext _context;
-        private readonly SaleInContext _saleInContext;
         private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _contextAccessor;
 
-        public ProductCategory(IMapper mapper, SaleInContext saleInContext, ShopContext context)
+        public ProductCategory(IMapper mapper, SaleInContext saleInContext, ShopContext context, IHttpContextAccessor contextAccessor)
         {
             _context = context;
+            _contextAccessor = contextAccessor;
             _mapper = mapper;
-            _saleInContext = saleInContext;
         }
 
         public void CreatePrdCategory(ProductLevelDto command)
         {
 
+            var baseConfig = _contextAccessor.HttpContext.Session.GetJson<BaseConfigDto>("BaseConfig");
         }
         public string GetPrdLvlCheck(string groupId)
         {
