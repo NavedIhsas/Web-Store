@@ -1,4 +1,4 @@
-﻿using Application.SettingsDb;
+﻿using Application.Common;
 using Domain.SaleInModels;
 using Domain.ShopModels;
 using Microsoft.EntityFrameworkCore;
@@ -69,7 +69,7 @@ namespace Application.Interfaces
 
         public List<BusinessUnit> SelectBranch()
         {
-            return _saleInContext.BusinessUnits.AsNoTracking().ToList();
+            return _saleInContext.BusinessUnits.Where(x=>x.BusUnitStatus!=false).AsNoTracking().ToList();
         }
 
         public Guid? SetBranch(string branchId)

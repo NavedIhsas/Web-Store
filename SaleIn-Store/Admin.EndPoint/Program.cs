@@ -1,25 +1,30 @@
+using Application.Common;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Application.Product.Category;
 using Domain.SaleInModels;
 using Domain.ShopModels;
-using infrastructure.Extensions;
-using infrastructure.Mapping;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Connections;
-using Microsoft.Data.SqlClient;
 using SaleInAdmin;
 
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
+    
     .CreateLogger();
-Log.Information("شروع راه اندازی");
 
+Log.Information("شروع راه اندازی");
 try
 {
     var builder = WebApplication.CreateBuilder(args);
-    builder.Host.UseSerilog();
+    builder.Host.UseSerilog().ConfigureLogging(logging =>
+    {
+        logging.ClearProviders();
+        logging.SetMinimumLevel(LogLevel.Trace);
+    });
     var configuration = builder.Configuration;
+    Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(configuration).CreateLogger();
+
     builder.Services.AddRazorPages().AddMvcOptions(x=>x.Filters.Add<Security>());
     builder.Services.AddAutoMapper(typeof(MappingProfile));
     #region IOC

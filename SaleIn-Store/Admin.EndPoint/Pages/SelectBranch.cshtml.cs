@@ -1,12 +1,10 @@
-using Application;
+using Application.Common;
 using Application.Interfaces;
 using Domain.SaleInModels;
 using infrastructure.Attribute;
-using infrastructure.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
-using Serilog.Parsing;
 
 namespace SaleInAdmin.Pages
 {
@@ -34,7 +32,7 @@ namespace SaleInAdmin.Pages
         }
 
         [IgnoreFilter]
-        public IActionResult OnPost(string branchId, string returnUrl)
+        public IActionResult OnPost(string branchId)
         {
             var databaseName = _authHelper.SetBranch(branchId);
             var database = HttpContext.Session.GetConnectionString("Branch") ?? databaseName.ToString();
@@ -44,6 +42,13 @@ namespace SaleInAdmin.Pages
                 InitialCatalog = database
             };
             HttpContext.Session.SetStringText("Branch", connection);
+            var baseConfig = HttpContext.Session.GetJson<BaseConfigDto>("BaseConfig") ?? new BaseConfigDto()
+            {
+                FisPeriodUId = new Guid(database),
+                BusUnitUId = new Guid(branchId)
+            };
+            HttpContext.Session.SetJson("BaseConfig",baseConfig);
+
             return RedirectToPage("Index");
         }
     }

@@ -30,6 +30,7 @@
                             <thead>
                                 <tr>
                                     <th>نام</th>
+                                    <th>کد</th>
                                     <th> وضعیت </th>
                                     <th> گروه اصلی </th>
                                     <th class="no-content"></th>
@@ -40,6 +41,7 @@
                                 {
                                     <tr>
                                         <td>@item.Name</td>
+                                        <td>@item.Code</td>
                                         <td>
                                             @if (item.Status == false)
                                             {
@@ -102,7 +104,7 @@
                                     کد گروه
                                     <span id="codeValue" class="pull-left"></span>
                                 </label>
-                                <input oninput="getCode(this.value)" name="code"  type="number" class="form-control basic" id="code" placeholder="کد گروه" required>
+                                <input oninput="getCode(this.value)" name="code" type="number" class="form-control basic" id="code" placeholder="کد گروه" required>
                             </div>
 
 
@@ -159,8 +161,10 @@
                 code = changeGroup();
                 if (code == false)
                     $("#codeValue").text(value)
-                else
-                    $("#codeValue").text(code + value)
+                else {
+                    $("#codeValue").text(code + value);
+
+                }
             } else
                 $("#codeValue").text(value)
             debugger
@@ -220,7 +224,9 @@
                 contentType: false,
                 processData: false,
                 success: function (result) {
-                    debugger
+                    notify("top center", "عملیات با موفقیت انجام شد", "success")
+                    $("#add-category").modal("hide");
+
                 }
             })
 

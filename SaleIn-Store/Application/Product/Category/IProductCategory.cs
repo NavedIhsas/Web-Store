@@ -1,9 +1,10 @@
-﻿using Application.SettingsDb;
+﻿using Application.Common;
 using AutoMapper;
 using Domain.SaleInModels;
 using Domain.ShopModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using ProductLevel = Domain.SaleInModels.ProductLevel;
 
 namespace Application.Product.Category
 {
@@ -37,6 +38,11 @@ namespace Application.Product.Category
         {
 
             var baseConfig = _contextAccessor.HttpContext.Session.GetJson<BaseConfigDto>("BaseConfig");
+            var map = _mapper.Map<Domain.ShopModels.ProductLevel>(command);
+            map.BusUnitUid = baseConfig.BusUnitUId;
+            map.FisPeriodUid = baseConfig.FisPeriodUId;
+            _context.ProductLevels.Add(map);
+            SaveChange.SaveChanges(_context);
         }
         public string GetPrdLvlCheck(string groupId)
         {

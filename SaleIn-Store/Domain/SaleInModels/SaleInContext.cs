@@ -15,6 +15,8 @@ public partial class SaleInContext : DbContext
     {
     }
 
+   
+
     public virtual DbSet<Account> Accounts { get; set; }
 
     public virtual DbSet<AccountClub> AccountClubs { get; set; }
@@ -194,6 +196,7 @@ public partial class SaleInContext : DbContext
     public virtual DbSet<WarehouseRecieptDetail> WarehouseRecieptDetails { get; set; }
 
     public virtual DbSet<WorkStation> WorkStations { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
