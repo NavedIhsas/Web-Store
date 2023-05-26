@@ -1,5 +1,4 @@
 using Application.Interfaces;
-using Domain.SaleInModels;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration.UserSecrets;
 

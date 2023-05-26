@@ -1,6 +1,5 @@
 using Application.Common;
 using Application.Interfaces;
-using Domain.SaleInModels;
 using infrastructure.Attribute;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

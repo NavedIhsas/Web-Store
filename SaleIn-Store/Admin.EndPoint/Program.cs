@@ -2,7 +2,6 @@ using Application.Common;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Application.Product.Category;
-using Domain.SaleInModels;
 using Domain.ShopModels;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Connections;

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Domain.ShopModels;
 
-public partial class ShopContext : DbContext, IShopContext
+public partial class ShopContext : DbContext
 {
     public ShopContext()
     {
@@ -193,7 +193,7 @@ public partial class ShopContext : DbContext, IShopContext
 
     public virtual DbSet<WorkStation> WorkStations { get; set; }
 
-
+ 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
