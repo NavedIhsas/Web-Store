@@ -23,12 +23,12 @@
     {
         public string Message { get; set; }
         public bool IsSucceeded { get; set; }
-        public T Date { get; set; }
+        public T Data { get; set; }
         public ResultDto<T> Succeeded(T date, string message = "عملیات با موفقیت انجام شد")
         {
             IsSucceeded = true;
             Message = message;
-            Date = date;
+            Data = date;
             return this;
         }
 

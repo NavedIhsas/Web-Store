@@ -23,7 +23,7 @@ namespace Application.Product.Category
         int GetSubCodeCount();
         int GetMainCodeCount();
         string GetPrdLvlCheck(string groupId);
-        ResultDto CreatePrdCategory(CreateProductLevel command);
+        ResultDto<List<ProductLevelDto>> CreatePrdCategory(CreateProductLevel command);
         ResultDto Remove(Guid id);
     }
 
@@ -42,10 +42,9 @@ namespace Application.Product.Category
             _mapper = mapper;
         }
 
-        public ResultDto CreatePrdCategory(CreateProductLevel command)
+        public ResultDto<List<ProductLevelDto>> CreatePrdCategory(CreateProductLevel command)
         {
-            var result = new ResultDto();
-
+            var result = new ResultDto<List<ProductLevelDto>>();
             try
             {
                 if (_context.ProductLevels.Any(x => x.PrdLvlName == command.Name.Fix()))
@@ -53,7 +52,7 @@ namespace Application.Product.Category
                 var map = _mapper.Map<Domain.ShopModels.ProductLevel>(command);
                 _context.ProductLevels.Add(map);
                 _context.SaveChanges();
-                return result.Succeeded();
+                return result.Succeeded(GetLevelList());
             }
             catch (Exception e)
             {
@@ -140,7 +139,6 @@ namespace Application.Product.Category
         {
             public Guid Id { get; set; }
 
-            [Required]
             public string Name { get; set; }
             public bool? Status { get; set; }
             public Guid? ParentId { get; set; }

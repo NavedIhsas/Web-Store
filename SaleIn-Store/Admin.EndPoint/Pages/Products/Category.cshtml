@@ -98,7 +98,7 @@
                                     نام گروه
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" class="form-control basic" asp-for="Command.Name" placeholder="نام گروه" required>
+                                <input type="text" class="form-control basic" asp-for="Command.Name" placeholder="نام گروه" >
                                 <span asp-validation-for="Command.Name" class="error"></span>
                             </div>
 
@@ -107,7 +107,7 @@
                                     کد گروه
                                     <span id="codeValue" class="pull-left"></span>
                                 </label>
-                                <input asp-for="Command.Code" oninput="getCode(this.value)"  type="number" class="form-control basic" id="code" placeholder="کد گروه" required>
+                                <input asp-for="Command.Code" oninput="getCode(this.value)"  type="number" class="form-control basic" id="code" placeholder="کد گروه" >
                                 <span asp-validation-for="Command.Code" class="error"></span>
                             </div>
 
@@ -125,7 +125,7 @@
 
                             <div class="col-md-6 mb-4">
                                 <label for="validationCustom02"> وضعیت <span class="text-danger">*</span></label>
-                                <select asp-for="Command.Status" type="text" class="form-control pb-5" id="validationCustom02" placeholder="وضعیت" value="شاپ" required>
+                                <select asp-for="Command.Status" type="text" class="form-control pb-5" id="validationCustom02" placeholder="وضعیت"  >
                                     <option value="true">فعال</option>
                                     <option value="false"> غیر فعال</option>
                                 </select>

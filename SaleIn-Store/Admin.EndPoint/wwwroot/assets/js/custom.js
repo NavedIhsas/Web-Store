@@ -141,8 +141,6 @@ function GetIEVersion() {
 https://notifyjs.jpillora.com/
 
 function notify(position, text, type) {
-    debugger
-   
     $.notify(text, {
         className: type,
         clickToHide: true,
