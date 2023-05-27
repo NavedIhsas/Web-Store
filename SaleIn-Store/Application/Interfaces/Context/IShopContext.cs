@@ -1,8 +1,16 @@
 ﻿using Domain.ShopModels;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+
 namespace Application.Interfaces.Context;
 
 public interface IShopContext
 {
+    int SaveChanges(bool acceptAllChangesOnSuccess);
+    int SaveChanges();
+    public  DatabaseFacade Database { get; }
+
     DbSet<AccountClubPhoto> AccountClubPhotos { get; set; }
     DbSet<AccountClub> AccountClubs { get; set; }
     DbSet<AccountClubType> AccountClubTypes { get; set; }

@@ -43,6 +43,8 @@ public partial class ProductLevel
 
     public int? PrdLvlType { get; set; }
 
+    public string PrdLvlCodeValue { get; set; }
+
     public virtual FiscalPeriod FisPeriodU { get; set; }
 
     public virtual ICollection<Product> Products { get; set; } = new List<Product>();

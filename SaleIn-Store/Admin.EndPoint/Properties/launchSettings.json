@@ -3,6 +3,8 @@
     "Admin.EndPoint": {
       "commandName": "Project",
       "launchBrowser": true,
+      "launchUrl": "products/category",
+
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
@@ -12,8 +14,8 @@
     },
     "IIS Express": {
       "commandName": "IISExpress",
-      "launchUrl": "products/category",
       "launchBrowser": true,
+      "launchUrl": "products/category",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -21,6 +23,7 @@
     "Profile 1": {
       "commandName": "IISExpress",
       "launchBrowser": true,
+      "launchUrl": "products/category",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -29,6 +32,7 @@
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
+    
     "iisExpress": {
       "applicationUrl": "http://localhost:27619",
       "sslPort": 44340

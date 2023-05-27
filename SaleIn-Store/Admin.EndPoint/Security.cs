@@ -25,7 +25,8 @@ namespace SaleInAdmin
             
             var ignoreFilter = context.HandlerMethod?.MethodInfo.GetCustomAttributes(typeof(IgnoreFilter), true);
 
-            if (ignoreFilter != null && ignoreFilter.Any()) return;
+            if (ignoreFilter != null && ignoreFilter.Any()) return;// for use branch UnComment this
+           // if (ignoreFilter != null && !ignoreFilter.Any()) return; //for use branch comment this line
             var database = context.HttpContext.Session.GetConnectionString("Branch");
             if (database == null)
             {

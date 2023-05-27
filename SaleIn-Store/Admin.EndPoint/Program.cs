@@ -4,8 +4,12 @@ using Serilog;
 using Application.Product.Category;
 using Domain.ShopModels;
 using Application.Interfaces;
+using Application.Interfaces.Context;
+using Domain.SaleInModels;
+using infrastructure.Context;
 using Microsoft.AspNetCore.Connections;
 using SaleInAdmin;
+using Microsoft.AspNetCore.Mvc;
 
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
@@ -25,21 +29,25 @@ try
     Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(configuration).CreateLogger();
 
     builder.Services.AddRazorPages().AddMvcOptions(x=>x.Filters.Add<Security>());
-    builder.Services.AddAutoMapper(typeof(MappingProfile));
+    builder.Services.AddAutoMapper(typeof(CategoryPrdMap));
     #region IOC
 
     builder.Services.AddScoped<IProductCategory, ProductCategory>();
     builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+    builder.Services.AddTransient<IShopContext, ShopContext>();
+    builder.Services.AddTransient<ISaleInContext, SaleInContext>();
     builder.Services.AddTransient<IAuthHelper, AuthHelper>();
     builder.Services.AddSession();
     builder.Services.AddDistributedMemoryCache();
-    
+
     #endregion
 
 
     #region connection string
 
     var saleInConnection = configuration.GetConnectionString("SaleInConnection");
+    var ShopConnection = configuration.GetConnectionString("ShopConnection1"); // for use branch remove this
+
     builder.Services.AddDbContext<SaleInContext>(option => option.UseSqlServer(saleInConnection));
 
     builder.Services.AddDbContext<ShopContext>((serviceProvider, options) =>
@@ -49,7 +57,7 @@ try
         string session = null;
         try
         {
-             session = httpContext.Session.GetConnectionString("Branch");
+             session = httpContext.Session.GetConnectionString("Branch"); //branch connection
             options.UseSqlServer(session);
         }
         catch (Exception exception)

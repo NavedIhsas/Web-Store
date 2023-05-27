@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Application.Interfaces.Context;
+using Domain.SaleInModels;
 using Microsoft.EntityFrameworkCore;
 
-namespace Domain.SaleInModels;
+namespace infrastructure.Context;
 
-public partial class SaleInContext : DbContext
+public partial class SaleInContext : DbContext,ISaleInContext
 {
     public SaleInContext()
     {

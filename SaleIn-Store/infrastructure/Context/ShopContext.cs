@@ -1,19 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using infrastructure.Context;
+using Application.Interfaces.Context;
+using Domain.ShopModels;
+using Microsoft.AspNetCore.Http;
+using Application.Common;
 
-namespace Domain.ShopModels;
+namespace infrastructure.Context;
 
-public partial class ShopContext : DbContext
+public partial class ShopContext : DbContext,IShopContext
 {
+    private readonly IHttpContextAccessor _httpContext;
     public ShopContext()
     {
+        
     }
 
-    public ShopContext(DbContextOptions<ShopContext> options)
+    public ShopContext(DbContextOptions<ShopContext> options, IHttpContextAccessor httpContext)
         : base(options)
     {
+        _httpContext = httpContext;
     }
+
+
 
     public virtual DbSet<Account> Accounts { get; set; }
 
@@ -193,7 +204,39 @@ public partial class ShopContext : DbContext
 
     public virtual DbSet<WorkStation> WorkStations { get; set; }
 
- 
+
+    public override int SaveChanges()
+    {
+        var modifiedEntries = ChangeTracker.Entries().Where(x => x.State == EntityState.Modified || x.State == EntityState.Deleted || x.State == EntityState.Added);
+        foreach (var entry in modifiedEntries)
+        {
+            var baseConfig = _httpContext.HttpContext.Session.GetJson<BaseConfigDto>("BaseConfig");
+
+            var getEntityType = entry.Context.Model.FindEntityType(entry.Entity.GetType());
+            if (getEntityType != null)
+            {
+                //shodow property
+                var insert = getEntityType.FindProperty("SysUsrCreatedon");
+                var insertBy = getEntityType.FindProperty("SysUsrCreatedby");
+                var updateBy = getEntityType.FindProperty("SysUsrModifiedby");
+                var updateDate = getEntityType.FindProperty("SysUsrModifiedon");
+                var busUnitUid = getEntityType.FindProperty("BusUnitUid");
+                var fisPeriodUid = getEntityType.FindProperty("FisPeriodUid");
+                
+
+                if (entry.State == EntityState.Added && busUnitUid != null) entry.Property("BusUnitUid").CurrentValue = baseConfig.BusUnitUId;
+                if (entry.State == EntityState.Added && fisPeriodUid != null) entry.Property("FisPeriodUid").CurrentValue = baseConfig.FisPeriodUId;//TODO current user
+                
+                if (entry.State == EntityState.Added && insert != null) entry.Property("SysUsrCreatedon").CurrentValue = DateTime.Now;
+                if (entry.State == EntityState.Added && insertBy != null) entry.Property("SysUsrCreatedby").CurrentValue = new Guid();//TODO current user
+
+                if (entry.State == EntityState.Modified && updateBy != null) entry.Property("SysUsrModifiedon").CurrentValue = DateTime.Now;
+                if (entry.State == EntityState.Modified && updateDate != null)
+                    entry.Property("SysUsrModifiedby").CurrentValue = entry.Property("SysUsrCreatedby").CurrentValue = new Guid();//TODO current user
+            }
+        }
+        return base.SaveChanges();
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -3098,6 +3141,9 @@ public partial class ShopContext : DbContext
             entity.Property(e => e.PrdLvlCode)
                 .HasMaxLength(50)
                 .HasColumnName("PRD_LVL_CODE");
+            entity.Property(e => e.PrdLvlCodeValue)
+                .HasMaxLength(50)
+                .HasColumnName("PRD_LVL_CODE_VALUE");
             entity.Property(e => e.PrdLvlCustomButton).HasColumnName("PRD_LVL_CUSTOM_BUTTON");
             entity.Property(e => e.PrdLvlCustomTab).HasColumnName("PRD_LVL_CUSTOM_TAB");
             entity.Property(e => e.PrdLvlExpButton).HasColumnName("PRD_LVL_EXP_BUTTON");

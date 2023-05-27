@@ -1,5 +1,6 @@
 using Application.Common;
 using Application.Interfaces;
+using Domain.SaleInModels;
 using infrastructure.Attribute;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -20,18 +21,18 @@ namespace SaleInAdmin.Pages
         public List<BusinessUnit> Branch;
 
         [IgnoreFilter]
-        public IActionResult OnGet()
+        public IActionResult OnGet(string returnUrl)
         {
             var database = HttpContext.Session.GetConnectionString("Branch");
             if (database != null)
                return RedirectToPage("Index");
-
+            ViewData["ReturnUrl"] = returnUrl;
             Branch = _authHelper.SelectBranch();
             return Page();
         }
 
         [IgnoreFilter]
-        public IActionResult OnPost(string branchId)
+        public IActionResult OnPost(string branchId,string returnUrl)
         {
             var databaseName = _authHelper.SetBranch(branchId);
             var database = HttpContext.Session.GetConnectionString("Branch") ?? databaseName.ToString();
@@ -48,7 +49,8 @@ namespace SaleInAdmin.Pages
             };
             HttpContext.Session.SetJson("BaseConfig",baseConfig);
 
-            return RedirectToPage("Index");
+            return returnUrl != null ? Redirect(returnUrl) : RedirectToPage("Index");
+          
         }
     }
 }

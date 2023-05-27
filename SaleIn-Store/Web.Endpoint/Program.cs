@@ -1,4 +1,5 @@
 using Domain.SaleInModels;
+using infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using Application.Interfaces.Context;
 using Domain.SaleInModels;
 using Domain.ShopModels;
 using Microsoft.EntityFrameworkCore;
@@ -19,10 +20,10 @@ namespace Application.Interfaces
 
     public class AuthHelper : IAuthHelper
     {
-        private readonly ShopContext _context;
-        private readonly SaleInContext _saleInContext;
+        private readonly IShopContext _context;
+        private readonly ISaleInContext _saleInContext;
         private readonly ILogger<AuthHelper> _logger;
-        public AuthHelper(ShopContext context, ILogger<AuthHelper> logger, SaleInContext saleInContext)
+        public AuthHelper(IShopContext context, ILogger<AuthHelper> logger, ISaleInContext saleInContext)
         {
             _context = context;
             _logger = logger;

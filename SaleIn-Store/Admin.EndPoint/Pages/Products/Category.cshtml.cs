@@ -1,6 +1,7 @@
 using Application.Product.Category;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using static Application.Product.Category.ProductCategory;
 
 namespace SaleInAdmin.Pages.Products
 {
@@ -15,6 +16,8 @@ namespace SaleInAdmin.Pages.Products
 
         public List<ProductCategory.ProductLevelDto> List;
         public List<ProductCategory.ProductLevelDto> SelectList;
+        [BindProperty]
+        public CreateProductLevel Command { get; set; }
         public int MainCodeCount;
         public int SubCodeCount;
         public void OnGet()
@@ -26,14 +29,20 @@ namespace SaleInAdmin.Pages.Products
         }
 
 
-        public void OnPost(ProductCategory.ProductLevelDto command)
+        public JsonResult OnPost(CreateProductLevel command)
         {
-            _category.CreatePrdCategory(command);
+           var result= _category.CreatePrdCategory(command);
+            return new JsonResult(result);
         }
         public IActionResult OnGetCode(string proLvlId)
         {
             var result = _category.GetPrdLvlCheck(proLvlId);
             return new JsonResult(result);
+        }
+
+        public IActionResult OnGetRemove(Guid id)
+        {
+           return new JsonResult(_category.Remove(id));
         }
     }
 }

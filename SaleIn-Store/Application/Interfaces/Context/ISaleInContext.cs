@@ -1,9 +1,14 @@
 ﻿using Domain.SaleInModels;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Application.Interfaces.Context
 {
     public interface ISaleInContext
     {
+        int SaveChanges(bool acceptAllChangesOnSuccess);
+        int SaveChanges();
+        public DatabaseFacade Database { get; }
         DbSet<AccountClubPhoto> AccountClubPhotos { get; set; }
         DbSet<AccountClub> AccountClubs { get; set; }
         DbSet<AccountClubType> AccountClubTypes { get; set; }

@@ -2,7 +2,7 @@
 @model SaleInAdmin.Pages.Products.CategoryModel
 @{
 }
-
+@Html.AntiForgeryToken()
 <style>
     .hiddenRow {
         padding: 0 !important;
@@ -59,7 +59,7 @@
 
                                         <td>
                                             <button class="btn btn-warning btn-rounded btn-sm">ویرایش</button>
-                                            <button class="btn btn-danger btn-rounded btn-sm">حذف</button>
+                                            <button onclick="Remove('@item.Id')" class="btn btn-danger btn-rounded btn-sm">حذف</button>
                                         </td>
                                     </tr>
 
@@ -86,17 +86,20 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
-            </div>
-            <div class="modal-body">
-                <div class="widget-content">
-                    <form method="post" class="needs-validation" name="submitForm" id="submitForm">
+            </div>  
+            <form method="post" class="needs-validation" name="submitForm" id="submitForm">
+                <div class="modal-body">
+           
+                    <div class="widget-content">
+                   
                         <div class="form-row">
                             <div class="col-md-6 mb-4">
                                 <label for="">
                                     نام گروه
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" class="form-control basic" name="name" placeholder="نام گروه" required>
+                                <input type="text" class="form-control basic" asp-for="Command.Name" placeholder="نام گروه" required>
+                                <span asp-validation-for="Command.Name" class="error"></span>
                             </div>
 
                             <div class="col-md-6 mb-4">
@@ -104,7 +107,8 @@
                                     کد گروه
                                     <span id="codeValue" class="pull-left"></span>
                                 </label>
-                                <input oninput="getCode(this.value)" name="code" type="number" class="form-control basic" id="code" placeholder="کد گروه" required>
+                                <input asp-for="Command.Code" oninput="getCode(this.value)"  type="number" class="form-control basic" id="code" placeholder="کد گروه" required>
+                                <span asp-validation-for="Command.Code" class="error"></span>
                             </div>
 
 
@@ -113,40 +117,62 @@
                         <div class="form-row">
                             <div class="col-md-6 mb-4">
                                 <label for="Group">گروه اصلی  </label>
-                                <select type="text" onchange="changeGroup()" name="parentId" class="form-control pb-5" id="Group" asp-items="@(new SelectList(Model.SelectList,"Id","Name"))" placeholder="وضعیت" value="شاپ" required>
+                                <select type="text" onchange="changeGroup()" asp-for="Command.ParentId" class="form-control pb-5" id="Group" asp-items="@(new SelectList(Model.SelectList,"Id","Name"))" placeholder="وضعیت" value="شاپ" required>
                                     <option value="0">-- گروه اصلی --</option>
                                 </select>
+                                <span asp-validation-for="Command.ParentId" class="error"></span>
                             </div>
 
                             <div class="col-md-6 mb-4">
                                 <label for="validationCustom02"> وضعیت <span class="text-danger">*</span></label>
-                                <select name="status" type="text" class="form-control pb-5" id="validationCustom02" placeholder="وضعیت" value="شاپ" required>
+                                <select asp-for="Command.Status" type="text" class="form-control pb-5" id="validationCustom02" placeholder="وضعیت" value="شاپ" required>
                                     <option value="true">فعال</option>
                                     <option value="false"> غیر فعال</option>
                                 </select>
+                                <span asp-validation-for="Command.Status" class="error"></span>
                             </div>
                         </div>
-
-                    </form>
-
-
+                        <input type="hidden" asp-for="Command.Id" value="@(Guid.NewGuid())" />
+                        <input type="hidden" asp-for="Command.CodeValue" id="setCode"/>
+                    </div> 
+                
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> انصراف</button>
-                <button type="submit" id="submit" class="btn btn-primary">ذخیره</button>
-            </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> انصراف</button>
+                    <button type="submit" id="submit" class="btn btn-primary">ذخیره</button>
+                </div>
+            </form>
+
+         
         </div>
     </div>
 </div>
 <!--  END CONTENT AREA  -->
 @section Scripts
-    {
+{
 
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
+
+         var table=$('#zero-config').DataTable({
+              //ajax: "data.json",
+            "oLanguage": {
+                "oPaginate": { "sPrevious": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>', "sNext": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>' },
+                "sInfo": "صفحه _PAGE_ از _PAGES_",
+                "sSearch": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
+                "sSearchPlaceholder": "جستجو کنید...",
+                "sLengthMenu": "نتایج :  _MENU_",
+            
+            },
+            "stripeClasses": [],
+            "lengthMenu": [7, 10, 20, 50],
+            "pageLength": 7
+        });
+
+
+ 
 
 
         function addModal() {
@@ -156,18 +182,21 @@
 
         function getCode(value, type = false) {
             var code = "";
-            debugger
+          
             if (!type) {
                 code = changeGroup();
                 if (code == false)
                     $("#codeValue").text(value)
                 else {
-                    $("#codeValue").text(code + value);
+                   {
+                       $("#codeValue").text(code + value)
+                       $("#setCode").val(code + value)
+                   };
 
                 }
             } else
                 $("#codeValue").text(value)
-            debugger
+          
         }
 
         function changeGroup() {
@@ -192,9 +221,9 @@
             return code;
         }
 
-        $("#submit").on('click', function (evn) {
+     $("#submitForm").on( "submit", function( evn ) {
             evn.preventDefault();
-            debugger
+            
 
             var form = $("#submitForm");
             form.validate();
@@ -206,26 +235,42 @@
             var code = parseInt($("#code").val());
 
             if (group === "0") {
-                if (code > @Model.MainCodeCount ) {
-                    notify("top center", "کد کالا باید @Model.MainCodeCount رقمی باشد", "error")
+                if (code.toString().length !== @Model.MainCodeCount ) {
+                    notify("top center", "کد کالا باید @Model.MainCodeCount رقمی باشد", "error");
+                    return false;
                 }
 
             } else {
-                if (code > @Model.SubCodeCount ) {
-                    notify("top center", "کد کالا باید @Model.SubCodeCount رقمی باشد", "error")
+                if (code.toString().length !== @Model.SubCodeCount ) {
+                    notify("top center", "کد کالا باید @Model.SubCodeCount رقمی باشد", "error");
+                    return false;
                 }
             }
 
-
+        
             $.ajax({
-                url: "",
-                type: "POST",
+                 url: '',
                 data: new FormData(document.forms.submitForm),
                 contentType: false,
                 processData: false,
+                type: 'POST',
+                headers: {
+                    RequestVerificationToken:
+                        $('input:hidden[name="__RequestVerificationToken"]').val()
+                },
+            
                 success: function (result) {
-                    notify("top center", "عملیات با موفقیت انجام شد", "success")
-                    $("#add-category").modal("hide");
+                    debugger
+                    if(result.isSucceeded){
+                        
+                        notify("top center", "عملیات با موفقیت انجام شد", "success")
+                         $("#add-category").modal("hide");  
+                           $(".modal-body").html("");
+                          window.location.href = "/Products/Category";
+                    } else{
+                     notify("top center", result.message, "error")
+                       return false;
+                    }
 
                 }
             })
@@ -233,7 +278,26 @@
         })
 
 
+      function Remove(id){
+          debugger
+              $.ajax({
+                 url: '?handler=remove&id='+id,
+                type: 'Get',
+                success: function (result) {
+                    debugger
+                    if(result.isSucceeded){     
+                        notify("top center", "عملیات با موفقیت انجام شد", "success")
+                          window.location.href = "/Products/Category";
+                    }
+                    else{
+                     notify("top center", result.message, "error")
+                       return false;
+                    }
 
+                }
+            })
+
+        };
 
     </script>
 
@@ -241,17 +305,6 @@
 
 
     <script>
-        $('#zero-config').DataTable({
-            "oLanguage": {
-                "oPaginate": { "sPrevious": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>', "sNext": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>' },
-                "sInfo": "صفحه _PAGE_ از _PAGES_",
-                "sSearch": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
-                "sSearchPlaceholder": "جستجو کنید...",
-                "sLengthMenu": "نتایج :  _MENU_",
-            },
-            "stripeClasses": [],
-            "lengthMenu": [7, 10, 20, 50],
-            "pageLength": 7
-        });
+   
     </script>
 }
