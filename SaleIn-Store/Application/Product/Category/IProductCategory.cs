@@ -26,7 +26,7 @@ namespace Application.Product.Category
         string GetPrdLvlCheck(string groupId);
         ResultDto<List<ProductLevelDto>> CreatePrdCategory(CreateProductLevel command);
         ResultDto Remove(Guid id);
-        string GetMaxProductLvlCodeVal(string groupId = null);
+        string GetMaxProductLvlCodeVal(bool noMax, string groupId = null);
         bool CheckExistCode(string id, string code);
     }
 
@@ -50,6 +50,8 @@ namespace Application.Product.Category
             var result = new ResultDto<List<ProductLevelDto>>();
             try
             {
+
+
                 var fakeParentId = "0";
                 if (command.ParentId.HasValue)
                     fakeParentId = command.Id.ToString();
@@ -58,6 +60,7 @@ namespace Application.Product.Category
 
                 if (_context.ProductLevels.Any(x => x.PrdLvlName == command.Name.Fix()))
                     return result.Failed("رکوردی با این نام از قبل وجود دارد");
+
                 var map = _mapper.Map<Domain.ShopModels.ProductLevel>(command);
                 _context.ProductLevels.Add(map);
                 _context.SaveChanges();
@@ -103,16 +106,19 @@ namespace Application.Product.Category
         }
 
 
-        public string GetMaxProductLvlCodeVal(string groupId = null)
+        public string GetMaxProductLvlCodeVal(bool noMax,string groupId = null)
         {
             try
             {
-                if (groupId is null or "0")
-                    return _context.ProductLevels.Where(x => x.PrdLvlParentUid == null).AsEnumerable().MaxBy(x => x.PrdLvlCodeValue)?.PrdLvlCodeValue;
+                if(noMax && groupId =="0")
+                    return "";
 
-                var result = _context.ProductLevels.AsEnumerable().MaxBy(x => x.PrdLvlParentUid == new Guid(groupId)).PrdLvlCodeValue;
+                if (groupId is null or "0")
+                    return _context.ProductLevels.Where(x => x.PrdLvlParentUid == null).Max(x => x.PrdLvlCodeValue);
+                var result = _context.ProductLevels.Where(x => x.PrdLvlParentUid == new Guid(groupId)).Max(x => x.PrdLvlCodeValue);
+
                 if (result == null)
-                    return _context.ProductLevels.AsEnumerable().MaxBy(x => x.PrdLvlUid == new Guid(groupId)).PrdLvlCodeValue;
+                    return _context.ProductLevels.Where(x => x.PrdLvlUid == new Guid(groupId)).Max(x => x.PrdLvlCodeValue);
                 return result;
             }
             catch (Exception e)

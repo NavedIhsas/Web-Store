@@ -66,13 +66,13 @@ table.dataTable {
   color: #1b55e2;
   font-weight: 700;
   font-size: 13px;
-  border: none;
-  letter-spacing: 1px;
+/*  border: none;
+*/  letter-spacing: 1px;
   text-transform: uppercase; }
 
 .table > tbody > tr > td {
-  border: none;
-  color: #888ea8;
+/*  border: none;
+*/  color: #888ea8;
   font-size: 13px;
   letter-spacing: 1px; }
 

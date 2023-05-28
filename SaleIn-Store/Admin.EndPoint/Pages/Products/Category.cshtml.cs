@@ -27,7 +27,7 @@ namespace SaleInAdmin.Pages.Products
             SelectList = _category.GetParentLevelList();
             MainCodeCount = _category.GetMainCodeCount();
             SubCodeCount = _category.GetSubCodeCount();
-            ProductLvlCode = _category.GetMaxProductLvlCodeVal();
+            ProductLvlCode = _category.GetMaxProductLvlCodeVal(false);
         }
 
 
@@ -41,9 +41,9 @@ namespace SaleInAdmin.Pages.Products
             var result = _category.GetPrdLvlCheck(proLvlId);
             return new JsonResult(result);
         }
-        public IActionResult OnGetMaxCode(string proLvlId = null)
+        public IActionResult OnGetMaxCode(bool noMax,string proLvlId = null)
         {
-            var result = _category.GetMaxProductLvlCodeVal(proLvlId);
+            var result = _category.GetMaxProductLvlCodeVal(noMax,proLvlId);
             return new JsonResult(result);
         }
 

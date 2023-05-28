@@ -8,6 +8,8 @@
         padding: 0 !important;
     }
 </style>
+
+
 <!--  BEGIN CONTENT AREA  -->
 <div id="content" class="main-content">
     <div class="layout-px-spacing">
@@ -26,7 +28,7 @@
                         <button onclick="addModal()" class="btn btn-success ">افزودن گروه جدید</button>
                     </div>
                     <div class="table-responsive mb-4 mt-4">
-                        <table id="zero-config" class="table table-hover table-bordered" style="width:100%">
+                        <table id="zero-config" class="table table-hover table-bordered cell-border row-border" style="width:100%">
                             <thead>
                                 <tr>
                                     <th>نام</th>
@@ -222,12 +224,12 @@
 
         }
 
-        function getMaxCode() {
+        function getMaxCode(isMax = false) {
 
             var groupId = $("#Group").val();
             var codeMax = "";
             $.ajax({
-                url: "/products/Category?proLvlId=" + groupId + "&handler=MaxCode",
+                url: "/products/Category?proLvlId=" + groupId + "&noMax=" + isMax + "&handler=MaxCode",
                 type: "GET",
                 async: false,
                 success: function (result) {
@@ -260,7 +262,6 @@
 
 
         function changeGroup() {
-
             var code = "";
             var groupId = $("#Group").val();
             var codeVal = $("#code").val();
@@ -282,20 +283,16 @@
             return code;
         }
 
-        $("#submitForm").on("submit", function (evn) {
-            evn.preventDefault();
-
-
-            var form = $("#submitForm");
-            form.validate();
-            if (form.valid() === false) {
-                return false;
-            }
+        function calculateCode() {
+            
+            var result=true;
 
             var group = $("#Group").val();
             var code = $("#code").val();
             var codeS = $("#code").val();
-
+            
+            
+            // check Exist code
             if (codeS === "" || codeS === undefined) {
                 code = getMaxCode();
 
@@ -315,22 +312,15 @@
                         code = resultCode;
                         checkFor = checkExistCode(resultCode);
                     }
-
-                    debugger
-                    var m = getMaxCode();
-                    getCode(code + m);
-
-                    $("#setCode").val(code + m).toString();
-
                 }
             };
-            $("#code").val("");
-            $("#code").val(code);
-            code = $("#code").val();
-            debugger
+            
+            
+            // generate autho code
             if (group === "0") {
                 if (code.length > @Model.MainCodeCount ) {
                     notify("top center", "کد کالا باید @Model.MainCodeCount رقمی باشد", "error");
+                    result=false;
                     return false;
                 }
 
@@ -345,9 +335,11 @@
 
                 }
 
-            } else {
+            }
+            else {
                 if (code.length > @Model.SubCodeCount ) {
                     notify("top center", "کد کالا باید @Model.SubCodeCount رقمی باشد", "error");
+                    result = false;
                     return false;
                 }
 
@@ -360,8 +352,39 @@
                     code = setCode;
                 }
             }
+
+            // helper
             $("#code").val("");
-            $("#code").val(code).toString();;
+            $("#code").val(code);
+            code = $("#code").val();
+
+            debugger
+            $("#setCode").val("").toString();
+
+            var isMax = false;
+            if (group === "0")
+                isMax = true;
+
+            var m = getMaxCode(isMax);
+            if (m === null)
+                m = "";
+            getCode(m + code);
+            $("#setCode").val(m + code).toString();
+        }
+
+        $("#submitForm").on("submit", function (evn) {
+            evn.preventDefault();
+
+            var form = $("#submitForm");
+            form.validate();
+            if (form.valid() === false) {
+                return false;
+            }
+
+           var result= calculateCode();
+           if(result===false) 
+            return false;
+
             $.ajax({
                 url: '',
                 data: new FormData(document.forms.submitForm),
@@ -390,7 +413,6 @@
             })
 
         })
-
 
         function Remove(id) {
             debugger
