@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using static Application.Product.Category.ProductCategory;
 using ProductLevel = Domain.SaleInModels.ProductLevel;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using System.Text.RegularExpressions;
 
 namespace Application.Product.Category
 {
@@ -25,6 +26,8 @@ namespace Application.Product.Category
         string GetPrdLvlCheck(string groupId);
         ResultDto<List<ProductLevelDto>> CreatePrdCategory(CreateProductLevel command);
         ResultDto Remove(Guid id);
+        string GetMaxProductLvlCodeVal(string groupId = null);
+        bool CheckExistCode(string id, string code);
     }
 
     public class ProductCategory : IProductCategory
@@ -47,6 +50,12 @@ namespace Application.Product.Category
             var result = new ResultDto<List<ProductLevelDto>>();
             try
             {
+                var fakeParentId = "0";
+                if (command.ParentId.HasValue)
+                    fakeParentId = command.Id.ToString();
+                if (CheckExistCode(fakeParentId, command.Code))
+                    return result.Failed("رکوردی با این کد از قبل وجود دارد");
+
                 if (_context.ProductLevels.Any(x => x.PrdLvlName == command.Name.Fix()))
                     return result.Failed("رکوردی با این نام از قبل وجود دارد");
                 var map = _mapper.Map<Domain.ShopModels.ProductLevel>(command);
@@ -64,7 +73,6 @@ namespace Application.Product.Category
         public ResultDto Remove(Guid id)
         {
             var result = new ResultDto();
-
             try
             {
                 var productLevel = _context.ProductLevels.SingleOrDefault(x => x.PrdLvlUid == id);
@@ -80,11 +88,40 @@ namespace Application.Product.Category
             }
         }
 
+
+        public bool CheckExistCode(string id, string code)
+        {
+            if (id == "0")
+                return _context.ProductLevels.Any(x => x.PrdLvlParentUid == null && x.PrdLvlCodeValue == code);
+            var result = _context.ProductLevels.Any(x => x.PrdLvlParentUid != null && x.PrdLvlCodeValue == code);
+            return result;
+        }
         public string GetPrdLvlCheck(string groupId)
         {
             var result = _context.ProductLevels.SingleOrDefault(x => x.PrdLvlUid == new Guid(groupId));
-            return result?.PrdLvlCode;
+            return result?.PrdLvlCodeValue;
         }
+
+
+        public string GetMaxProductLvlCodeVal(string groupId = null)
+        {
+            try
+            {
+                if (groupId is null or "0")
+                    return _context.ProductLevels.Where(x => x.PrdLvlParentUid == null).AsEnumerable().MaxBy(x => x.PrdLvlCodeValue)?.PrdLvlCodeValue;
+
+                var result = _context.ProductLevels.AsEnumerable().MaxBy(x => x.PrdLvlParentUid == new Guid(groupId)).PrdLvlCodeValue;
+                if (result == null)
+                    return _context.ProductLevels.AsEnumerable().MaxBy(x => x.PrdLvlUid == new Guid(groupId)).PrdLvlCodeValue;
+                return result;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+                return null;
+            }
+        }
+
 
         public List<ProductLevelDto> GetLevelList()
         {

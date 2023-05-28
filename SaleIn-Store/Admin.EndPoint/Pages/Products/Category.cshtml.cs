@@ -20,18 +20,20 @@ namespace SaleInAdmin.Pages.Products
         public CreateProductLevel Command { get; set; }
         public int MainCodeCount;
         public int SubCodeCount;
+        public string ProductLvlCode { get; set; }
         public void OnGet()
         {
             List = _category.GetLevelList();
             SelectList = _category.GetParentLevelList();
             MainCodeCount = _category.GetMainCodeCount();
             SubCodeCount = _category.GetSubCodeCount();
+            ProductLvlCode = _category.GetMaxProductLvlCodeVal();
         }
 
 
         public JsonResult OnPost(CreateProductLevel command)
         {
-           var result= _category.CreatePrdCategory(command);
+            var result = _category.CreatePrdCategory(command);
             return new JsonResult(result);
         }
         public IActionResult OnGetCode(string proLvlId)
@@ -39,10 +41,21 @@ namespace SaleInAdmin.Pages.Products
             var result = _category.GetPrdLvlCheck(proLvlId);
             return new JsonResult(result);
         }
+        public IActionResult OnGetMaxCode(string proLvlId = null)
+        {
+            var result = _category.GetMaxProductLvlCodeVal(proLvlId);
+            return new JsonResult(result);
+        }
 
         public IActionResult OnGetRemove(Guid id)
         {
-           return new JsonResult(_category.Remove(id));
+            return new JsonResult(_category.Remove(id));
+        }
+
+
+        public IActionResult OnGetCheckCode(string id,string code)
+        {
+            return new JsonResult(_category.CheckExistCode(id, code));
         }
     }
 }

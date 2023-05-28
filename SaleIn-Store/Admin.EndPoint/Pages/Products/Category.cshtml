@@ -86,19 +86,19 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
-            </div>  
+            </div>
             <form method="post" class="needs-validation" name="submitForm" id="submitForm">
                 <div class="modal-body">
-           
+
                     <div class="widget-content">
-                   
+
                         <div class="form-row">
                             <div class="col-md-6 mb-4">
                                 <label for="">
                                     نام گروه
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" class="form-control basic" asp-for="Command.Name" placeholder="نام گروه" >
+                                <input type="text" class="form-control basic" asp-for="Command.Name" placeholder="نام گروه">
                                 <span asp-validation-for="Command.Name" class="error"></span>
                             </div>
 
@@ -107,8 +107,9 @@
                                     کد گروه
                                     <span id="codeValue" class="pull-left"></span>
                                 </label>
-                                <input asp-for="Command.Code" oninput="getCode(this.value)"  type="number" class="form-control basic" id="code" placeholder="کد گروه" >
+                                <input asp-for="Command.Code" oninput="getCode(this.value)" onkeypress="validate(event)" type="text" class="form-control basic" id="code" placeholder="کد گروه">
                                 <span asp-validation-for="Command.Code" class="error"></span>
+                                <span class="text text-info help-block" id="defualCode">آخرین کد ثبت شده برای این گروه : @Model.ProductLvlCode</span>
                             </div>
 
 
@@ -125,17 +126,17 @@
 
                             <div class="col-md-6 mb-4">
                                 <label for="validationCustom02"> وضعیت <span class="text-danger">*</span></label>
-                                <select asp-for="Command.Status" type="text" class="form-control pb-5" id="validationCustom02" placeholder="وضعیت"  >
+                                <select asp-for="Command.Status" type="text" class="form-control pb-5" id="validationCustom02" placeholder="وضعیت">
                                     <option value="true">فعال</option>
                                     <option value="false"> غیر فعال</option>
                                 </select>
                                 <span asp-validation-for="Command.Status" class="error"></span>
                             </div>
                         </div>
-                        <input type="hidden" asp-for="Command.Id" value="@(Guid.NewGuid())" />
-                        <input type="hidden" asp-for="Command.CodeValue" id="setCode"/>
-                    </div> 
-                
+                        <input type="hidden" id="id" asp-for="Command.Id" value="@(Guid.NewGuid())" />
+                        <input type="hidden" class="hidden" asp-for="Command.CodeValue" id="setCode" />
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> انصراف</button>
@@ -143,28 +144,48 @@
                 </div>
             </form>
 
-         
         </div>
     </div>
 </div>
 <!--  END CONTENT AREA  -->
 @section Scripts
-{
+    {
 
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
 
-         var table=$('#zero-config').DataTable({
-              //ajax: "data.json",
+
+        function validate(evt) {
+            var theEvent = evt || window.event;
+
+            // Handle paste
+            if (theEvent.type === 'paste') {
+                key = event.clipboardData.getData('text/plain');
+            } else {
+                // Handle key press
+                var key = theEvent.keyCode || theEvent.which;
+                key = String.fromCharCode(key);
+            }
+            var regex = /[0-9]|\./;
+            if (!regex.test(key)) {
+                theEvent.returnValue = false;
+                if (theEvent.preventDefault) theEvent.preventDefault();
+            }
+        }
+
+
+
+        var table = $('#zero-config').DataTable({
+            //ajax: "data.json",
             "oLanguage": {
                 "oPaginate": { "sPrevious": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>', "sNext": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>' },
                 "sInfo": "صفحه _PAGE_ از _PAGES_",
                 "sSearch": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
                 "sSearchPlaceholder": "جستجو کنید...",
                 "sLengthMenu": "نتایج :  _MENU_",
-            
+
             },
             "stripeClasses": [],
             "lengthMenu": [7, 10, 20, 50],
@@ -172,7 +193,7 @@
         });
 
 
- 
+
 
 
         function addModal() {
@@ -182,22 +203,61 @@
 
         function getCode(value, type = false) {
             var code = "";
-          
+
             if (!type) {
                 code = changeGroup();
                 if (code == false)
                     $("#codeValue").text(value)
                 else {
-                   {
-                       $("#codeValue").text(code + value)
-                       $("#setCode").val(code + value)
-                   };
+                    {
+                        $("#codeValue").text(code + value)
+
+                        var str = (code + value).toString();
+                        $("#setCode").val(str)
+                    };
 
                 }
             } else
                 $("#codeValue").text(value)
-          
+
         }
+
+        function getMaxCode() {
+
+            var groupId = $("#Group").val();
+            var codeMax = "";
+            $.ajax({
+                url: "/products/Category?proLvlId=" + groupId + "&handler=MaxCode",
+                type: "GET",
+                async: false,
+                success: function (result) {
+                    $("#defualCode").text("");
+                    $("#defualCode").text("آخرین کد ثبت شده برای این گروه: " + result);
+                    codeMax = result;
+                }
+            });
+            return codeMax;
+        }
+
+        function checkExistCode(code) {
+
+            var id = $("#id").val();
+            var group = $("#Group").val();
+            if (group === "0")
+                id = group;
+
+            var existCode = "";
+            $.ajax({
+                url: "/products/Category?id=" + id + "&code=" + code + "&handler=CheckCode",
+                type: "GET",
+                async: false,
+                success: function (result) {
+                    existCode = result;
+                }
+            });
+            return existCode;
+        }
+
 
         function changeGroup() {
 
@@ -217,13 +277,14 @@
                     code = result;
                 }
             });
+            getMaxCode()
             getCode(code + codeVal, true)
             return code;
         }
 
-     $("#submitForm").on( "submit", function( evn ) {
+        $("#submitForm").on("submit", function (evn) {
             evn.preventDefault();
-            
+
 
             var form = $("#submitForm");
             form.validate();
@@ -232,24 +293,77 @@
             }
 
             var group = $("#Group").val();
-            var code = parseInt($("#code").val());
+            var code = $("#code").val();
+            var codeS = $("#code").val();
 
+            if (codeS === "" || codeS === undefined) {
+                code = getMaxCode();
+
+                if (code == null) code = "1";
+                var existCode = checkExistCode(code);
+
+                if (existCode) {
+
+                    var rplcCode = "";
+                    var checkFor = true;
+                    for (var i = 0, count = 1; checkFor === true; i++) {
+
+                        const rplcCode = code.at(-1);
+                        var parse = parseInt(rplcCode);
+                        var th = parse + 1;
+                        var resultCode = code.replace(/.$/, th);
+                        code = resultCode;
+                        checkFor = checkExistCode(resultCode);
+                    }
+
+                    debugger
+                    var m = getMaxCode();
+                    getCode(code + m);
+
+                    $("#setCode").val(code + m).toString();
+
+                }
+            };
+            $("#code").val("");
+            $("#code").val(code);
+            code = $("#code").val();
+            debugger
             if (group === "0") {
-                if (code.toString().length !== @Model.MainCodeCount ) {
+                if (code.length > @Model.MainCodeCount ) {
                     notify("top center", "کد کالا باید @Model.MainCodeCount رقمی باشد", "error");
                     return false;
                 }
 
+                if (code.length !== @Model.MainCodeCount ) {
+
+                    var setCode = code;
+                    for (var i = 0, count = 1; i < @Model.MainCodeCount-code.length; i++) {
+                        setCode = "0" + setCode;
+
+                    }
+                    code = setCode;
+
+                }
+
             } else {
-                if (code.toString().length !== @Model.SubCodeCount ) {
+                if (code.length > @Model.SubCodeCount ) {
                     notify("top center", "کد کالا باید @Model.SubCodeCount رقمی باشد", "error");
                     return false;
                 }
-            }
 
-        
+
+                if (code.length !== @Model.SubCodeCount ) {
+                    var setCode = code;
+                    for (var i = 0, count = 1; i < @Model.SubCodeCount-code.length; i++) {
+                        setCode = "0" + setCode;
+                    }
+                    code = setCode;
+                }
+            }
+            $("#code").val("");
+            $("#code").val(code).toString();;
             $.ajax({
-                 url: '',
+                url: '',
                 data: new FormData(document.forms.submitForm),
                 contentType: false,
                 processData: false,
@@ -258,18 +372,18 @@
                     RequestVerificationToken:
                         $('input:hidden[name="__RequestVerificationToken"]').val()
                 },
-            
+
                 success: function (result) {
                     debugger
-                    if(result.isSucceeded){
-                        
+                    if (result.isSucceeded) {
+
                         notify("top center", "عملیات با موفقیت انجام شد", "success")
-                         $("#add-category").modal("hide");  
-                           $(".modal-body").html("");
-                          window.location.href = "/Products/Category";
-                    } else{
-                     notify("top center", result.message, "error")
-                       return false;
+                        $("#add-category").modal("hide");
+                        $(".modal-body").html("");
+                        window.location.href = "/Products/Category";
+                    } else {
+                        notify("top center", result.message, "error")
+                        return false;
                     }
 
                 }
@@ -278,20 +392,20 @@
         })
 
 
-      function Remove(id){
-          debugger
-              $.ajax({
-                 url: '?handler=remove&id='+id,
+        function Remove(id) {
+            debugger
+            $.ajax({
+                url: '?handler=remove&id=' + id,
                 type: 'Get',
                 success: function (result) {
                     debugger
-                    if(result.isSucceeded){     
+                    if (result.isSucceeded) {
                         notify("top center", "عملیات با موفقیت انجام شد", "success")
-                          window.location.href = "/Products/Category";
+                        window.location.href = "/Products/Category";
                     }
-                    else{
-                     notify("top center", result.message, "error")
-                       return false;
+                    else {
+                        notify("top center", result.message, "error")
+                        return false;
                     }
 
                 }
@@ -305,6 +419,6 @@
 
 
     <script>
-   
+
     </script>
 }

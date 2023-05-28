@@ -8,6 +8,9 @@ namespace Application.Product.Category
     public class CategoryPrdValidator : AbstractValidator<CreateProductLevel>
     {
         public CategoryPrdValidator()
-        =>RuleFor(x => x.Name).NotEmpty().WithMessage(ValidateMessage.Required);
+        {
+            RuleFor(x => x.Name).NotEmpty().WithMessage(ValidateMessage.Required);
+            
+        }
     }
 }
