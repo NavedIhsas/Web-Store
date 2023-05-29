@@ -60,7 +60,7 @@
 
 
                                         <td>
-                                            <button class="btn btn-warning btn-rounded btn-sm">ویرایش</button>
+                                            <button onclick="Edit('@item.Id','@item.Name','@item.Code','@item.CodeValue','@item.ParentId','@item.Status')" class="btn btn-warning btn-rounded btn-sm">ویرایش</button>
                                             <button onclick="Remove('@item.Id')" class="btn btn-danger btn-rounded btn-sm">حذف</button>
                                         </td>
                                     </tr>
@@ -75,6 +75,74 @@
 
         </div>
 
+    </div>
+</div>
+
+<div class="modal fade" id="edit-category" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width:700px !Important">
+            <div class="modal-header">
+                <h5 class="modal-title text-center" id="exampleModalLabel1">  ویرایش گروه جدید</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <form method="post" class="needs-validation" name="submitEditForm" id="submitEditForm">
+                <div class="modal-body">
+
+                    <div class="widget-content">
+
+                        <div class="form-row">
+                            <div class="col-md-6 mb-4">
+                                <label for="">
+                                    نام گروه
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control basic" asp-for="Command.Name" placeholder="نام گروه">
+                                <span asp-validation-for="Command.Name" class="error"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                              
+                                <label for="Group">کد گروه  </label>
+                                <input asp-for="Command.Code" oninput="getCode(this.value)" onkeypress="validate(event)" type="text" class="form-control basic" placeholder="کد گروه">
+                                <span asp-validation-for="Command.Code" class="error"></span>
+                              
+                            </div>
+
+
+                        </div>
+
+                        <div class="form-row">
+                            <div class="col-md-6 mb-4">
+                                <label for="Group">گروه اصلی  </label>
+                                <select type="text" onchange="changeGroup()" id="editParentId" asp-for="Command.ParentId" class="form-control pb-5" asp-items="@(new SelectList(Model.SelectList,"Id","Name"))" >
+                                    <option value="0">-- گروه اصلی --</option>
+                                </select>
+                                <span asp-validation-for="Command.ParentId" class="error"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label for=""> وضعیت <span class="text-danger">*</span></label>
+                                <select asp-for="Command.Status" type="text" class="form-control pb-5" id="" placeholder="وضعیت">
+                                    <option value="true">فعال</option>
+                                    <option value="false"> غیر فعال</option>
+                                </select>
+                                <span asp-validation-for="Command.Status" class="error"></span>
+                            </div>
+                        </div>
+                        <input type="hidden" class="hidden" asp-for="Command.CodeValue"/>
+                        <input type="hidden" class="hidden" asp-for="Command.Id" />
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> انصراف</button>
+                    <a  id="editCategory" class="btn btn-primary">ذخیره</a>
+                </div>
+            </form>
+
+        </div>
     </div>
 </div>
 
@@ -151,7 +219,7 @@
 </div>
 <!--  END CONTENT AREA  -->
 @section Scripts
-    {
+{
 
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
@@ -176,9 +244,7 @@
                 if (theEvent.preventDefault) theEvent.preventDefault();
             }
         }
-
-
-
+        
         var table = $('#zero-config').DataTable({
             //ajax: "data.json",
             "oLanguage": {
@@ -193,15 +259,69 @@
             "lengthMenu": [7, 10, 20, 50],
             "pageLength": 7
         });
-
-
-
-
-
+        
         function addModal() {
             $("#add-category").modal("show");
         }
 
+
+        $("#editCategory").on('click', function (evn) {
+            evn.preventDefault();
+           debugger
+           
+
+            var result = editCalculateCode();
+            if (result === false)
+                return false;
+
+            var form = $("#submitEditForm");
+            form.validate();
+            if (form.valid() === false) {
+                return false;
+            }
+
+            var result = calculateCode();
+            if (result === false)
+                return false;
+
+            $.ajax({
+                url: '@Url.Page(null,"Edit")',
+                data: new FormData(document.forms.submitEditForm),
+                contentType: false,
+                processData: false,
+                type: 'POST',
+                headers: {
+                    RequestVerificationToken:
+                        $('input:hidden[name="__RequestVerificationToken"]').val()
+                },
+
+                success: function (result) {
+                    debugger
+                    if (result.isSucceeded) {
+
+                        notify("top center", "عملیات با موفقیت انجام شد", "success")
+                        $("#add-category").modal("hide");
+                        $(".modal-body").html("");
+                        window.location.href = "/Products/Category";
+                    } else {
+                        notify("top center", result.message, "error")
+                        return false;
+                    }
+
+                }
+            })
+       
+       })
+        function Edit(id, name, code, setCode, parentId, status) {
+            debugger
+            $("#edit-category").modal("show");
+            $("#Command_Name").val(name);
+            $("#Command_Code").val(code);
+            $("#editParentId").val(parentId);
+            $("#Command_CodeValue").val(setCode);
+            $("#Command_Status").val(setCode);
+            $("#Command_Id").val(id);
+        }
 
         function getCode(value, type = false) {
             var code = "";
@@ -216,6 +336,7 @@
 
                         var str = (code + value).toString();
                         $("#setCode").val(str)
+                        $("#Command_CodeValue").val(str)
                     };
 
                 }
@@ -227,6 +348,22 @@
         function getMaxCode(isMax = false) {
 
             var groupId = $("#Group").val();
+            var codeMax = "";
+            $.ajax({
+                url: "/products/Category?proLvlId=" + groupId + "&noMax=" + isMax + "&handler=MaxCode",
+                type: "GET",
+                async: false,
+                success: function (result) {
+                    $("#defualCode").text("");
+                    $("#defualCode").text("آخرین کد ثبت شده برای این گروه: " + result);
+                    codeMax = result;
+                }
+            });
+            return codeMax;
+        }
+
+        function editGetMaxCode(isMax = false, groupId) {
+
             var codeMax = "";
             $.ajax({
                 url: "/products/Category?proLvlId=" + groupId + "&noMax=" + isMax + "&handler=MaxCode",
@@ -260,6 +397,19 @@
             return existCode;
         }
 
+        function editExistCode(code, id) {
+            var existCode = "";
+            $.ajax({
+                url: "/products/Category?id=" + id + "&code=" + code + "&handler=EditExistCode",
+                type: "GET",
+                async: false,
+                success: function (result) {
+                    existCode = result;
+                }
+            });
+            return existCode;
+        }
+
 
         function changeGroup() {
             var code = "";
@@ -283,15 +433,17 @@
             return code;
         }
 
+
+
         function calculateCode() {
-            
-            var result=true;
+
+            var result = true;
 
             var group = $("#Group").val();
             var code = $("#code").val();
             var codeS = $("#code").val();
-            
-            
+
+
             // check Exist code
             if (codeS === "" || codeS === undefined) {
                 code = getMaxCode();
@@ -314,13 +466,13 @@
                     }
                 }
             };
-            
-            
+
+
             // generate autho code
             if (group === "0") {
                 if (code.length > @Model.MainCodeCount ) {
                     notify("top center", "کد کالا باید @Model.MainCodeCount رقمی باشد", "error");
-                    result=false;
+                    result = false;
                     return false;
                 }
 
@@ -372,6 +524,98 @@
             $("#setCode").val(m + code).toString();
         }
 
+        function editCalculateCode() {
+
+            var result = true;
+
+            var group = $("#editParentId").val();
+            if(group==null) group="0";
+            var code = $("#Command_Code").val();
+            var codeS = $("#Command_Code").val();
+
+        debugger
+            // check Exist code
+            if (codeS === "" || codeS === undefined) {
+                code = editGetMaxCode(group);
+
+                if (code == null) code = "1";
+                var existCode = editExistCode(code, id);
+
+                if (existCode) {
+
+                    var rplcCode = "";
+                    var checkFor = true;
+                    for (var i = 0, count = 1; checkFor === true; i++) {
+
+                        const rplcCode = code.at(-1);
+                        var parse = parseInt(rplcCode);
+                        var th = parse + 1;
+                        var resultCode = code.replace(/.$/, th);
+                        code = resultCode;
+                        checkFor = editExistCode(resultCode);
+                    }
+                }
+            };
+
+
+            // generate autho code
+            if (group === "0") {
+                if (code.length > @Model.MainCodeCount ) {
+                    notify("top center", "کد کالا باید @Model.MainCodeCount رقمی باشد", "error");
+                    result = false;
+                    return false;
+                }
+
+                if (code.length !== @Model.MainCodeCount ) {
+
+                    var setCode = code;
+                    for (var i = 0, count = 1; i < @Model.MainCodeCount-code.length; i++) {
+                        setCode = "0" + setCode;
+
+                    }
+                    code = setCode;
+
+                }
+
+            }
+            else {
+                if (code.length > @Model.SubCodeCount ) {
+                    notify("top center", "کد کالا باید @Model.SubCodeCount رقمی باشد", "error");
+                    result = false;
+                    return false;
+                }
+
+
+                if (code.length !== @Model.SubCodeCount ) {
+                    var setCode = code;
+                    for (var i = 0, count = 1; i < @Model.SubCodeCount-code.length; i++) {
+                        setCode = "0" + setCode;
+                    }
+                    code = setCode;
+                }
+            }
+
+            // helper
+            $("#Command_Code").val("");
+            $("#Command_Code").val(code);
+            code = $("#Command_Code").val();
+
+          
+            var setCode = $("#Command_CodeValue").val();
+       
+
+            var isMax = false;
+            if (group === "0")
+                isMax = true;
+
+            var m = editGetMaxCode(isMax,group);
+            if (m === null)
+                m = "";
+            getCode(m + code);
+            debugger
+            $("#Command_CodeValue").val(m + code).toString();
+        }
+
         $("#submitForm").on("submit", function (evn) {
             evn.preventDefault();
 
@@ -381,9 +625,9 @@
                 return false;
             }
 
-           var result= calculateCode();
-           if(result===false) 
-            return false;
+            var result = calculateCode();
+            if (result === false)
+                return false;
 
             $.ajax({
                 url: '',

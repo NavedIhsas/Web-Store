@@ -1,0 +1,140 @@
+﻿@page
+@model SaleInAdmin.Pages.Products.IndexModel
+@{
+}
+
+
+<style>
+    .border-none {
+        border: none !important;
+    }
+</style>
+<div id="content" class="main-content">
+    <div class="layout-px-spacing">
+
+        <div class="page-header">
+            <div class="page-title">
+                <h3>گروه کالا ها</h3>
+            </div>
+        </div>
+
+        <div class="row layout-top-spacing" id="cancel-row">
+
+            <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
+                <div class="widget-content widget-content-area br-6">
+                    <div class="text-center">
+                        <button onclick="addModal()" class="btn btn-success ">افزودن گروه جدید</button>
+                    </div>
+                    <div class="table-responsive mb-4 mt-4">
+                        <table id="dataTable" class="table table-hover table-bordered cell-border row-border" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>نام</th>
+                                    <th>گروه</th>
+                                    <th> کد </th>
+                                    <th>نوع</th>
+                                    <th>قیمت 1</th>
+                                    <th>مالیات</th>
+                                    <th>وضعیت</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                              @foreach (var item in Model.Products)
+                              {
+                                  <tr>
+                                      <td>@item.PrdName</td>
+                                      <td>@item.PrdLvlName</td>
+                                      <td>@item.PrdCode</td>
+                                      <td></td>
+                                      <td>@item.PrdPricePerUnit1</td>
+                                      <td>@item.TaxName</td>
+                                        <td>
+                                            @if (item.PrdStatus != false)
+                                            {
+                                                <span>فعال</span>
+                                            }
+                                            else
+                                            {
+                                                <span>غیر فعال</span>
+                                            }
+                                        </td>
+                                      <td>
+                                          <a onclick="showModal()" class="btn btn-success">جزییات بیشتر</a>
+                                      </td>
+                                  </tr>
+                              }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="detailsProduct" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width:700px !Important">
+            <div class="modal-header">
+                <h5 class="modal-title text-center" id="exampleModalLabel">  افزودن گروه جدید</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <form method="post" class="needs-validation" name="submitForm" id="submitForm">
+                <div class="modal-body">
+
+                    <div class="widget-content">
+                        <div class="form-row">
+                            <div class="col-md-6 mb-4">
+                                <input type="text" class="form-control basic border-none" value="نام و وضعیت کالا: " placeholder="نام گروه">
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <input oninput="getCode(this.value)" value="sam en " onkeypress="validate(event)" type="text" class="form-control basic border-none" id="code" placeholder="کد گروه">
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> انصراف</button>
+                    <button type="submit" id="submit" class="btn btn-primary">ذخیره</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts
+    {
+    <script>
+        var table = $('#dataTable').DataTable({
+            //ajax: "data.json",
+            "oLanguage": {
+                "oPaginate": { "sPrevious": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>', "sNext": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>' },
+                "sInfo": "صفحه _PAGE_ از _PAGES_",
+                "sSearch": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
+                "sSearchPlaceholder": "جستجو کنید...",
+                "sLengthMenu": "نتایج :  _MENU_",
+
+            },
+            "stripeClasses": [],
+            "lengthMenu": [7, 10, 20, 50],
+            "pageLength": 7
+        });
+
+        function showModal() {
+            $("#detailsProduct").modal('show')
+        }
+    </script>
+}

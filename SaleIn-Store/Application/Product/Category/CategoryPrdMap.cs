@@ -15,6 +15,7 @@ namespace Application.Product.Category
                 .ForMember(x => x.PrdLvlCode, opt => opt.MapFrom(x => x.Code))
                 .ForMember(x => x.PrdLvlUid, opt => opt.MapFrom(x => x.Id))
                 .ForMember(x => x.PrdLvlParentUid, opt => opt.MapFrom(x => x.ParentId))
+                .ForMember(x => x.PrdLvlStatus, opt => opt.MapFrom(x => x.Status))
                 .ReverseMap();
 
             CreateMap<CreateProductLevel, ProductLevel>().ForMember(x => x.PrdLvlName,
@@ -23,8 +24,9 @@ namespace Application.Product.Category
                     opt => opt.MapFrom(x => x.Id))
                 .ForMember(x => x.PrdLvlCode, opt => opt.MapFrom(x => x.CodeValue))
                 .ForMember(x => x.PrdLvlUid, opt => opt.MapFrom(x => x.Id))
-                .ForMember(x => x.PrdLvlCodeValue, opt => opt.MapFrom(x => x.Code))
+                .ForMember(x => x.PrdLvlCodeValue, opt => opt.MapFrom(x => x.ParsCode))
                 .ForMember(x => x.PrdLvlParentUid, opt => opt.MapFrom(x => x.ParentId))
+                .ForMember(x => x.PrdLvlStatus, opt => opt.MapFrom(x => x.Status))
                 .ReverseMap();
         }
     }

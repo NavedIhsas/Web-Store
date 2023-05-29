@@ -13,9 +13,15 @@ namespace Application.Product.Category
         {
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IAuthHelper, AuthHelper>();
-            services.AddScoped<IValidator<ProductCategory.CreateProductLevel>, CategoryPrdValidator>();
+            services.AddTransient<IProductService, ProductService>();
             services.AddScoped<IProductCategory, ProductCategory>();
+
+
+            services.AddScoped<IValidator<ProductCategory.CreateProductLevel>, CategoryPrdValidator>();
+            services.AddScoped<IValidator<CreateProduct>, ProductValidate>();
+           
             services.AddAutoMapper(typeof(CategoryPrdMap));
+            services.AddAutoMapper(typeof(ProductMapping));
         }
     }
 }

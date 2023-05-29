@@ -35,6 +35,12 @@ namespace SaleInAdmin.Pages.Products
         {
             var result = _category.CreatePrdCategory(command);
             return new JsonResult(result);
+        } 
+        
+        public JsonResult OnPostEdit(CreateProductLevel command)
+        {
+            var result = _category.EditPrdCategory(command);
+            return new JsonResult(result);
         }
         public IActionResult OnGetCode(string proLvlId)
         {
@@ -56,6 +62,15 @@ namespace SaleInAdmin.Pages.Products
         public IActionResult OnGetCheckCode(string id,string code)
         {
             return new JsonResult(_category.CheckExistCode(id, code));
+        }
+         public IActionResult OnGetEditExistCode(string id,string code)
+        {
+            return new JsonResult(_category.EditExistCode(id, code));
+        }
+
+        public IActionResult OnGetDetails(string id)
+        {
+            return new JsonResult(_category.GetDetails(id));
         }
     }
 }
