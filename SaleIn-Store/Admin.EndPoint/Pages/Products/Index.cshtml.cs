@@ -14,9 +14,15 @@ namespace SaleInAdmin.Pages.Products
        }
 
        public List<ProductDto> Products;
+       public ProductDetails Details;
        public void OnGet()
        {
           Products= _productService.GetAll();
+       }
+
+       public IActionResult OnGetDetails(Guid id)
+       {
+           return new JsonResult(_productService.GetDetails(id));
        }
     }
 }

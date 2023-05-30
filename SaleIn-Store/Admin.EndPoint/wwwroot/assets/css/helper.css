@@ -4,3 +4,8 @@
 .error{
     color:red;
 }
+
+.form-control {
+    height: calc(0.9em + 1.4rem + 2px) !important;
+    padding: 0.25rem 1.25rem;
+}

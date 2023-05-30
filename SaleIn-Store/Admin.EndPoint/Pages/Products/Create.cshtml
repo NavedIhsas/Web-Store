@@ -1,0 +1,144 @@
+﻿@page
+@model SaleInAdmin.Pages.Products.CreateModel
+@{
+}
+
+<!--  BEGIN CONTENT AREA  -->
+<link href="~/assets/css/components/tabs-accordian/custom-tabs.css" rel="stylesheet" type="text/css" />
+<div id="content" class="main-content">
+    <div class="layout-px-spacing">
+
+        <div class="row">
+            <div id="tabsAlignments" class="col-lg-12 col-12 layout-spacing">
+                <div class="widget-content widget-content-area justify-tab">
+
+                    <ul class="nav nav-tabs  mb-3 mt-3 nav-fill" id="justifyTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="justify-home-tab" data-toggle="tab" href="#justify-home" role="tab" aria-controls="justify-home" aria-selected="true">محصول</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="justify-profile-tab" data-toggle="tab" href="#justify-profile" role="tab" aria-controls="justify-profile" aria-selected="false">عکس های محصول</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="justify-contact-tab" data-toggle="tab" href="#justify-contact" role="tab" aria-controls="justify-contact" aria-selected="false">جزییات بیشتر</a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="justifyTabContent">
+                        <div class="tab-pane fade show active" id="justify-home" role="tabpanel" aria-labelledby="justify-home-tab">
+
+
+
+
+                            <div class="row layout-top-spacing" id="cancel-row">
+
+                                <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
+                                    <div class=" br-6">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col col-md-8">
+                                                    <div class="form-row mb-4">
+                                                        <div class="form-group col-md-4">
+                                                            <label for="inputEmail4">نام</label>
+                                                            <input type="email" class="form-control" id="inputEmail4" placeholder="نام">
+                                                        </div>
+                                                        <div class="form-group col-md-4">
+                                                            <label for="inputPassword4">کد</label>
+                                                            <input type="password" class="form-control" id="inputPassword4" placeholder="کد">
+                                                        </div>
+                                                        
+                                                        <div class="form-group col-md-4">
+                                                            <label for="inputState">گرو</label>
+                                                            <select id="inputState" class="form-control">
+                                                                <option selected>انتخاب کنید...</option>
+                                                                <option>...</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-row mb-4">
+                                                        <div class="form-group col-md-4">
+                                                            <label for="inputEmail4">قیمت 1</label>
+                                                            <input type="email" class="form-control" id="" placeholder="قیمت 1">
+                                                        </div>
+                                                        <div class="form-group col-md-4">
+                                                            <label for="inputPassword4">قیمت 2</label>
+                                                            <input type="password" class="form-control" id="" placeholder="قیمت 2">
+                                                        </div>
+                                                        
+                                                        <div class="form-group col-md-4">
+                                                            <label for="inputPassword4">قیمت 3</label>
+                                                            <input type="password" class="form-control" id="" placeholder="قیمت 3">
+                                                        </div>
+                                                    </div>
+                                               </div>
+                                              
+                                                
+                                                
+
+                                                <div class="col col-md-4">
+                                                    <img id="imgCourse" class="thumbnail" src="/defualtImg/10.png" />
+                                                    <div class="form-group">
+                                                        <label class="control-label">عکس<span class="text-danger">*</span></label>
+                                                        <input id="imgCourseUp" type="file" class="form-control" accept="image/*" required>
+                                                        <span class="text-danger"></span>
+                                                        <p class="help-block"> مشخصۀ تصویر: width:185px و  Height:1200px</p>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary mt-3">ورود</button>
+                                        </form>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+
+
+
+
+
+
+
+                        <div class="tab-pane fade" id="justify-profile" role="tabpanel" aria-labelledby="justify-profile-tab">
+                            <div class="media">
+                                <img class="mr-3" src="assets/img/90x90.jpg" alt="Generic placeholder image">
+                                <div class="media-body">
+                                    لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با استفاده از طراحان گرافیک است، چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است، و برای شرایط فعلی تکنولوژی مورد نیاز، و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد، کتابهای زیادی در شصت و سه درصد گذشته حال و آینده، شناخت فراوان جامعه و متخصصان را می طلبد.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="justify-contact" role="tabpanel" aria-labelledby="justify-contact-tab">
+                            <p class="dropcap  dc-outline-primary">لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با استفاده از طراحان گرافیک است، چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است، و برای شرایط فعلی تکنولوژی مورد نیاز، و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد، کتابهای زیادی در شصت و سه درصد گذشته حال و آینده، شناخت فراوان جامعه و متخصصان را می طلبد، تا با نرم افزارها شناخت بیشتری را برای طراحان رایانه ای علی الخصوص طراحان خلاقی، و فرهنگ پیشرو در زبان فارسی ایجاد کرد، در این صورت می توان امید داشت که تمام و دشواری موجود در ارائه راهکارها، و شرایط سخت تایپ به پایان رسد و زمان مورد نیاز شامل حروفچینی دستاوردهای اصلی، و جوابگوی سوالات پیوسته اهل دنیای موجود طراحی اساسا مورد استفاده قرار گیرد.</p>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>
+
+
+
+
+
+
+
+    </div>
+</div>
+
+
+
+
+
+
+
+
+

@@ -8,6 +8,12 @@
     .border-none {
         border: none !important;
     }
+
+    input[readonly] {
+        background: no-repeat !important;
+        cursor: default !important;
+        color: darkslategrey;
+    }
 </style>
 <div id="content" class="main-content">
     <div class="layout-px-spacing">
@@ -23,31 +29,37 @@
             <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
                 <div class="widget-content widget-content-area br-6">
                     <div class="text-center">
-                        <button onclick="addModal()" class="btn btn-success ">افزودن گروه جدید</button>
+                        <button onclick="addModal()" class="btn btn-secondary btn-rounded btn-sm">افزودن محصول جدید</button>
                     </div>
                     <div class="table-responsive mb-4 mt-4">
                         <table id="dataTable" class="table table-hover table-bordered cell-border row-border" style="width:100%">
                             <thead>
                                 <tr>
+                                    <th>عکس</th>
                                     <th>نام</th>
                                     <th>گروه</th>
                                     <th> کد </th>
-                                    <th>نوع</th>
+                                    <th>نوع مالیات</th>
                                     <th>قیمت 1</th>
-                                    <th>مالیات</th>
                                     <th>وضعیت</th>
+                                    <th>عملیات</th>
+
                                 </tr>
                             </thead>
                             <tbody>
-                              @foreach (var item in Model.Products)
-                              {
-                                  <tr>
-                                      <td>@item.PrdName</td>
-                                      <td>@item.PrdLvlName</td>
-                                      <td>@item.PrdCode</td>
-                                      <td></td>
-                                      <td>@item.PrdPricePerUnit1</td>
-                                      <td>@item.TaxName</td>
+                                @foreach (var item in Model.Products)
+                                {
+                                    <tr>
+                                        <td>
+                                            <img src="@String.Format("data:image/png;base64,{0}",
+                                                        Convert.ToBase64String(item.Image64))" style="max-width:60px" />
+                                        </td>
+                                        <td>@item.PrdName</td>
+                                        <td>@item.PrdLvlName</td>
+                                        <td>@item.PrdCode</td>
+                                        <td>@item.TaxName</td>
+                                        <td>@item.PrdPricePerUnit1.ToString("#,0#")</td>
+
                                         <td>
                                             @if (item.PrdStatus != false)
                                             {
@@ -58,11 +70,18 @@
                                                 <span>غیر فعال</span>
                                             }
                                         </td>
-                                      <td>
-                                          <a onclick="showModal()" class="btn btn-success">جزییات بیشتر</a>
-                                      </td>
-                                  </tr>
-                              }
+                                        <td>
+
+                                            <a title="جزییات بیشستر" onclick="showModal('@item.PrdUid')">
+                                                <svg style="color:#2196f3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-info"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                                            </a>
+                                            <a title="ویرایش" class=" mb-2 mr-2"> <svg  style="color:#e2a03f !important" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg></a>
+                                            <a class="" title="حذف">
+                                                <svg style="color:#e7515a" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
 
                             </tbody>
                         </table>
@@ -81,7 +100,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content" style="width:700px !Important">
             <div class="modal-header">
-                <h5 class="modal-title text-center" id="exampleModalLabel">  افزودن گروه جدید</h5>
+                <h5 class="modal-title text-center" id="productName"> جزییات :   </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
@@ -92,11 +111,29 @@
                     <div class="widget-content">
                         <div class="form-row">
                             <div class="col-md-6 mb-4">
-                                <input type="text" class="form-control basic border-none" value="نام و وضعیت کالا: " placeholder="نام گروه">
+                                <input type="text" class="form-control basic border-none" value="درصد تخفیف: " readonly>
                             </div>
 
                             <div class="col-md-6 mb-4">
-                                <input oninput="getCode(this.value)" value="sam en " onkeypress="validate(event)" type="text" class="form-control basic border-none" id="code" placeholder="کد گروه">
+                                <input id="price1" class="form-control basic border-none" value="قیمت2: " readonly="">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-6 mb-4">
+                                <input id="price3" type="text" class="form-control basic border-none" value="قیمت3: " readonly>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <input id="price4" class="form-control basic border-none" value="قیمت4: " readonly="">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-6 mb-4">
+                                <input type="text" class="form-control basic border-none" value="قیمت4: " readonly>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <input class="form-control basic border-none" value="قیمت1: " readonly="">
                             </div>
                         </div>
 
@@ -104,8 +141,7 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> انصراف</button>
-                    <button type="submit" id="submit" class="btn btn-primary">ذخیره</button>
+                    <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> بستن</button>
                 </div>
             </form>
 
@@ -116,25 +152,10 @@
 
 
 @section Scripts
-    {
+{
+    <script src="~/source/js/product.js"></script>
     <script>
-        var table = $('#dataTable').DataTable({
-            //ajax: "data.json",
-            "oLanguage": {
-                "oPaginate": { "sPrevious": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>', "sNext": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>' },
-                "sInfo": "صفحه _PAGE_ از _PAGES_",
-                "sSearch": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
-                "sSearchPlaceholder": "جستجو کنید...",
-                "sLengthMenu": "نتایج :  _MENU_",
+       
 
-            },
-            "stripeClasses": [],
-            "lengthMenu": [7, 10, 20, 50],
-            "pageLength": 7
-        });
-
-        function showModal() {
-            $("#detailsProduct").modal('show')
-        }
     </script>
 }
