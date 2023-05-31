@@ -1,11 +1,37 @@
 ﻿.pb-5 {
-    padding-bottom:5px !important;
+    padding-bottom: 5px !important;
 }
-.error{
-    color:red;
+
+.error {
+    color: red;
 }
 
 .form-control {
     height: calc(0.9em + 1.4rem + 2px) !important;
     padding: 0.25rem 1.25rem;
 }
+
+.mb-8 {
+    margin-bottom: 8px !important;
+}
+
+.mt-40 {
+    margin-top: 40px !important;
+}
+
+.mt-30 {
+    margin-top: 30px !important;
+}
+
+.mr-0 {
+    margin-right: 0 !important;
+}
+
+.form-group label, label {
+    margin-right: 15px !important;
+}
+
+
+    label.form-check-label.mr-0 {
+        margin-right: 0 !important;
+    }
