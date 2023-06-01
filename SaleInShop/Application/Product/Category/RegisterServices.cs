@@ -19,6 +19,7 @@ namespace Application.Product.Category
 
             services.AddScoped<IValidator<ProductCategory.CreateProductLevel>, CategoryPrdValidator>();
             services.AddScoped<IValidator<CreateProduct>, ProductValidate>();
+            services.AddScoped<IValidator<CreateProperty>, CreatePropertyValidate>();
            
             services.AddAutoMapper(typeof(CategoryPrdMap));
             services.AddAutoMapper(typeof(ProductMapping));

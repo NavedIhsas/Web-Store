@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Domain.ShopModels;
@@ -113,6 +112,8 @@ public partial class Product
     public bool? PrdPriceInPrint { get; set; }
 
     public string PrdSalegroupid { get; set; }
+    public string ShortDescription { get; set; }
+
 
     public virtual ICollection<Barcode> Barcodes { get; set; } = new List<Barcode>();
 
@@ -121,6 +122,10 @@ public partial class Product
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 
     public virtual ProductLevel PrdLvlUid3Navigation { get; set; }
+
+    public virtual ICollection<ProductPicture> ProductPictures { get; set; } = new List<ProductPicture>();
+
+    public virtual ICollection<ProductProperty> ProductProperties { get; set; } = new List<ProductProperty>();
 
     public virtual ICollection<ProductQuantityOnHand> ProductQuantityOnHands { get; set; } = new List<ProductQuantityOnHand>();
 

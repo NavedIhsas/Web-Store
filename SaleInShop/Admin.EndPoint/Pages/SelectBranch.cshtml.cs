@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
 
-namespace SaleInAdmin.Pages
+namespace SaleInWeb.Pages
 {
     public class SelectBranchModel : PageModel
     {
@@ -25,19 +25,19 @@ namespace SaleInAdmin.Pages
         {
             var database = HttpContext.Session.GetConnectionString("Branch");
             if (database != null)
-               return RedirectToPage("Index");
+                return RedirectToPage("Index");
             ViewData["ReturnUrl"] = returnUrl;
             Branch = _authHelper.SelectBranch();
             return Page();
         }
 
         [IgnoreFilter]
-        public IActionResult OnPost(string branchId,string returnUrl)
+        public IActionResult OnPost(string branchId, string returnUrl)
         {
             var databaseName = _authHelper.SetBranch(branchId);
             var database = HttpContext.Session.GetConnectionString("Branch") ?? databaseName.ToString();
             var connectionString = _configuration.GetConnectionString("shopConnection");
-            var connection= new SqlConnectionStringBuilder(connectionString)
+            var connection = new SqlConnectionStringBuilder(connectionString)
             {
                 InitialCatalog = database
             };
@@ -47,10 +47,10 @@ namespace SaleInAdmin.Pages
                 FisPeriodUId = new Guid(database),
                 BusUnitUId = new Guid(branchId)
             };
-            HttpContext.Session.SetJson("BaseConfig",baseConfig);
+            HttpContext.Session.SetJson("BaseConfig", baseConfig);
 
             return returnUrl != null ? Redirect(returnUrl) : RedirectToPage("Index");
-          
+
         }
     }
 }

@@ -11,6 +11,7 @@ namespace Application.Product
         ResultDto Create(CreateProduct command);
         List<ProductDto> GetAll();
         ProductDetails GetDetails(Guid id);
+        List<PropertySelectOptionDto> PropertySelectOption();
     }
 
     public class ProductService : IProductService
@@ -104,9 +105,21 @@ namespace Application.Product
                 PrdTaxValue = x.PrdTaxValue ?? 0
             }).SingleOrDefault(x => x.PrdUid == id);
         }
+
+        public List<PropertySelectOptionDto> PropertySelectOption()
+        {
+           return _shopContext.Properties.Select(x => new PropertySelectOptionDto() { Id = x.Id, Name = x.Name })
+                .AsNoTracking().ToList();
+        }
     }
 }
 
+public class PropertySelectOptionDto
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; }
+    public string Value { get; set; }
+}
 
 public class ProductDetails
 {
@@ -121,6 +134,12 @@ public class ProductDetails
     public decimal PrdTaxValue { get; set; }
 }
 
+public class CreateProperty
+{
+    public Guid Id { get; set; }
+    public string Value { get; set; }
+    public string Name { get; set; }
+}
 public class ProductDto
 {
     public Guid PrdUid { get; set; }
@@ -140,6 +159,118 @@ public class ProductDto
 
 public class CreateProduct
 {
-    public Guid PrdLvlUid1 { get; set; }
+    public Guid PrdUid { get; set; }
+
+    public Guid? BusUnitUid { get; set; }
+
+    public Guid? FisPeriodUid { get; set; }
+
+    public Guid? TaxUid { get; set; }
+
+    public Guid? PrdLvlUid1 { get; set; }
+
+    public Guid? PrdLvlUid2 { get; set; }
+
+    public Guid? PrdLvlUid3 { get; set; }
+
+    public Guid? UomUid1 { get; set; }
+
+    public Guid? UomUid2 { get; set; }
+
     public string PrdName { get; set; }
+
+    public string PrdCode { get; set; }
+
+    public string PrdBarcode { get; set; }
+
+    public string PrdIranCode { get; set; }
+
+    public decimal? PrdCoefficient { get; set; }
+
+    public decimal? PrdPricePerUnit1 { get; set; }
+
+    public decimal? PrdPricePerUnit2 { get; set; }
+
+    public long? PrdMinQuantityOnHand { get; set; }
+
+    public long? PrdMaxQuantityOnHand { get; set; }
+
+    public string PrdTechnicalDescription { get; set; }
+
+    public bool? PrdTax { get; set; }
+
+    public bool? PrdStatus { get; set; }
+
+    public DateTime? SysUsrCreatedon { get; set; }
+
+    public Guid? SysUsrCreatedby { get; set; }
+
+    public DateTime? SysUsrModifiedon { get; set; }
+
+    public Guid? SysUsrModifiedby { get; set; }
+
+    public int PrdUniqid { get; set; }
+
+    public int? PrdTarazoId { get; set; }
+
+    public int? PrdMemory { get; set; }
+
+    public int? PrdMemory2 { get; set; }
+
+    public string PrdUnit { get; set; }
+
+    public string PrdUnit2 { get; set; }
+
+    public double? PrdPercentDiscount { get; set; }
+
+    public Guid? PrdWareHouse { get; set; }
+
+    public decimal? PrdTaxValue { get; set; }
+
+    public decimal? PrdPricePerUnitExchange { get; set; }
+
+    public decimal? PrdPricePerUnit3 { get; set; }
+
+    public decimal? PrdPricePerUnit4 { get; set; }
+
+    public decimal? PrdPricePerUnit5 { get; set; }
+
+    public double? PrdRemain { get; set; }
+
+    public string PrdImage { get; set; }
+
+    public bool? PrdNameShow { get; set; }
+
+    public bool? PrdImageShow { get; set; }
+
+    public string PrdNameInPrint { get; set; }
+
+    public string PrdLatinName { get; set; }
+
+    public int? PrdMaxSale { get; set; }
+
+    public long? PrdStamp { get; set; }
+
+    public int? PrdSerial { get; set; }
+
+    public bool? PrdNameInPrintTouchActive { get; set; }
+
+    public bool? PrdStatusApp { get; set; }
+
+    public int? PrdDiscountType { get; set; }
+
+    public decimal? PrdDiscount { get; set; }
+
+    public decimal? PrdCoefficient2 { get; set; }
+
+    public bool? PrdPriceInPrint { get; set; }
+
+    public bool? PrdIsUnit1Bigger { get; set; }
+
+    public string PrdSalegroupid { get; set; }
+
+    public string ShortDescription { get; set; }
+    public string PropertyName { get; set; }
+    public string PropertyValue { get; set; }
+    
 }

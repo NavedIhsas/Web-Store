@@ -4,9 +4,9 @@ using infrastructure.Attribute;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace SaleInAdmin
+namespace SaleInWeb
 {
-    public class Security: IPageFilter
+    public class Security : IPageFilter
     {
         private readonly IAuthHelper _authHelper;
 
@@ -17,16 +17,16 @@ namespace SaleInAdmin
 
         public void OnPageHandlerSelected(PageHandlerSelectedContext context)
         {
-            
+
         }
 
         public void OnPageHandlerExecuting(PageHandlerExecutingContext context)
         {
-            
+
             var ignoreFilter = context.HandlerMethod?.MethodInfo.GetCustomAttributes(typeof(IgnoreFilter), true);
 
             if (ignoreFilter != null && ignoreFilter.Any()) return;// for use branch UnComment this
-           // if (ignoreFilter != null && !ignoreFilter.Any()) return; //for use branch comment this line
+                                                                   // if (ignoreFilter != null && !ignoreFilter.Any()) return; //for use branch comment this line
             var database = context.HttpContext.Session.GetConnectionString("Branch");
             if (database == null)
             {
@@ -48,7 +48,7 @@ namespace SaleInAdmin
 
         public void OnPageHandlerExecuted(PageHandlerExecutedContext context)
         {
-            
+
         }
     }
 }

@@ -31,6 +31,8 @@ namespace Application.Product.Category
         CreateProductLevel GetDetails(string id);
         bool EditExistCode(string id, string code);
         ResultDto<List<ProductLevelDto>> EditPrdCategory(CreateProductLevel command);
+        List<SelectOption> SelectOptions();
+        List<TaxSelectOptionDto> TaxSelectOption();
     }
 
     public class ProductCategory : IProductCategory
@@ -100,6 +102,22 @@ namespace Application.Product.Category
                 _logger.LogError($"حین ثبت گروه کالا ها خطای زیر رخ داد {e}");
                 return result.Failed("عملیات با خطا مواجه شد");
             }
+        }
+
+        public List<SelectOption> SelectOptions()
+        {
+            return _context.ProductLevels.Select(x => new { x.PrdLvlUid, x.PrdLvlName })
+                .Select(x => new SelectOption()
+                {
+                    PrdLvlName = x.PrdLvlName,
+                    PrdLvlUId = x.PrdLvlUid
+                }).AsNoTracking().ToList();
+        }
+
+        public List<TaxSelectOptionDto> TaxSelectOption()
+        {
+          return  _context.Taxes.Select(x => new { x.TaxUid, x.TaxName })
+                .Select(x => new TaxSelectOptionDto() { Id = x.TaxUid, Name = x.TaxName }).AsNoTracking().ToList();
         }
 
         public ResultDto Remove(Guid id)
@@ -235,6 +253,18 @@ namespace Application.Product.Category
             public string CodeValue { get; set; }
             public string Code { get; set; }
             public int ParsCode { get; set; }
+        }
+
+        public class SelectOption
+        {
+            public Guid PrdLvlUId { get; set; }
+            public string PrdLvlName { get; set; }
+        }
+
+        public class TaxSelectOptionDto
+        {
+            public Guid Id { get; set; }
+            public string Name { get; set; }
         }
     }
 }

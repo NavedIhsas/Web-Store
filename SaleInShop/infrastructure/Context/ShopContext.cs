@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Application.Common;
+﻿using Application.Common;
 using Application.Interfaces.Context;
+using Domain.ShopModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Domain.ShopModels;
 
 namespace infrastructure.Context;
 
@@ -137,6 +135,8 @@ public partial class ShopContext : DbContext,IShopContext
 
     public virtual DbSet<ProductLevelAccess> ProductLevelAccesses { get; set; }
 
+    public virtual DbSet<ProductPicture> ProductPictures { get; set; }
+
     public virtual DbSet<ProductProperty> ProductProperties { get; set; }
 
     public virtual DbSet<ProductQuantity> ProductQuantities { get; set; }
@@ -203,8 +203,8 @@ public partial class ShopContext : DbContext,IShopContext
 
     public virtual DbSet<WorkStation> WorkStations { get; set; }
 
-
-
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseSqlServer("name=shopConnection1");
 
     public override int SaveChanges()
     {
@@ -238,9 +238,6 @@ public partial class ShopContext : DbContext,IShopContext
         }
         return base.SaveChanges();
     }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("name=shopConnection1");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -3025,7 +3022,10 @@ public partial class ShopContext : DbContext,IShopContext
                 .HasColumnName("PRD_IRAN_CODE");
             entity.Property(e => e.PrdLatinName)
                 .HasMaxLength(100)
-                .HasColumnName("PRD_LATIN_NAME");
+                .HasColumnName("PRD_LATIN_NAME"); 
+            entity.Property(e => e.ShortDescription)
+                .HasMaxLength(500);
+             
             entity.Property(e => e.PrdLvlUid1).HasColumnName("PRD_LVL_UID1");
             entity.Property(e => e.PrdLvlUid2).HasColumnName("PRD_LVL_UID2");
             entity.Property(e => e.PrdLvlUid3).HasColumnName("PRD_LVL_UID3");
@@ -3199,19 +3199,36 @@ public partial class ShopContext : DbContext,IShopContext
                 .HasColumnName("SYS_USR_MODIFIEDON");
         });
 
+        modelBuilder.Entity<ProductPicture>(entity =>
+        {
+            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Image).IsRequired();
+
+            entity.HasOne(d => d.Product).WithMany(p => p.ProductPictures)
+                .HasForeignKey(d => d.ProductId)
+                .HasConstraintName("FK_ProductPictures_Product");
+        });
+
         modelBuilder.Entity<ProductProperty>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("ProductProperty");
+            entity.HasKey(e => e.Id).HasName("PK_ProductProperty1");
 
+            entity.ToTable("ProductProperty");
+
+            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Value)
                 .IsRequired()
-                .HasMaxLength(400);
+                .HasMaxLength(200);
 
-            entity.HasOne(d => d.Property).WithMany()
+            entity.HasOne(d => d.Product).WithMany(p => p.ProductProperties)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ProductProperty1_Product");
+
+            entity.HasOne(d => d.Property).WithMany(p => p.ProductProperties)
                 .HasForeignKey(d => d.PropertyId)
-                .HasConstraintName("FK_ProductProperty_Property");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ProductProperty1_Property");
         });
 
         modelBuilder.Entity<ProductQuantity>(entity =>
@@ -3309,7 +3326,9 @@ public partial class ShopContext : DbContext,IShopContext
             entity.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(200);
-            entity.Property(e => e.Type).HasMaxLength(50);
+            entity.Property(e => e.Type)
+                .IsRequired()
+                .HasMaxLength(50);
         });
 
         modelBuilder.Entity<Purchase>(entity =>

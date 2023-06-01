@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using static Application.Product.Category.ProductCategory;
 
-namespace SaleInAdmin.Pages.Products
+namespace SaleInWeb.Pages.Products
 {
     public class CategoryModel : PageModel
     {
@@ -14,8 +14,8 @@ namespace SaleInAdmin.Pages.Products
             _category = category;
         }
 
-        public List<ProductCategory.ProductLevelDto> List;
-        public List<ProductCategory.ProductLevelDto> SelectList;
+        public List<ProductLevelDto> List;
+        public List<ProductLevelDto> SelectList;
         [BindProperty]
         public CreateProductLevel Command { get; set; }
         public int MainCodeCount;
@@ -35,8 +35,8 @@ namespace SaleInAdmin.Pages.Products
         {
             var result = _category.CreatePrdCategory(command);
             return new JsonResult(result);
-        } 
-        
+        }
+
         public JsonResult OnPostEdit(CreateProductLevel command)
         {
             var result = _category.EditPrdCategory(command);
@@ -47,9 +47,9 @@ namespace SaleInAdmin.Pages.Products
             var result = _category.GetPrdLvlCheck(proLvlId);
             return new JsonResult(result);
         }
-        public IActionResult OnGetMaxCode(bool noMax,string proLvlId = null)
+        public IActionResult OnGetMaxCode(bool noMax, string proLvlId = null)
         {
-            var result = _category.GetMaxProductLvlCodeVal(noMax,proLvlId);
+            var result = _category.GetMaxProductLvlCodeVal(noMax, proLvlId);
             return new JsonResult(result);
         }
 
@@ -59,11 +59,11 @@ namespace SaleInAdmin.Pages.Products
         }
 
 
-        public IActionResult OnGetCheckCode(string id,string code)
+        public IActionResult OnGetCheckCode(string id, string code)
         {
             return new JsonResult(_category.CheckExistCode(id, code));
         }
-         public IActionResult OnGetEditExistCode(string id,string code)
+        public IActionResult OnGetEditExistCode(string id, string code)
         {
             return new JsonResult(_category.EditExistCode(id, code));
         }

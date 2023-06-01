@@ -8,13 +8,13 @@ using Application.Interfaces.Context;
 using Domain.SaleInModels;
 using infrastructure.Context;
 using Microsoft.AspNetCore.Connections;
-using SaleInAdmin;
 using Microsoft.AspNetCore.Mvc;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using SaleInWeb;
 
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
