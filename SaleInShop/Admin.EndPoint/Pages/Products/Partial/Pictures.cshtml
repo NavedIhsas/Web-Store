@@ -8,7 +8,7 @@
                     <div class="custom-file-container" data-upload-id="mySecondImage">
                         <label>بارگذاری (میتوانید چندین عکس را باهم آپلود کنید) <a href="javascript:void(0)" class="custom-file-container__image-clear" title="Clear Image">x</a></label>
                         <label class="custom-file-container__custom-file">
-                            <input id="files" type="file" class="custom-file-container__custom-file__custom-file-input" multiple>
+                            <input name="Command.Files" id="files" type="file" class="custom-file-container__custom-file__custom-file-input" multiple>
                             <input type="hidden" name="MAX_FILE_SIZE" value="10485760" />
                             <span class="custom-file-container__custom-file__custom-file-control"></span>
                         </label>
@@ -17,14 +17,46 @@
                 </div>
             </div>
         </div>
-        <button onclick="Photo()" class="btn btn-success">تایید</button>
+        <br />
+        <button onclick="Submit()" type="button" class="btn btn-success btn-sm btn-rounded pull-left">تایید نهایی</button>
     </div>
 </div>
 
- 
+
+
 <script>
-function Photo(){
-    debugger
-        var test = $("#files").val();
-}
+    
+   
+    function Submit(evn) {
+        debugger
+      
+       debugger
+        var form = $("#createForm");
+        var valid = form.validate();
+        if (!valid) {
+            notify("top center", "فرم را به درستی پر کنید", "error");
+            return false;
+        }
+
+        $.ajax({
+            url: '',
+            data: new FormData(document.forms.createForm),
+            contentType: false,
+            processData: false,
+            type: 'POST',
+            headers: {
+                RequestVerificationToken:
+                    $('input:hidden[name="__RequestVerificationToken"]').val()
+            },
+
+            success: function (result) {
+                debugger
+                if (result.isSucceeded) {
+
+                }
+
+            }
+
+        })
+    }
 </script>

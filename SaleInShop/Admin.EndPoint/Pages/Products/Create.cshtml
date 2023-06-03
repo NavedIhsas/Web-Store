@@ -34,68 +34,76 @@
                             <a class="nav-link" id="justify-pictures-tab" data-toggle="tab" href="#justify-pictures" role="tab" aria-controls="justify-contact" aria-selected="false">عکس های محصول</a>
                         </li>
                     </ul>
+                    <form enctype='multipart/form-data' method="post" id="createForm" name="createForm">
+                        <div class="tab-content" id="justifyTabContent">
+                            <div class="tab-pane fade show active" id="justify-home" role="tabpanel" aria-labelledby="justify-home-tab">
+                                <div class="row layout-top-spacing" id="cancel-row">
+                                    <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
+                                        <div class=" br-6">
 
-                    <div class="tab-content" id="justifyTabContent">
-                        <div class="tab-pane fade show active" id="justify-home" role="tabpanel" aria-labelledby="justify-home-tab">
-                            <div class="row layout-top-spacing" id="cancel-row">
-                                <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
-                                    <div class=" br-6">
-                                        <form>
                                             <div class="row">
                                                 <div class=" col-lg-8 col-sm-12">
                                                     <div class="form-row mb-8">
                                                         <div class="form-group col-md-4">
                                                             <label for="group">گرو</label>
-                                                            <select id="group" class="form-control" asp-Items="@(new SelectList(Model.Category,"PrdLvlUId","PrdLvlName"))">
-                                                                <option selected>انتخاب کنید...</option>
-                                                                <option>...</option>
+                                                            <select asp-for="Command.PrdLvlUid3" id="group" class="form-control" asp-Items="@(new SelectList(Model.Category,"PrdLvlUId","PrdLvlName"))">
+                                                                <option selected value="0">انتخاب کنید...</option>
                                                             </select>
-                                                        </div>
+                                                      <span asp-validation-for="Command.PrdLvlUid3" class="error"></span>
+                                                            </div>
 
                                                         <div class="form-group col-md-4">
                                                             <label for="">ماهیت </label>
-                                                            <select id="" class="form-control">
+                                                            <select asp-for="Command.PrdLvlType" id="" class="form-control">
                                                                 <option selected>انتخاب کنید...</option>
-                                                                <option>واقعی</option>
-                                                                <option>خدماتی</option>
-                                                                <option>مجازی</option>
+                                                                <option value="0">واقعی</option>
+                                                                <option value="2">خدماتی</option>
+                                                                <option value="3">مجازی</option>
+                                                                <option value="1">غرفه</option>
                                                             </select>
+                                                            <span asp-validation-for="Command.PrdLvlType" class="error"></span>
                                                         </div>
                                                         <div class="form-group col-md-4">
                                                             <label for="">نام</label>
-                                                            <input asp-for="Command.PrdName" type="email" class="form-control" id="" placeholder="نام">
+                                                            <input asp-for="Command.PrdName" type="text" class="form-control" id="" placeholder="نام">
+                                                            <span asp-validation-for="Command.PrdName" class="error"></span>
                                                         </div>
                                                     </div>
                                                     <div class="form-row mb-8">
                                                         <div class="form-group col-md-4">
                                                             <label for="">نام نمایشی کالا</label>
-                                                            <input asp-for="Command.PrdNameShow" type="password" class="form-control" id="" placeholder="نام نمایشی">
+                                                            <input asp-for="Command.PrdNameShow" type="text" class="form-control" id="" placeholder="نام نمایشی">
+                                                            <span asp-validation-for="Command.PrdNameShow" class="error"></span>
                                                         </div>
 
                                                         <div class="form-group col-md-4">
                                                             <label for=""> کد کالا</label>
-                                                            <input asp-for="Command.PrdCode" type="email" class="form-control" id="" placeholder=" کد کالا">
+                                                            <input onchange="CheckControl()" asp-for="Command.PrdCode" type="text" class="form-control" id="" placeholder=" کد کالا">
+                                                            <span asp-validation-for="Command.PrdCode" class="error"></span>
                                                         </div>
 
                                                         <div class="form-group col-md-4">
                                                             <label for=""> واحد شمارش</label>
-                                                            <input asp-for="Command.PrdUid" type="email" class="form-control" id="" placeholder="واحد شمارش">
+                                                            <select asp-for="Command.PrdUnit" asp-items="@(new SelectList(Model.Unit,"Id","Name"))" type="text" class="form-control" id="">
+                                                                <option value="0">انتخاب...</option>
+                                                            </select>
+                                                            <span asp-validation-for="Command.PrdUnit" class="error"></span>
                                                         </div>
                                                     </div>
 
 
                                                     <div class="form-row mb-8">
-
                                                         <div class="form-group col-md-4">
-                                                            <label for=""> کد کالا</label>
-                                                            <input type="email" class="form-control" id="" placeholder=" کد کالا">
+                                                            <label for=""> بار کد</label>
+                                                            <input onchange="CheckControl()" asp-for="Command.PrdBarcode" type="text" class="form-control" id="" placeholder=" کد کالا">
+                                                            <span asp-validation-for="Command.PrdBarcode" class="error"></span>
                                                         </div>
 
                                                         <div class="form-group col-md-4">
-                                                            <label for=""> واحد شمارش</label>
-                                                            <input type="email" class="form-control" id="" placeholder="واحد شمارش">
+                                                            <label for=""> ایران کد</label>
+                                                            <input asp-for="Command.PrdIranCode" type="text" class="form-control" id="" placeholder="واحد شمارش">
+                                                            <span asp-validation-for="Command.PrdIranCode" class="error"></span>
                                                         </div>
-
                                                         <div class="form-group col-md-4">
                                                             <div class="n-chk mt-40">
                                                                 <label class="new-control new-checkbox checkbox-primary">
@@ -123,7 +131,7 @@
                                                 </div>
 
                                                 <div class=" col-lg-4 col-sm-12">
-                                                    <img id="imgCourse" class="thumbnail" src="/defualtImg/10.png" />
+                                                    <img id="imgCourse " class="thumbnail" src="/defualtImg/10.png" />
                                                     <div class="form-group">
                                                         <label class="control-label">عکس<span class="text-danger">*</span></label>
                                                         <input asp-for="Command.PrdImage" id="imgCourseUp" type="file" class="form-control" accept="image/*" required>
@@ -133,20 +141,19 @@
                                                 </div>
 
                                             </div>
-                                            <button type="submit" class="btn btn-primary mt-3">ورود</button>
-                                        </form>
+                                          
+                                        </div>
                                     </div>
+
                                 </div>
-
                             </div>
-                        </div>
 
 
-                        <div class="tab-pane fade" id="justify-profile" role="tabpanel" aria-labelledby="justify-profile-tab">
-                            <div class="row layout-top-spacing" id="cancel-row">
-                                <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
-                                    <div class=" br-6">
-                                        <form>
+                            <div class="tab-pane fade" id="justify-profile" role="tabpanel" aria-labelledby="justify-profile-tab">
+                                <div class="row layout-top-spacing" id="cancel-row">
+                                    <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
+                                        <div class=" br-6">
+
                                             <div class="row">
                                                 <div class=" col-lg-12 col-sm-12">
                                                     <div class="form-row mb-4">
@@ -203,11 +210,11 @@
 
                                                             <label for="">نوع تخفیف:</label>
                                                             <div class="form-check form-check-inline">
-                                                                <input asp-for="Command.PrdDiscountType" class="form-check-input" type="radio" name="dicountType" id="Percentage" value="درصد">
+                                                                <input asp-for="Command.PrdDiscountType" class="form-check-input" type="radio"  id="Percentage" value="درصد">
                                                                 <label class="form-check-label mr-0" for="inlineRadio1">درصد</label>
                                                             </div>
                                                             <div class="form-check form-check-inline">
-                                                                <input asp-for="Command.PrdDiscountType" class="form-check-input" type="radio" name="dicountType" id="price" value="مبلغ">
+                                                                <input asp-for="Command.PrdDiscountType" class="form-check-input" type="radio"  id="price" value="مبلغ">
                                                                 <label class="form-check-label mr-0" for="inlineRadio2">مبلغ</label>
                                                             </div>
 
@@ -240,82 +247,80 @@
                                                             </div>
                                                         </div>
                                                     </div>
-
-
                                                 </div>
                                             </div>
-                                            <button type="submit" class="btn btn-primary mt-3">ورود</button>
-                                        </form>
+                                          
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="tab-pane fade" id="justify-contact" role="tabpanel" aria-labelledby="justify-contact-tab">
-                            <div class="row layout-top-spacing" id="cancel-row">
-                                <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
-                                    <div class=" br-6">
-                                        <form method="get" id="submitProperty" name="submitProperty">
-                                            <div class="row">
-                                                <div class=" col-lg-12 col-sm-12">
-                                                    <div class="form-row mb-4">
-                                                        <div class="form-group col-md-4">
-                                                            <label for=""> نام ویژگی</label>
-                                                            <select asp-for="Property.Id" id="propertyName" asp-items="@(new SelectList(Model.Properties,"Id","Name"))" class="form-control" id="">
-                                                                <option value="null">انتخاب...</option>
-                                                            </select>
-                                                            <span asp-validation-for="Property.Id" class="error"></span>
-                                                        </div>
+                            <div class="tab-pane fade" id="justify-contact" role="tabpanel" aria-labelledby="justify-contact-tab">
+                                <div class="row layout-top-spacing" id="cancel-row">
+                                    <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
+                                        <div class=" br-6">
+                                            <form method="get" id="submitProperty" name="submitProperty">
+                                                <div class="row">
+                                                    <div class=" col-lg-12 col-sm-12">
+                                                        <div class="form-row mb-4">
+                                                            <div class="form-group col-md-4">
+                                                                <label for=""> نام ویژگی</label>
+                                                                <select asp-for="Property.Id" id="propertyName" asp-items="@(new SelectList(Model.Properties,"Id","Name"))" class="form-control" id="">
+                                                                    <option value="0">انتخاب...</option>
+                                                                </select>
+                                                                <span asp-validation-for="Property.Id" class="error"></span>
+                                                            </div>
 
-                                                        <div class="form-group col-md-4">
-                                                            <label for=""> مقدار ویژگی</label>
-                                                            <input asp-for="Property.Value" id="propertyValue" type="text" class="form-control" id="" placeholder=" مقدار ویژگی">
-                                                            <span asp-validation-for="Property.Value" class="error"></span>
-                                                        </div>
+                                                            <div class="form-group col-md-4">
+                                                                <label for=""> مقدار ویژگی</label>
+                                                                <input asp-for="Property.Value" id="propertyValue" type="text" class="form-control" id="" placeholder=" مقدار ویژگی">
+                                                                <span asp-validation-for="Property.Value" class="error"></span>
+                                                            </div>
 
-                                                        <div class="form-group col-md-4">
-                                                            <button type="submit" id="submit-property" class="btn btn-info btn-sm btn-rounded mt-35">افزودن به لیست</button>
+                                                            <div class="form-group col-md-4">
+                                                                <button type="submit" id="submit-property" class="btn btn-info btn-sm btn-rounded mt-35">افزودن به لیست</button>
+                                                            </div>
+
                                                         </div>
 
                                                     </div>
-
                                                 </div>
-                                            </div>
-                                        </form>
+                                            </form>
 
-                                        <div class="row">
-                                            <div class="col-md-6 text-center">
-                                                <div class="panel panel-default">
+                                            <div class="row">
+                                                <div class="col-md-6 text-center">
+                                                    <div class="panel panel-default">
 
-                                                    <div class="panel-body">
-                                                        <div class="row">
-                                                            <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
-                                                                <table id="property-dataTable" class="table table-striped table-bordered">
-                                                                    <thead>
-                                                                        <tr>
-                                                                            <th>نام ویژگی</th>
-                                                                            <th>مقدار ویژگی</th>
-                                                                            <th>عملیات</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                    </tbody>
-                                                                </table>
+                                                        <div class="panel-body">
+                                                            <div class="row">
+                                                                <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
+                                                                    <table id="property-dataTable" class="table table-striped table-bordered">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>نام ویژگی</th>
+                                                                                <th>مقدار ویژگی</th>
+                                                                                <th>عملیات</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                        </tbody>
+                                                                    </table>
 
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
 
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <partial name="Partial/Pictures" />
-                    </div>
+                            <partial name="Partial/Pictures" />
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -341,9 +346,12 @@
                     <div class="widget-content">
                         <div class="widget-content">
                             <div class="form-row">
-                                <div class="form-group col-md-6">
-                                    <label for=""> واحد شمارش 2</label>
-                                    <input asp-for="Command.PrdUnit2" type="number" class="form-control" id="" placeholder="واحد شمارش 2 ">
+                                <div class="form-group col-md-4">
+                                    <label for="">2 واحد شمارش</label>
+                                    <select asp-for="Command.PrdUnit" asp-items="@(new SelectList(Model.Unit,"Id","Name"))" type="text" class="form-control" id="">
+                                        <option value="0">انتخاب...</option>
+                                    </select>
+                                    <span asp-validation-for="Command.PrdUnit" class="error"></span>
                                 </div>
 
                                 <div class="form-group col-md-6">
@@ -393,5 +401,5 @@
     <script src="~/plugins/select2/custom-select2.js"></script>
     <script src="~/plugins/editors/quill/quill.js"></script>
     <script src="~/plugins/editors/quill/custom-quill.js"></script>
-   
+    <script src="~/source/js/product.js"></script>
 }

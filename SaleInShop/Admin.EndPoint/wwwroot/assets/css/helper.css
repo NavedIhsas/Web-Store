@@ -22,6 +22,7 @@
 .mt-30 {
     margin-top: 30px !important;
 }
+
 .mt-35 {
     margin-top: 35px !important;
 }
@@ -38,3 +39,20 @@
     label.form-check-label.mr-0 {
         margin-right: 0 !important;
     }
+
+
+.table > thead {
+    border-top: 0;
+    border-bottom: 0 !important;
+}
+
+
+
+table.dataTable td {
+    padding: 4px 7px !important;
+}
+
+.table > tbody:before {
+    line-height: 0em !important;
+ 
+}

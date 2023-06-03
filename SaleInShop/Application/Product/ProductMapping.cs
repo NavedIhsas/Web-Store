@@ -7,6 +7,7 @@ namespace Application.Product
         public ProductMapping()
         {
             CreateMap<ProductDto, Domain.ShopModels.Product>();
+            CreateMap<CreateProduct, Domain.ShopModels.Product>();
         }
     }
 }

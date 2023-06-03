@@ -24,16 +24,22 @@ namespace SaleInWeb.Pages.Products
         public CreateProduct Command;
         public List<PropertySelectOptionDto> Properties;
         public CreateProperty Property;
+        public List<UnitOfMeasurementDto> Unit;
+
         public void OnGet()
         {
             Category = _category.SelectOptions();
             Tax = _category.TaxSelectOption();
             Properties = _product.PropertySelectOption();
+            HttpContext.Session.Remove("Product-Property");
+            Unit = _product.UnitOfMeasurement();
         }
 
-        public void OnPost(CreateProduct command)
+        public IActionResult OnPost(CreateProduct command)
         {
-
+            //if (!ModelState.IsValid) return Page();
+            _product.CreateProduct(command);
+            return new JsonResult(true);
         }
 
         public IActionResult OnGetProperty(CreateProperty property)

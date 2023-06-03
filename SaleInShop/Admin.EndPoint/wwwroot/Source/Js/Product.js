@@ -59,14 +59,15 @@ $("#submit-property").on("click", function (env) {
     env.preventDefault();
     debugger
     var form = $("#submitProperty");
+    var value = $("#propertyValue").val();
+    var id = $("#propertyName").val();
     var isValid = form.validate();
-    if (!isValid) {
-        nofity("top center", "فرم را به درستی پر کنید", "error")
+    if (!isValid || id==0) {
+        notify("top center", "فرم را به درستی پر کنید", "error")
         return false;
     }
 
-    var value = $("#propertyValue").val();
-    var id = $("#propertyName").val();
+   
     var name = $("#propertyName option:selected").text();
     $.ajax({
         type: "get",
@@ -79,6 +80,8 @@ $("#submit-property").on("click", function (env) {
                 return false;
             }
             table.clear().draw();
+            $("#propertyName").val(0);
+            $("#propertyValue").val("");
             list.forEach(x => {
                 const result =
                     `
@@ -125,3 +128,45 @@ function removeProperty(id) {
         }
     })
 }
+
+
+function CheckControl() {
+    debugger
+}
+
+
+
+
+function readURL(input) {
+   
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = (function (theFile) {
+          
+            $('#imgCourse').attr('src', theFile.target.result);
+
+            var image = new Image();
+            image.src = theFile.target.result;
+
+            image.onload = function () {
+                // access image size here
+                if (this.width === 600 && this.height === 600) {
+                    {
+
+                    }
+                } else {
+                    notify("top center", "طول و عرض عکس باید 600 در 600 پیکسل باشد","error")
+                   
+                }
+
+            };
+        });
+
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+$("#imgCourseUp").change(function () {
+    readURL(this);
+});
