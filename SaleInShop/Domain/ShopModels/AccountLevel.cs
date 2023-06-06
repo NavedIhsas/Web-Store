@@ -27,6 +27,8 @@ public partial class AccountLevel
 
     public Guid? SysUsrModifiedby { get; set; }
 
+    public Guid? AccLvlFrGuid { get; set; }
+
     public virtual ICollection<Account> Accounts { get; set; } = new List<Account>();
 
     public virtual FiscalPeriod FisPeriodU { get; set; }

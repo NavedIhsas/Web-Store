@@ -6,9 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace infrastructure.Context;
 
-public partial class ShopContext : DbContext,IShopContext
+public partial class ShopContext : DbContext, IShopContext
 {
     private readonly IHttpContextAccessor _httpContext;
+
     public ShopContext()
     {
     }
@@ -100,6 +101,8 @@ public partial class ShopContext : DbContext,IShopContext
     public virtual DbSet<Invoice> Invoices { get; set; }
 
     public virtual DbSet<InvoiceDetail> InvoiceDetails { get; set; }
+
+    public virtual DbSet<InvoiceDetails2> InvoiceDetails2s { get; set; }
 
     public virtual DbSet<Language> Languages { get; set; }
 
@@ -205,6 +208,7 @@ public partial class ShopContext : DbContext,IShopContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("name=shopConnection1");
+
 
     public override int SaveChanges()
     {
@@ -515,6 +519,7 @@ public partial class ShopContext : DbContext,IShopContext
             entity.Property(e => e.AccLvlCode)
                 .HasMaxLength(50)
                 .HasColumnName("ACC_LVL_CODE");
+            entity.Property(e => e.AccLvlFrGuid).HasColumnName("ACC_LVL_FR_GUID");
             entity.Property(e => e.AccLvlName)
                 .HasMaxLength(100)
                 .HasColumnName("ACC_LVL_NAME");
@@ -2257,6 +2262,7 @@ public partial class ShopContext : DbContext,IShopContext
                 .HasMaxLength(100)
                 .HasColumnName("INV_REFERENCE");
             entity.Property(e => e.InvSection).HasColumnName("INV_SECTION");
+            entity.Property(e => e.InvShareDiscount).HasColumnName("INV_SHARE_DISCOUNT");
             entity.Property(e => e.InvStartTime)
                 .HasMaxLength(8)
                 .HasColumnName("INV_START_TIME");
@@ -2361,8 +2367,10 @@ public partial class ShopContext : DbContext,IShopContext
                 .HasDefaultValueSql("((0))")
                 .HasColumnName("INV_DET_PRINT");
             entity.Property(e => e.InvDetQuantity).HasColumnName("INV_DET_QUANTITY");
+            entity.Property(e => e.InvDetRetRefrence).HasColumnName("INV_DET_RET_REFRENCE");
             entity.Property(e => e.InvDetRowGroup).HasColumnName("INV_DET_ROW_GROUP");
             entity.Property(e => e.InvDetRowOrder).HasColumnName("INV_DET_ROW_ORDER");
+            entity.Property(e => e.InvDetShareDiscountPer).HasColumnName("INV_DET_SHARE_DISCOUNT_PER");
             entity.Property(e => e.InvDetStatus).HasColumnName("INV_DET_STATUS");
             entity.Property(e => e.InvDetTax)
                 .HasColumnType("decimal(18, 0)")
@@ -2403,6 +2411,65 @@ public partial class ShopContext : DbContext,IShopContext
             entity.HasOne(d => d.WarHosU).WithMany(p => p.InvoiceDetails)
                 .HasForeignKey(d => d.WarHosUid)
                 .HasConstraintName("FK_InvoiceDetails_WareHouse");
+        });
+
+        modelBuilder.Entity<InvoiceDetails2>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("InvoiceDetails2");
+
+            entity.Property(e => e.InvDetDescribtion).HasColumnName("INV_DET_DESCRIBTION");
+            entity.Property(e => e.InvDetDiscount)
+                .HasColumnType("decimal(18, 0)")
+                .HasColumnName("INV_DET_DISCOUNT");
+            entity.Property(e => e.InvDetDiscountExchange)
+                .HasColumnType("decimal(18, 2)")
+                .HasColumnName("INV_DET_DISCOUNT_EXCHANGE");
+            entity.Property(e => e.InvDetParentUid).HasColumnName("INV_DET_PARENT_UID");
+            entity.Property(e => e.InvDetPayment).HasColumnName("INV_DET_PAYMENT");
+            entity.Property(e => e.InvDetPercentDiscount).HasColumnName("INV_DET_PERCENT_DISCOUNT");
+            entity.Property(e => e.InvDetPriceExchange)
+                .HasColumnType("decimal(18, 2)")
+                .HasColumnName("INV_DET_PRICE_EXCHANGE");
+            entity.Property(e => e.InvDetPricePerUnit)
+                .HasColumnType("decimal(18, 0)")
+                .HasColumnName("INV_DET_PRICE_PER_UNIT");
+            entity.Property(e => e.InvDetPricePerUnitExchange)
+                .HasColumnType("decimal(18, 2)")
+                .HasColumnName("INV_DET_PRICE_PER_UNIT_EXCHANGE");
+            entity.Property(e => e.InvDetPrint).HasColumnName("INV_DET_PRINT");
+            entity.Property(e => e.InvDetQuantity).HasColumnName("INV_DET_QUANTITY");
+            entity.Property(e => e.InvDetQuantity2).HasColumnName("INV_DET_QUANTITY2");
+            entity.Property(e => e.InvDetRetRefrence).HasColumnName("INV_DET_RET_REFRENCE");
+            entity.Property(e => e.InvDetRowGroup).HasColumnName("INV_DET_ROW_GROUP");
+            entity.Property(e => e.InvDetRowOrder).HasColumnName("INV_DET_ROW_ORDER");
+            entity.Property(e => e.InvDetShareDiscountPer).HasColumnName("INV_DET_SHARE_DISCOUNT_PER");
+            entity.Property(e => e.InvDetStatus).HasColumnName("INV_DET_STATUS");
+            entity.Property(e => e.InvDetTax)
+                .HasColumnType("decimal(18, 0)")
+                .HasColumnName("INV_DET_TAX");
+            entity.Property(e => e.InvDetTaxValue).HasColumnName("INV_DET_TAX_VALUE");
+            entity.Property(e => e.InvDetTotalAmount)
+                .HasColumnType("decimal(18, 0)")
+                .HasColumnName("INV_DET_TOTAL_AMOUNT");
+            entity.Property(e => e.InvDetTotalExchange)
+                .HasColumnType("decimal(18, 2)")
+                .HasColumnName("INV_DET_TOTAL_EXCHANGE");
+            entity.Property(e => e.InvDetUid).HasColumnName("INV_DET_UID");
+            entity.Property(e => e.InvUid).HasColumnName("INV_UID");
+            entity.Property(e => e.PrdUid).HasColumnName("PRD_UID");
+            entity.Property(e => e.ServiceunitUid).HasColumnName("SERVICEUNIT_UID");
+            entity.Property(e => e.SysUsrCreatedby).HasColumnName("SYS_USR_CREATEDBY");
+            entity.Property(e => e.SysUsrCreatedon)
+                .HasColumnType("datetime")
+                .HasColumnName("SYS_USR_CREATEDON");
+            entity.Property(e => e.SysUsrModifiedby).HasColumnName("SYS_USR_MODIFIEDBY");
+            entity.Property(e => e.SysUsrModifiedon)
+                .HasColumnType("datetime")
+                .HasColumnName("SYS_USR_MODIFIEDON");
+            entity.Property(e => e.UomUid).HasColumnName("UOM_UID");
+            entity.Property(e => e.WarHosUid).HasColumnName("WAR_HOS_UID");
         });
 
         modelBuilder.Entity<Language>(entity =>
@@ -2993,6 +3060,8 @@ public partial class ShopContext : DbContext,IShopContext
                 .HasColumnName("PRD_UID");
             entity.Property(e => e.BusUnitUid).HasColumnName("BUS_UNIT_UID");
             entity.Property(e => e.FisPeriodUid).HasColumnName("FIS_PERIOD_UID");
+            entity.Property(e => e.FkProductUnit).HasColumnName("FK_ProductUnit");
+            entity.Property(e => e.FkProductUnit2).HasColumnName("FK_ProductUnit2");
             entity.Property(e => e.PrdBarcode)
                 .HasMaxLength(50)
                 .HasColumnName("PRD_BARCODE");
@@ -3020,12 +3089,10 @@ public partial class ShopContext : DbContext,IShopContext
             entity.Property(e => e.PrdIranCode)
                 .HasMaxLength(50)
                 .HasColumnName("PRD_IRAN_CODE");
+            entity.Property(e => e.PrdIsUnit1Bigger).HasColumnName("PRD_IsUnit1Bigger");
             entity.Property(e => e.PrdLatinName)
                 .HasMaxLength(100)
-                .HasColumnName("PRD_LATIN_NAME"); 
-            entity.Property(e => e.ShortDescription)
-                .HasMaxLength(500);
-             
+                .HasColumnName("PRD_LATIN_NAME");
             entity.Property(e => e.PrdLvlUid1).HasColumnName("PRD_LVL_UID1");
             entity.Property(e => e.PrdLvlUid2).HasColumnName("PRD_LVL_UID2");
             entity.Property(e => e.PrdLvlUid3).HasColumnName("PRD_LVL_UID3");
@@ -3096,6 +3163,7 @@ public partial class ShopContext : DbContext,IShopContext
                 .HasMaxLength(10)
                 .HasColumnName("PRD_UNIT2");
             entity.Property(e => e.PrdWareHouse).HasColumnName("PRD_WARE_HOUSE");
+            entity.Property(e => e.ShortDescription).HasMaxLength(500);
             entity.Property(e => e.SysUsrCreatedby).HasColumnName("SYS_USR_CREATEDBY");
             entity.Property(e => e.SysUsrCreatedon)
                 .HasColumnType("datetime")
@@ -3107,6 +3175,14 @@ public partial class ShopContext : DbContext,IShopContext
             entity.Property(e => e.TaxUid).HasColumnName("TAX_UID");
             entity.Property(e => e.UomUid1).HasColumnName("UOM_UID1");
             entity.Property(e => e.UomUid2).HasColumnName("UOM_UID2");
+
+            entity.HasOne(d => d.FkProductUnitNavigation).WithMany(p => p.ProductFkProductUnitNavigations)
+                .HasForeignKey(d => d.FkProductUnit)
+                .HasConstraintName("FK_Product_UnitOfMeasurement2");
+
+            entity.HasOne(d => d.FkProductUnit2Navigation).WithMany(p => p.ProductFkProductUnit2Navigations)
+                .HasForeignKey(d => d.FkProductUnit2)
+                .HasConstraintName("FK_Product_UnitOfMeasurement3");
 
             entity.HasOne(d => d.PrdLvlUid3Navigation).WithMany(p => p.Products)
                 .HasForeignKey(d => d.PrdLvlUid3)
@@ -4636,4 +4712,5 @@ public partial class ShopContext : DbContext,IShopContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
 }

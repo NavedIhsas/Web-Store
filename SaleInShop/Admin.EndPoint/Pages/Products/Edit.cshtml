@@ -1,9 +1,8 @@
 ﻿@page
-@using Microsoft.AspNetCore.Mvc.TagHelpers
-@model SaleInWeb.Pages.Products.CreateModel
+@model SaleInWeb.Pages.Products.EditModel
 @{
-    ViewData["Title"] = "افزودن محصول جدید";
 }
+
 
 <!--  BEGIN CONTENT AREA  -->
 
@@ -49,8 +48,8 @@
                                                             <select asp-for="Command.PrdLvlUid3" id="group" class="form-control" asp-Items="@(new SelectList(Model.Category,"PrdLvlUId","PrdLvlName"))">
                                                                 <option selected value="0">انتخاب کنید...</option>
                                                             </select>
-                                                      <span asp-validation-for="Command.PrdLvlUid3" class="error"></span>
-                                                            </div>
+                                                            <span asp-validation-for="Command.PrdLvlUid3" class="error"></span>
+                                                        </div>
 
                                                         <div class="form-group col-md-4">
                                                             <label for="">ماهیت </label>
@@ -141,7 +140,7 @@
                                                 </div>
 
                                             </div>
-                                          
+
                                         </div>
                                     </div>
 
@@ -249,7 +248,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                          
+
                                         </div>
                                     </div>
                                 </div>
@@ -296,13 +295,25 @@
                                                                 <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
                                                                     <table id="property-dataTable" class="Current-color table table-striped table-bordered">
                                                                         <thead>
-                                                                            <tr>
-                                                                                <th>نام ویژگی</th>
-                                                                                <th>مقدار ویژگی</th>
-                                                                                <th>عملیات</th>
-                                                                            </tr>
+                                                                        <tr>
+                                                                            <th>نام ویژگی</th>
+                                                                            <th>مقدار ویژگی</th>
+                                                                            <th>عملیات</th>
+                                                                        </tr>
                                                                         </thead>
+
                                                                         <tbody>
+                                                                        @foreach (var item in Model.Command.ProductProperties)
+                                                                        {
+                                                                            <tr>
+                                                                                <td>@item.Property.Name</td>
+                                                                                <td>@item.Value</td>
+                                                                                <td>
+                                                                                    <button type="button" class="btn btn-sm btn-danger btn-rounded" onclick="removeProperty('@item.PropertyId')">حذف</button>
+                                                                                </td>
+                                                                            </tr>
+                                                                        }
+
                                                                         </tbody>
                                                                     </table>
 
@@ -318,7 +329,7 @@
                                 </div>
                             </div>
 
-                            <partial name="Partial/Pictures" />
+                            <partial name="Partial/Pictures" model="@Model.Command.ProductPictures" />
                         </div>
                     </form>
                 </div>

@@ -3,6 +3,12 @@
     $(this).find('form').trigger('reset');
 })
 
+const table = $('#property-dataTable').DataTable({
+    paging: false,
+    ordering: true,
+    info: false,
+    searching: false,
+});
 
 function showModal(id) {
     $("#detailsProduct").modal('show')
@@ -10,13 +16,27 @@ function showModal(id) {
         type: "GET",
         url: "?handler=Details&id=" + id,
         success: function (result) {
-
+            debugger
             $("#productName").text($("#productName").text() + result.prdName);
 
             $("#price2").val($("#price2").val() + result.prdPricePerUnit2.toLocaleString());
             $("#price3").val($("#price3").val() + result.prdPricePerUnit3.toLocaleString());
             $("#price4").val($("#price4").val() + result.prdPricePerUnit4.toLocaleString());
+            $("#price5").val($("#price5").val() + result.prdPricePerUnit5.toLocaleString());
 
+
+            table.clear().draw();
+            result.properties.forEach(x => {
+                const list =
+                    `
+                                                  <tr>
+                                                      <td>${x.propertyName ?? ""}</td>
+                                                       <td>${x.value ?? ""}</td>
+                                                
+                                                    </tr>
+                                                                         `
+                table.row.add($(list)).draw();
+            });
         }
 
 
@@ -41,28 +61,20 @@ $(".product-unit").change(function () {
 });
 
 
-$("input[name='dicountType']").change(function () {
+$("input[name='Command.PrdDiscountType']").change(function () {
     debugger
     $("#dicountDis").text("تخفیف را به " + this.value + " " + "وارد کنید  ")
 });
 
 
-const table = $('#property-dataTable').DataTable({
-    paging: false,
-    ordering: true,
-    info: false,
-    searching: false,
-});
 
 
 $("#submit-property").on("click", function (env) {
     env.preventDefault();
     debugger
-    var form = $("#submitProperty");
     var value = $("#propertyValue").val();
     var id = $("#propertyName").val();
-    var isValid = form.validate();
-    if (!isValid || id==0) {
+    if (value==="" || id==0) {
         notify("top center", "فرم را به درستی پر کنید", "error")
         return false;
     }
@@ -71,7 +83,7 @@ $("#submit-property").on("click", function (env) {
     var name = $("#propertyName option:selected").text();
     $.ajax({
         type: "get",
-        url: "?handler=Property&id=" + id + "&name=" + name + "&value=" + value,
+        url: "/Products/Create?handler=Property&id=" + id + "&name=" + name + "&value=" + value,
 
         success: function (list) {
             debugger
@@ -106,7 +118,7 @@ $("#submit-property").on("click", function (env) {
 function removeProperty(id) {
 
     $.ajax({
-        url: "?handler=removeProperty&id=" + id,
+        url: "/Products/Create?handler=removeProperty&id=" + id,
         type: "get",
         success: function (list) {
             debugger

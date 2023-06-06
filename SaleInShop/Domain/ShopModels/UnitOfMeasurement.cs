@@ -29,6 +29,10 @@ public partial class UnitOfMeasurement
 
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 
+    public virtual ICollection<Product> ProductFkProductUnit2Navigations { get; set; } = new List<Product>();
+
+    public virtual ICollection<Product> ProductFkProductUnitNavigations { get; set; } = new List<Product>();
+
     public virtual ICollection<Product> ProductUomUid1Navigations { get; set; } = new List<Product>();
 
     public virtual ICollection<Product> ProductUomUid2Navigations { get; set; } = new List<Product>();

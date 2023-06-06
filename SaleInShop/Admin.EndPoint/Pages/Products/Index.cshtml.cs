@@ -18,11 +18,14 @@ namespace SaleInWeb.Pages.Products
         public void OnGet()
         {
             Products = _productService.GetAll();
+            
         }
 
         public IActionResult OnGetDetails(Guid id)
         {
-            return new JsonResult(_productService.GetDetails(id));
+            var details = _productService.GetDetails(id);
+            details.Properties = _productService.GetProductProperty(id);
+            return new JsonResult(details);
         }
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using static Application.Product.Category.ProductCategory;
+using static Application.Product.ProductService;
 
 namespace SaleInWeb.Pages.Products
 {
@@ -31,7 +32,7 @@ namespace SaleInWeb.Pages.Products
             Category = _category.SelectOptions();
             Tax = _category.TaxSelectOption();
             Properties = _product.PropertySelectOption();
-            HttpContext.Session.Remove("Product-Property");
+            //HttpContext.Session.Remove("Product-Property");
             Unit = _product.UnitOfMeasurement();
         }
 

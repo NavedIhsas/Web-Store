@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Domain.ShopModels;
 
-public partial class InvoiceDetail
+public partial class InvoiceDetails2
 {
     public Guid InvDetUid { get; set; }
 
@@ -65,13 +65,5 @@ public partial class InvoiceDetail
 
     public Guid? InvDetRetRefrence { get; set; }
 
-    public virtual Invoice InvU { get; set; }
-
-    public virtual Product PrdU { get; set; }
-
-    public virtual ICollection<SerialDetail> SerialDetails { get; set; } = new List<SerialDetail>();
-
-    public virtual UnitOfMeasurement UomU { get; set; }
-
-    public virtual WareHouse WarHosU { get; set; }
+    public double? InvDetQuantity2 { get; set; }
 }

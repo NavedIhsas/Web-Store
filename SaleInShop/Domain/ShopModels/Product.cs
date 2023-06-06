@@ -112,10 +112,20 @@ public partial class Product
     public bool? PrdPriceInPrint { get; set; }
 
     public string PrdSalegroupid { get; set; }
+
     public string ShortDescription { get; set; }
 
+    public bool? PrdIsUnit1Bigger { get; set; }
+
+    public Guid? FkProductUnit { get; set; }
+
+    public Guid? FkProductUnit2 { get; set; }
 
     public virtual ICollection<Barcode> Barcodes { get; set; } = new List<Barcode>();
+
+    public virtual UnitOfMeasurement FkProductUnit2Navigation { get; set; }
+
+    public virtual UnitOfMeasurement FkProductUnitNavigation { get; set; }
 
     public virtual ICollection<InvoiceDetail> InvoiceDetails { get; set; } = new List<InvoiceDetail>();
 

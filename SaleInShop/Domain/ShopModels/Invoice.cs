@@ -113,6 +113,8 @@ public partial class Invoice
 
     public string InvDueTime { get; set; }
 
+    public bool? InvShareDiscount { get; set; }
+
     public virtual AccountClub AccClbU { get; set; }
 
     public virtual Account AccU { get; set; }

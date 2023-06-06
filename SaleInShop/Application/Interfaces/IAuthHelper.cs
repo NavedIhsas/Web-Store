@@ -16,6 +16,22 @@ namespace Application.Interfaces
         Guid? SetBranch(string branchId);
         bool ServerConnect();
         bool BaseServerConnect();
+
+        /// <summary>
+        ///  کد محصول
+        /// </summary>
+        /// <returns></returns>
+        bool IsAutomatic();
+
+
+        /// <summary>
+        /// اندازه طول کد محصول
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        bool CheckLength(string code);
+
+        List<Domain.ShopModels.Setting> GetSettings();
     }
 
     public class AuthHelper : IAuthHelper
@@ -95,6 +111,22 @@ namespace Application.Interfaces
         /// <returns></returns>
         public bool BaseServerConnect()
            => _saleInContext.Database.CanConnect();
+
+        public bool IsAutomatic()
+        {
+            //ToDo
+            throw new NotImplementedException();
+        }
+
+        public bool CheckLength(string code)
+        {
+            return true;
+        }
+
+        public List<Domain.ShopModels.Setting> GetSettings()
+        {
+            return _context.Settings.AsNoTracking().ToList();
+        }
 
         /// <summary>
         /// Branch Database
