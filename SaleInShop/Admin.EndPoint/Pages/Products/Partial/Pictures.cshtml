@@ -1,4 +1,4 @@
-﻿@model List<Domain.ShopModels.ProductPicture>
+﻿
 
 <div class="tab-pane fade" id="justify-pictures" role="tabpanel" aria-labelledby="justify-pictures-tab">
     <div class="row ">
@@ -11,28 +11,6 @@
                             <input name="Command.Files" id="files" type="file" class="custom-file-container__custom-file__custom-file-input" multiple>
                             <input type="hidden" name="MAX_FILE_SIZE" value="10485760" />
                             <span class="custom-file-container__custom-file__custom-file-control"></span>
-                            
-                            
-                            <div class="custom-file-container__image-preview custom-file-container__image-preview--active" style="background-image: url(&quot;&quot;);">
-                                @foreach (var item in Model)
-                                {
-                                    <div class="custom-file-container__image-multi-preview"
-                                         style="background-image: url('data:image/jpeg;base64, @item.Image'); ">
-                                        <span class="custom-file-container__image-multi-preview__single-image-clear">
-                                            <span class="custom-file-container__image-multi-preview__single-image-clear__icon" >×</span>
-                                        </span>
-                                    </div>
-                                }
-                            </div>
-                            
-
-                            
-                            
-                            
-                            
-                            
-                            
-
                         </label>
                         <div class="custom-file-container__image-preview"></div>
                     </div>
@@ -40,46 +18,17 @@
             </div>
         </div>
         <br />
-        <button onclick="Submit()" type="button" class="btn btn-success btn-sm btn-rounded pull-left">تایید نهایی</button>
+        <button id="final-submit" type="submit" class="btn btn-success btn-sm btn-rounded pull-left">تایید نهایی</button>
+
     </div>
 </div>
 
-
-
 <script>
-    
+
+
+    $(document).ready(function () {
+        var secondUpload = new FileUploadWithPreview('mySecondImage')
+    });
    
-    function Submit(evn) {
-        debugger
-      
-       debugger
-        var form = $("#createForm");
-        var valid = form.validate();
-        if (!valid) {
-            notify("top center", "فرم را به درستی پر کنید", "error");
-            return false;
-        }
 
-        $.ajax({
-            url: '',
-            data: new FormData(document.forms.createForm),
-            contentType: false,
-            processData: false,
-            type: 'POST',
-            headers: {
-                RequestVerificationToken:
-                    $('input:hidden[name="__RequestVerificationToken"]').val()
-            },
-
-            success: function (result) {
-                debugger
-                if (result.isSucceeded) {
-                    notify("top center","اطلاعات با موفقیت ثبت شد", "success");
-                    window.href="/Products/Index";
-                }
-
-            }
-
-        })
-    }
 </script>

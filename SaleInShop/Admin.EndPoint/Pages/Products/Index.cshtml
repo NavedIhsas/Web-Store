@@ -1,7 +1,8 @@
 ﻿@page
-@model             SaleInWeb.Pages.Products.IndexModel
+@model SaleInWeb.Pages.Products.IndexModel
 @{
 }
+
 
 
 <style>
@@ -29,7 +30,10 @@
             <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
                 <div class="widget-content widget-content-area br-6">
                     <div class="text-center">
-                        <button onclick="addModal()" class="btn btn-secondary btn-rounded btn-sm">افزودن محصول جدید</button>
+                        <a asp-page="/Products/Create" class="btn btn-secondary btn-rounded btn-sm">افزودن محصول جدید</a>
+                        <button class="btn btn-success" onclick="pictures()">تصاویر</button>
+                        <a class="btn btn-success" onclick="pictures()">تصاویر</a>
+
                     </div>
                     <div class="table-responsive mb-4 mt-4">
                         <table id="dataTable" class="table table-hover table-bordered cell-border row-border" style="width:100%">
@@ -51,8 +55,7 @@
                                 {
                                     <tr>
                                         <td>
-                                            <img src="@String.Format("data:image/png;base64,{0}",
-                                                        Convert.ToBase64String(item.Image64))" style="max-width:60px" />
+                                            <img src="@($"data:image/png;base64,{Convert.ToBase64String(item.Image64)}")" style="max-width:60px" />
                                         </td>
                                         <td>@item.PrdName</td>
                                         <td>@item.PrdLvlName</td>
@@ -75,9 +78,14 @@
                                             <a title="جزییات بیشستر" onclick="showModal('@item.PrdUid')">
                                                 <svg style="color:#2196f3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-info"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                                             </a>
-                                            <a asp-page="/Products/Edit"  asp-route-id="@item.PrdUid" title="ویرایش" class=" mb-2 mr-2"> <svg  style="color:#e2a03f !important" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg></a>
+                                            <a asp-page="/Products/Edit" asp-route-id="@item.PrdUid" title="ویرایش" class=" mb-2 mr-2"> <svg style="color:#e2a03f !important" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg></a>
                                             <a class="" title="حذف">
                                                 <svg style="color:#e7515a" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                            </a>
+
+
+                                            <a title="تصاویر" onclick="pictures('@item.PrdUid')">
+                                                <svg style="color:green" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-image"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                                             </a>
                                         </td>
                                     </tr>
@@ -138,20 +146,40 @@
                         </div>
 
                     </div>
-                    
+
                     <div class="panel-body">
                         <div class="row">
                             <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
-                                <table id="property-dataTable" class="Current-color table table-striped table-bordered">
-                                    <thead>
-                                    <tr>
-                                        <th>نام ویژگی</th>
-                                        <th>مقدار ویژگی</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
+                                <div class="row">
+
+                                    <div class="col col-md-6">
+                                        <strong class="text-info">ویژگی ها</strong>
+                                        <table id="property-dataTable" class="Current-color table table-striped table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>نام ویژگی</th>
+                                                    <th>مقدار ویژگی</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+
+                                    <div class="col col-md-6">
+                                        <strong class="text-info">تصاویر</strong>
+                                        <table id="picture-dataTable" class="Current-color table table-striped table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>تصویر</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
 
                             </div>
                         </div>
@@ -169,10 +197,90 @@
 
 
 
+
+<div class="modal fade" id="pictureProduct" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width:700px !Important">
+            <div class="modal-header">
+                <h5 class="modal-title text-center text-center" id="productName"> تصاویر   </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <form method="post" class="needs-validation" name="submitForm" id="submitForm">
+                <div class="modal-body">
+
+                    <div class="widget-content">
+
+                        <!-- Gallery -->
+                        <div class="row" id="gallery">
+                        </div>
+                        <!-- Gallery -->
+
+                    </div>
+
+
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> بستن</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
 @section Scripts
-{
+    {
     <script src="~/source/js/product.js"></script>
     <script>
+
+
+        const pictureTable1 = $('#picture-dataTable1').DataTable({
+            paging: false,
+            ordering: true,
+            info: false,
+            searching: false,
+        });
+
+
+
+        function pictures(id) {
+            debugger
+            $("#pictureProduct").modal('show')
+            $.ajax({
+                type: "GET",
+                url: "?handler=pictures&id=" + id,
+                success: function (result) {
+                
+                    $("#gallery").html("")
+                    result.forEach(x => {
+                        const list1 =
+                            `
+                                            <div class="col-lg-4 mb-4 mb-lg-0">
+                                                         <img src="data:image/png;base64,${x.image ?? ""}"
+                                                     class="w-100 shadow-1-strong rounded mb-4"
+                                                     alt="Mountains in the Clouds" />
+                                            </div>
+                                 `
+                        debugger
+                        $("#gallery").append(list1)
+                    });
+
+
+
+
+                }
+
+
+            });
+        }
+
+
+
 
         function Details(id) {
 
@@ -181,7 +289,7 @@
                 type: "get",
                 success: function (list) {
                     debugger
-                    
+
 
                 }
             })

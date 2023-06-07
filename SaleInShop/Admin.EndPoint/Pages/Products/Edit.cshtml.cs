@@ -1,3 +1,4 @@
+using Application.Common;
 using Application.Product;
 using Application.Product.Category;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,7 @@ namespace SaleInWeb.Pages.Products
         public List<PropertySelectOptionDto> Properties;
         public CreateProperty Property;
         public List<UnitOfMeasurementDto> Unit;
+        public List<ProductPicturesDto> ProductPictures;
 
         public EditModel(IProductService product, IProductCategory category)
         {
@@ -27,9 +29,11 @@ namespace SaleInWeb.Pages.Products
         public void OnGet(Guid id)
         {
             Command = _product.GetDetailsForEdit(id);
+            ProductPictures = HttpContext.Session.GetJson<List<ProductPicturesDto>>("Product-Property") ?? new List<ProductPicturesDto>();
             Category = _category.SelectOptions();
             Tax = _category.TaxSelectOption();
             Properties = _product.PropertySelectOption();
+
             //HttpContext.Session.Remove("Product-Property");
             Unit = _product.UnitOfMeasurement();
         }

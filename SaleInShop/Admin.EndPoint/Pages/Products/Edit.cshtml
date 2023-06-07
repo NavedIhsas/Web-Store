@@ -287,36 +287,61 @@
                                             </form>
 
                                             <div class="row">
-                                                <div class="col-md-6 text-center">
+                                                <div class="col-md-12 text-center">
                                                     <div class="panel panel-default">
 
                                                         <div class="panel-body">
                                                             <div class="row">
-                                                                <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
+                                                                <div class="col-md-6 col-sm-12 col-xs-12 table-responsive">
                                                                     <table id="property-dataTable" class="Current-color table table-striped table-bordered">
                                                                         <thead>
-                                                                        <tr>
-                                                                            <th>نام ویژگی</th>
-                                                                            <th>مقدار ویژگی</th>
-                                                                            <th>عملیات</th>
-                                                                        </tr>
+                                                                            <tr>
+                                                                                <th>نام ویژگی</th>
+                                                                                <th>مقدار ویژگی</th>
+                                                                                <th>عملیات</th>
+                                                                            </tr>
                                                                         </thead>
 
                                                                         <tbody>
-                                                                        @foreach (var item in Model.Command.ProductProperties)
-                                                                        {
-                                                                            <tr>
-                                                                                <td>@item.Property.Name</td>
-                                                                                <td>@item.Value</td>
-                                                                                <td>
-                                                                                    <button type="button" class="btn btn-sm btn-danger btn-rounded" onclick="removeProperty('@item.PropertyId')">حذف</button>
-                                                                                </td>
-                                                                            </tr>
-                                                                        }
+                                                                            @foreach (var item in Model.Command.ProductProperties)
+                                                                            {
+                                                                                <tr>
+                                                                                    <td>@item.Property.Name</td>
+                                                                                    <td>@item.Value</td>
+                                                                                    <td>
+                                                                                        <button type="button" class="btn btn-sm btn-danger btn-rounded" onclick="removeProperty('@item.PropertyId')">حذف</button>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            }
 
                                                                         </tbody>
                                                                     </table>
 
+                                                                </div>
+                                                                <div class="col-md-6 col-sm-12 col-xs-12 table-responsive">
+                                                                    <div class="col col-md-6">
+                                                                        <table id="picture-dataTable" class="Current-color table table-striped table-bordered">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th>تصویر</th>
+                                                                                    <th>عملیات</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                @foreach (var item in Model.ProductPictures)
+                                                                                {
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <img src="@($"data:image/png;base64,{Convert.ToBase64String(item.ImageBase64)}")" style="max-width:60px" />
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            <button type="button" class="btn btn-sm btn-danger btn-rounded" onclick="removeProperty('@item.Id')">حذف</button>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                }
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -329,7 +354,7 @@
                                 </div>
                             </div>
 
-                            <partial name="Partial/Pictures" model="@Model.Command.ProductPictures" />
+                            <partial name="Partial/Pictures"  />
                         </div>
                     </form>
                 </div>

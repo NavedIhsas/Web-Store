@@ -1,5 +1,7 @@
-﻿using Application.Common;
+﻿using System.Data;
+using Application.Common;
 using Application.Interfaces.Context;
+using AutoMapper.Configuration.Annotations;
 using Domain.SaleInModels;
 using Domain.ShopModels;
 using Microsoft.EntityFrameworkCore;
@@ -29,9 +31,12 @@ namespace Application.Interfaces
         /// </summary>
         /// <param name="code"></param>
         /// <returns></returns>
-        bool CheckLength(string code);
+        bool? CheckLength(string code);
 
         List<Domain.ShopModels.Setting> GetSettings();
+
+        string AutoGenerateCode(Guid prdLvlId);
+        bool AutoCodeProduct();
     }
 
     public class AuthHelper : IAuthHelper
@@ -75,6 +80,34 @@ namespace Application.Interfaces
                     { SetKey = id.ToString(), SetValue = key });
                     _context.SaveChanges();
                 }
+
+
+                var productKey = ConstantParameter.ProductCodeLength;
+                var productId = ConstantParameter.ProductCodeLengthGuId;
+                var productCheck = _context.Settings.SingleOrDefault(x => x.SetKey == productKey);
+
+                if (productCheck != null) return;
+                {
+                    var checkGuid = _context.Settings.SingleOrDefault(x => x.SetUid == productId);
+                    if (checkGuid != null) productId = new Guid();
+                    _context.Settings.Add(new Domain.ShopModels.Setting()
+                    { SetKey = productId.ToString(), SetValue = productKey });
+                    _context.SaveChanges();
+                }
+
+                var autoProductKey = ConstantParameter.AutoProductCode;
+                var autoProductId = ConstantParameter.AutoProductCodeId;
+                var autoProductCheck = _context.Settings.SingleOrDefault(x => x.SetKey == autoProductKey);
+
+                if (autoProductCheck != null) return;
+                {
+                    var checkGuid = _context.Settings.SingleOrDefault(x => x.SetUid == autoProductId);
+                    if (checkGuid != null) autoProductId = new Guid();
+                    _context.Settings.Add(new Domain.ShopModels.Setting()
+                    { SetKey = autoProductId.ToString(), SetValue = autoProductKey });
+                    _context.SaveChanges();
+                }
+
             }
             catch (Exception exception)
             {
@@ -86,7 +119,7 @@ namespace Application.Interfaces
 
         public List<BusinessUnit> SelectBranch()
         {
-            return _saleInContext.BusinessUnits.Where(x=>x.BusUnitStatus!=false).AsNoTracking().ToList();
+            return _saleInContext.BusinessUnits.Where(x => x.BusUnitStatus != false).AsNoTracking().ToList();
         }
 
         public Guid? SetBranch(string branchId)
@@ -101,7 +134,7 @@ namespace Application.Interfaces
             catch (Exception exception)
             {
                 _logger.LogError(exception.Message);
-              throw  new Exception(exception.Message);
+                throw new Exception(exception.Message);
             }
         }
 
@@ -114,18 +147,129 @@ namespace Application.Interfaces
 
         public bool IsAutomatic()
         {
-            //ToDo
-            throw new NotImplementedException();
+            try
+            {
+                var auto = _context.Settings.FirstOrDefault(x => x.SetKey == ConstantParameter.AutoProductCode)?.SetValue;
+                var autoBool = Convert.ToBoolean(auto);
+                return autoBool;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
 
-        public bool CheckLength(string code)
+        public bool? CheckLength(string code)
         {
-            return true;
+            try
+            {
+                var auto = AutoCodeProduct();
+                if (auto) return true;
+                if (code== null) return false;
+               
+                var length = _context.Settings.FirstOrDefault(x => x.SetKey == ConstantParameter.ProductCodeLength)?.SetValue;
+                if (length == null) return null;
+                return !(code.Length > int.Parse(length));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"حین چک کردن کد کالا ({code}) خطای زیر رخ داد {e}");
+                throw new Exception($"حین چک کردن کد کالا ({code}) خطای زیر رخ داد {e}");
+            }
         }
 
         public List<Domain.ShopModels.Setting> GetSettings()
         {
             return _context.Settings.AsNoTracking().ToList();
+        }
+
+
+
+        private string AutoGenerateCode()
+        {
+            var codeLength = _context.Settings
+                .FirstOrDefault(x => x.SetKey == ConstantParameter.ProductCodeLength)
+                ?.SetValue;
+            var generateLength = 0;
+            if (codeLength != null)
+                generateLength = int.Parse(codeLength);
+            var product = _context.Products.Select(x => new { x.PrdCode });
+
+            #region for First Product
+
+            //TODo Test Tis
+            //if (!product.Any())
+            //{
+            //    var z = "";
+            //    for (var i = 0; i < generateLength; i++)
+            //    {
+            //        z += "0";
+            //    }
+
+            //    return z + "1";
+            //}
+
+            #endregion
+
+            var numbers = new List<int>();
+            foreach (var p in product)
+            {
+                var length = p.PrdCode.Substring(p.PrdCode.Length - generateLength);
+                var convertToInt = int.Parse(length);
+                numbers.Add(convertToInt);
+            }
+
+            var max = numbers.Max();
+            var generate = (max + 1).ToString();
+            var r = generate.Length;
+            var generateZero = Math.Abs(r - generateLength);
+
+            var zero = "";
+            for (var i = 0; i < generateZero; i++)
+            {
+                zero += "0";
+            }
+            return zero + generate;
+        }
+
+        public string AutoGenerateCode(Guid prdLvlId)
+        {
+            try
+            {
+                var auto = AutoCodeProduct();
+                if (!auto) return "";
+                {
+                    var maxSubGroup = "";
+                    var level = _context.ProductLevels.Find(prdLvlId);
+                    if (level == null) return "";
+                    var maxGroup = level.PrdLvlCodeValue;
+                    var subGroup = _context.ProductLevels.Where(x => x.PrdLvlParentUid ==  prdLvlId);
+                    if (subGroup.Any())
+                        maxSubGroup = subGroup.Max(x => x.PrdLvlCodeValue);
+                    return maxGroup + maxSubGroup + AutoGenerateCode();
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"حین تولید کردن کد خودکار برای کالا خطای زیر رخ داد {e}");
+                throw new Exception($"حین تولید کردن کد خودکار برای کالا خطای زیر رخ داد {e}");
+            }
+
+        }
+
+        public bool AutoCodeProduct()
+        {
+            try
+            {
+                var auto = _context.Settings.FirstOrDefault(x => x.SetKey == ConstantParameter.AutoProductCode)?.SetValue;
+                var convertToB = Convert.ToBoolean(auto);
+                return convertToB;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+                throw new Exception(e.Message);
+            }
         }
 
         /// <summary>
@@ -134,5 +278,8 @@ namespace Application.Interfaces
         /// <returns></returns>
         public bool ServerConnect()
             => _context.Database.CanConnect();
+
+
+
     }
 }

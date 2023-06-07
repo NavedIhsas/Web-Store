@@ -10,6 +10,15 @@ const table = $('#property-dataTable').DataTable({
     searching: false,
 });
 
+const pictureTable = $('#picture-dataTable').DataTable({
+    paging: false,
+    ordering: true,
+    info: false,
+    searching: false,
+});
+
+var secondUpload = new FileUploadWithPreview('mySecondImage');
+
 function showModal(id) {
     $("#detailsProduct").modal('show')
     $.ajax({
@@ -21,22 +30,40 @@ function showModal(id) {
 
             $("#price2").val($("#price2").val() + result.prdPricePerUnit2.toLocaleString());
             $("#price3").val($("#price3").val() + result.prdPricePerUnit3.toLocaleString());
-            $("#price4").val($("#price4").val() + result.prdPricePerUnit4.toLocaleString());
-            $("#price5").val($("#price5").val() + result.prdPricePerUnit5.toLocaleString());
+            $("#price4").val($("#price4").val() + result.prdPricePerUnit4.toLocaleString() ?? "");
+            // $("#price5").val($("#price5").val() + result.prdPricePerUnit5.toLocaleString()??"");
 
 
             table.clear().draw();
             result.properties.forEach(x => {
                 const list =
                     `
-                                                  <tr>
-                                                      <td>${x.propertyName ?? ""}</td>
-                                                       <td>${x.value ?? ""}</td>
-                                                
-                                                    </tr>
+                     <tr>
+                         <td>${x.propertyName ?? ""}</td>
+                          <td>${x.value ?? ""}</td>
+                     </tr>
                                                                          `
                 table.row.add($(list)).draw();
             });
+
+            debugger
+            pictureTable.clear().draw();
+            result.pictures.forEach(x => {
+                const list1 =
+                    `
+                     <tr>
+                         <td>
+                              <img src="data:image/png;base64,${x.image ?? ""}" style="max-width:80px;max-height:90px" />
+                         </td>
+                     </tr>
+                     `
+                     debugger
+                pictureTable.row.add($(list1)).draw();
+            });
+
+
+
+
         }
 
 
@@ -44,7 +71,7 @@ function showModal(id) {
 }
 
 
-var secondUpload = new FileUploadWithPreview('mySecondImage')
+
 
 
 
@@ -74,12 +101,12 @@ $("#submit-property").on("click", function (env) {
     debugger
     var value = $("#propertyValue").val();
     var id = $("#propertyName").val();
-    if (value==="" || id==0) {
+    if (value === "" || id == 0) {
         notify("top center", "فرم را به درستی پر کنید", "error")
         return false;
     }
 
-   
+
     var name = $("#propertyName option:selected").text();
     $.ajax({
         type: "get",
@@ -150,12 +177,12 @@ function CheckControl() {
 
 
 function readURL(input) {
-   
+
     if (input.files && input.files[0]) {
         var reader = new FileReader();
 
         reader.onload = (function (theFile) {
-          
+
             $('#imgCourse').attr('src', theFile.target.result);
 
             var image = new Image();
@@ -168,8 +195,8 @@ function readURL(input) {
 
                     }
                 } else {
-                    notify("top center", "طول و عرض عکس باید 600 در 600 پیکسل باشد","error")
-                   
+                    notify("top center", "طول و عرض عکس باید 600 در 600 پیکسل باشد", "error")
+
                 }
 
             };
@@ -181,4 +208,46 @@ function readURL(input) {
 
 $("#imgCourseUp").change(function () {
     readURL(this);
+});
+
+
+
+
+$("#final-submit").on('click', function (env) {
+    env.preventDefault();
+
+
+    debugger
+    var form = $("#createForm");
+
+    var vali = form.validate();
+
+    if (!vali.valid()) {
+        notify("top center", "فرم را به درستی پر کنید", "error");
+        return false;
+    }
+
+    $.ajax({
+        url: '',
+        data: new FormData(document.forms.createForm),
+        contentType: false,
+        processData: false,
+        type: 'POST',
+        headers: {
+            RequestVerificationToken:
+                $('input:hidden[name="__RequestVerificationToken"]').val()
+        },
+
+        success: function (result) {
+            debugger
+            if (result.isSucceeded) {
+                notify("top center", "اطلاعات با موفقیت ثبت شد", "success");
+                window.location.href = "/Products/Index";
+            } else {
+                notify("top center", result.message, "error");
+            }
+
+        }
+
+    });
 });

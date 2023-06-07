@@ -1,6 +1,7 @@
 ﻿@page
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model SaleInWeb.Pages.Products.CreateModel
+@Html.AntiForgeryToken()
 @{
     ViewData["Title"] = "افزودن محصول جدید";
 }
@@ -49,8 +50,8 @@
                                                             <select asp-for="Command.PrdLvlUid3" id="group" class="form-control" asp-Items="@(new SelectList(Model.Category,"PrdLvlUId","PrdLvlName"))">
                                                                 <option selected value="0">انتخاب کنید...</option>
                                                             </select>
-                                                      <span asp-validation-for="Command.PrdLvlUid3" class="error"></span>
-                                                            </div>
+                                                            <span asp-validation-for="Command.PrdLvlUid3" class="error"></span>
+                                                        </div>
 
                                                         <div class="form-group col-md-4">
                                                             <label for="">ماهیت </label>
@@ -76,12 +77,24 @@
                                                             <span asp-validation-for="Command.PrdNameShow" class="error"></span>
                                                         </div>
 
-                                                        <div class="form-group col-md-4">
-                                                            <label for=""> کد کالا</label>
-                                                            <input onchange="CheckControl()" asp-for="Command.PrdCode" type="text" class="form-control" id="" placeholder=" کد کالا">
-                                                            <span asp-validation-for="Command.PrdCode" class="error"></span>
-                                                        </div>
+                                                        @if (Model.GenerateCode)
+                                                        {
+                                                            <div class="form-group col-md-4">
+                                                                <label for=""> کد کالا</label>
+                                                                <input disabled="" onchange="CheckControl()" asp-for="Command.PrdCode" type="text" class="form-control" id="" placeholder=" کد کالا">
+                                                                <p class="help-block">کد کالا بصورت خودکار تولید میشود</p>
+                                                            </div>
 
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="form-group col-md-4">
+                                                                <label for=""> کد کالا</label>
+                                                                <input onchange="CheckControl()" asp-for="Command.PrdCode" type="text" class="form-control" id="" placeholder=" کد کالا">
+                                                                <span asp-validation-for="Command.PrdCode" class="error"></span>
+                                                            </div>
+
+                                                        }
                                                         <div class="form-group col-md-4">
                                                             <label for=""> واحد شمارش</label>
                                                             <select asp-for="Command.FkProductUnit" asp-items="@(new SelectList(Model.Unit,"Id","Name"))" type="text" class="form-control" id="">
@@ -141,7 +154,7 @@
                                                 </div>
 
                                             </div>
-                                          
+
                                         </div>
                                     </div>
 
@@ -249,7 +262,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                          
+
                                         </div>
                                     </div>
                                 </div>
@@ -317,8 +330,7 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <partial name="Partial/Pictures" />
+                        <partial name="Partial/Pictures" />
                         </div>
                     </form>
                 </div>

@@ -25,7 +25,13 @@ namespace SaleInWeb.Pages.Products
         {
             var details = _productService.GetDetails(id);
             details.Properties = _productService.GetProductProperty(id);
+            details.Pictures = _productService.GetProductPictures(id);
             return new JsonResult(details);
+        }
+
+        public IActionResult OnGetPictures(Guid id)
+        {
+            return new JsonResult(_productService.GetProductPictures(id));
         }
     }
 }

@@ -1,4 +1,5 @@
 using Application.Common;
+using Application.Interfaces;
 using Application.Product;
 using Application.Product.Category;
 using Microsoft.AspNetCore.Http;
@@ -13,24 +14,27 @@ namespace SaleInWeb.Pages.Products
     {
         private readonly IProductCategory _category;
         private readonly IProductService _product;
-
-        public CreateModel(IProductCategory category, IProductService product)
+        private readonly IAuthHelper _authHelper;
+        public CreateModel(IProductCategory category, IProductService product, IAuthHelper authHelper)
         {
             _category = category;
             _product = product;
+            _authHelper = authHelper;
         }
 
         public List<ProductCategory.SelectOption> Category;
         public List<TaxSelectOptionDto> Tax;
-        public CreateProduct Command;
+        public CreateProduct Command { get; set; }
         public List<PropertySelectOptionDto> Properties;
         public CreateProperty Property;
         public List<UnitOfMeasurementDto> Unit;
+        public bool GenerateCode;
 
         public void OnGet()
         {
             Category = _category.SelectOptions();
             Tax = _category.TaxSelectOption();
+            GenerateCode = _authHelper.AutoCodeProduct();
             Properties = _product.PropertySelectOption();
             //HttpContext.Session.Remove("Product-Property");
             Unit = _product.UnitOfMeasurement();
@@ -38,9 +42,9 @@ namespace SaleInWeb.Pages.Products
 
         public IActionResult OnPost(CreateProduct command)
         {
-            //if (!ModelState.IsValid) return Page();
-            _product.CreateProduct(command);
-            return new JsonResult(true);
+            if (_authHelper.AutoCodeProduct())
+                command.PrdCode = _authHelper.AutoGenerateCode(command.PrdLvlUid3??new Guid());
+            return new JsonResult(_product.CreateProduct(command));
         }
 
         public IActionResult OnGetProperty(CreateProperty property)
