@@ -29,13 +29,26 @@ namespace SaleInWeb.Pages.Products
         public void OnGet(Guid id)
         {
             Command = _product.GetDetailsForEdit(id);
-            ProductPictures = HttpContext.Session.GetJson<List<ProductPicturesDto>>("Product-Property") ?? new List<ProductPicturesDto>();
+            ProductPictures = HttpContext.Session.GetJson<List<ProductPicturesDto>>("Product-picture") ?? new List<ProductPicturesDto>();
             Category = _category.SelectOptions();
             Tax = _category.TaxSelectOption();
             Properties = _product.PropertySelectOption();
 
             //HttpContext.Session.Remove("Product-Property");
             Unit = _product.UnitOfMeasurement();
+        }
+
+
+
+        public IActionResult OnGetRemovePictures(Guid id)
+        {
+            var getPictures = HttpContext.Session.GetJson<List<ProductPicturesDto>>("Product-picture") ?? new List<ProductPicturesDto>();
+            var get = getPictures.SingleOrDefault(x => x.Id == id);
+            if (get != null)
+                getPictures.Remove(get);
+
+            HttpContext.Session.SetJson("Product-picture", getPictures);
+            return new JsonResult(getPictures);
         }
     }
 }

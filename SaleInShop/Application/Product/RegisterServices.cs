@@ -1,11 +1,12 @@
 ﻿using Application.Interfaces.Context;
 using Application.Interfaces;
-using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Application.Product.Category;
+using FluentValidation;
 
-namespace Application.Product.Category
+namespace Application.Product
 {
     public class RegisterServices
     {
@@ -20,7 +21,7 @@ namespace Application.Product.Category
             services.AddScoped<IValidator<ProductCategory.CreateProductLevel>, CategoryPrdValidator>();
             services.AddScoped<IValidator<CreateProduct>, CreateProductValidate>();
             services.AddScoped<IValidator<CreateProperty>, CreatePropertyValidate>();
-           
+
             services.AddAutoMapper(typeof(CategoryPrdMap));
             services.AddAutoMapper(typeof(ProductMapping));
         }

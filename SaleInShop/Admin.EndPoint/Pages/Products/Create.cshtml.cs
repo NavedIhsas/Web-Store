@@ -42,6 +42,11 @@ namespace SaleInWeb.Pages.Products
 
         public IActionResult OnPost(CreateProduct command)
         {
+            if (!ModelState.IsValid)
+            {
+                ViewData["ErrorMessage"] = true;
+                return Page();
+            }
             if (_authHelper.AutoCodeProduct())
                 command.PrdCode = _authHelper.AutoGenerateCode(command.PrdLvlUid3??new Guid());
             return new JsonResult(_product.CreateProduct(command));

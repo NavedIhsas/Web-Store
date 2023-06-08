@@ -1,34 +1,78 @@
-﻿
+﻿@model List<ProductPicturesDto>
 
-<div class="tab-pane fade" id="justify-pictures" role="tabpanel" aria-labelledby="justify-pictures-tab">
-    <div class="row ">
-        <div id="fuMultipleFile" class="col-lg-12 layout-spacing">
-            <div class="statbox  box box-shadow">
-                <div class="widget-content ">
-                    <div class="custom-file-container" data-upload-id="mySecondImage">
-                        <label>بارگذاری (میتوانید چندین عکس را باهم آپلود کنید) <a href="javascript:void(0)" class="custom-file-container__image-clear" title="Clear Image">x</a></label>
-                        <label class="custom-file-container__custom-file">
-                            <input name="Command.Files" id="files" type="file" class="custom-file-container__custom-file__custom-file-input" multiple>
-                            <input type="hidden" name="MAX_FILE_SIZE" value="10485760" />
-                            <span class="custom-file-container__custom-file__custom-file-control"></span>
-                        </label>
-                        <div class="custom-file-container__image-preview"></div>
+@if (!Model.Any())
+{
+    <div class="tab-pane fade" id="justify-pictures" role="tabpanel" aria-labelledby="justify-pictures-tab">
+        <div class="row ">
+            <div class="col col-md-12">
+                <div id="fuMultipleFile" class="col-lg-12 layout-spacing">
+                    <div class="statbox  box box-shadow">
+                        <div class="widget-content ">
+                            <div class="custom-file-container" data-upload-id="mySecondImage">
+                                <label>بارگذاری (میتوانید چندین عکس را باهم آپلود کنید) <a href="javascript:void(0)" class="custom-file-container__image-clear" title="Clear Image">x</a></label>
+                                <label class="custom-file-container__custom-file">
+                                    <input name="Command.Files" id="files" type="file" class="custom-file-container__custom-file__custom-file-input" multiple>
+                                    <input type="hidden" name="MAX_FILE_SIZE" value="10485760" />
+                                    <span class="custom-file-container__custom-file__custom-file-control"></span>
+                                </label>
+                                <div class="custom-file-container__image-preview"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+          
+            <br />
         </div>
-        <br />
-        <button id="final-submit" type="submit" class="btn btn-success btn-sm btn-rounded pull-left">تایید نهایی</button>
-
     </div>
-</div>
 
-<script>
+}
+else
+{
+    <div class="tab-pane fade" id="justify-pictures" role="tabpanel" aria-labelledby="justify-pictures-tab">
+        <div class="row ">
+            <div class="col col-md-8">
+                <div id="fuMultipleFile" class="col-lg-12 layout-spacing">
+                    <div class="statbox  box box-shadow">
+                        <div class="widget-content ">
+                            <div class="custom-file-container" data-upload-id="mySecondImage">
+                                <label>بارگذاری (میتوانید چندین عکس را باهم آپلود کنید) <a href="javascript:void(0)" class="custom-file-container__image-clear" title="Clear Image">x</a></label>
+                                <label class="custom-file-container__custom-file">
+                                    <input name="Command.Files" id="files" type="file" class="custom-file-container__custom-file__custom-file-input" multiple>
+                                    <input type="hidden" name="MAX_FILE_SIZE" value="10485760"/>
+                                    <span class="custom-file-container__custom-file__custom-file-control"></span>
+                                </label>
+                                <div class="custom-file-container__image-preview"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-md-4">
+                <table id="picture-dataTable" class=" mt-35 Current-color table table-striped table-bordered " style="margin-top:35px !important">
+                    <thead>
+                    <tr>
+                        <th>تصویر</th>
+                        <th>عملیات</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <img src="@($"data:image/png;base64,{Convert.ToBase64String(item.ImageBase64)}")" style="max-width:80px; max-height:100px"/>
+                            </td>
+                            <td>
+                                <button onclick="removePicture('@item.Id')" type="button" class="btn btn-sm btn-danger btn-rounded" onclick="removeProperty('@item.Id')">حذف</button>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+            <br/>
 
-
-    $(document).ready(function () {
-        var secondUpload = new FileUploadWithPreview('mySecondImage')
-    });
-   
-
-</script>
+        </div>
+    </div>
+}

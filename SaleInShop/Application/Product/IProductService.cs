@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 using System.Drawing.Imaging;
 using Application.Common;
@@ -116,18 +117,17 @@ namespace Application.Product
                 });
                 _contextAccessor.HttpContext.Session.SetJson("Product-Property", getProperty);
             }
+            var getPictures = _contextAccessor.HttpContext.Session.GetJson<List<ProductPicturesDto>>("Product-picture") ?? new List<ProductPicturesDto>();
 
             foreach (var picture in map.ProductPictures)
             {
-                var getPictures = _contextAccessor.HttpContext.Session.GetJson<List<ProductPicturesDto>>("Product-picture") ?? new List<ProductPicturesDto>();
-
                 getPictures.Add(new ProductPicturesDto()
                 {
                     ImageBase64 = Convert.FromBase64String(picture.Image),
                     Id = picture.Id,
                 });
-                _contextAccessor.HttpContext.Session.SetJson("Product-picture", getPictures);
             }
+            _contextAccessor.HttpContext.Session.SetJson("Product-picture", getPictures);
 
             return map;
         }
@@ -326,6 +326,7 @@ public class CreateProduct
     public Guid? FisPeriodUid { get; set; }
 
     public Guid? TaxUid { get; set; }
+
     public Guid? PrdLvlUid3 { get; set; }
 
     public string PrdName { get; set; }

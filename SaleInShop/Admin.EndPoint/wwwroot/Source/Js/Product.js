@@ -57,7 +57,7 @@ function showModal(id) {
                          </td>
                      </tr>
                      `
-                     debugger
+                debugger
                 pictureTable.row.add($(list1)).draw();
             });
 
@@ -90,6 +90,12 @@ $(".product-unit").change(function () {
 
 $("input[name='Command.PrdDiscountType']").change(function () {
     debugger
+    var input = $("input[name='Command.PrdDiscount");
+    input.prop('disabled', false);
+
+    if (this.value == "درصد")
+        input.prop('max', 99);
+    else input.prop('max', null);
     $("#dicountDis").text("تخفیف را به " + this.value + " " + "وارد کنید  ")
 });
 
@@ -153,15 +159,42 @@ function removeProperty(id) {
             list.forEach(x => {
                 const result =
                     `
-                                          <tr>
-                                              <td>${x.name ?? ""}</td>
-                                               <td>${x.value ?? ""}</td>
-                                               <td>
-                                                    <button type="button" class="btn btn-sm btn-danger btn-rounded" onclick="(removeProperty('${x.id}'))">حذف</button>
-                                                 </td>
-                                            </tr>
-                                                                 `
+                     <tr>
+                         <td>${x.name ?? ""}</td>
+                          <td>${x.value ?? ""}</td>
+                          <td>
+                               <button type="button" class="btn btn-sm btn-danger btn-rounded" onclick="(removeProperty('${x.id}'))">حذف</button>
+                            </td>
+                       </tr>
+                                            `
                 table.row.add($(result)).draw();
+            });
+
+        }
+    })
+}
+
+
+function removePicture(id) {
+
+    $.ajax({
+        url: "?handler=RemovePictures&id=" + id,
+        type: "get",
+        success: function (list) {
+            debugger
+            pictureTable.clear().draw();
+            list.forEach(x => {
+                const result =
+                    `
+                     <tr>
+                         <td> <img src="data:image/png;base64,${x.imageBase64 ?? ""}" alt="" style="max-width:80px; max-height:100px" /></td>
+                           
+                          <td>
+                               <button type="button" class="btn btn-sm btn-danger btn-rounded" onclick="(removePicture('${x.id}'))">حذف</button>
+                            </td>
+                       </tr>
+                                            `
+                pictureTable.row.add($(result)).draw();
             });
 
         }
@@ -180,22 +213,23 @@ function readURL(input) {
 
     if (input.files && input.files[0]) {
         var reader = new FileReader();
-
         reader.onload = (function (theFile) {
-
-            $('#imgCourse').attr('src', theFile.target.result);
 
             var image = new Image();
             image.src = theFile.target.result;
 
+            var preview = document.getElementById("preViewImg");
+            preview.src = image.src;
+
             image.onload = function () {
-                // access image size here
                 if (this.width === 600 && this.height === 600) {
                     {
 
+                        $("#validateImg").text("")
+                        //TO Do validation
                     }
                 } else {
-                    notify("top center", "طول و عرض عکس باید 600 در 600 پیکسل باشد", "error")
+                    $("#validateImg").text("سایز عکس معتبر نیست")
 
                 }
 
@@ -212,14 +246,17 @@ $("#imgCourseUp").change(function () {
 
 
 
-
 $("#final-submit").on('click', function (env) {
     env.preventDefault();
 
 
     debugger
     var form = $("#createForm");
-
+    form.submit();
+    form.validate();
+    if (form.valid() === false) {
+        return false;
+    }
     var vali = form.validate();
 
     if (!vali.valid()) {

@@ -1,7 +1,6 @@
 using Application.Common;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using Application.Product.Category;
 using Domain.ShopModels;
 using Application.Interfaces;
 using Application.Interfaces.Context;
@@ -12,9 +11,11 @@ using Microsoft.AspNetCore.Mvc;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using System.ComponentModel.DataAnnotations;
+using Application.Product;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using SaleInWeb;
+using System.Reflection;
 
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
@@ -62,13 +63,7 @@ try
 
         if (httpContext == null) return;
         string session = null;
-
-
-
-
-
-
-
+        
         #region Implement Manual Select Branch
 
         var connectionString = configuration.GetConnectionString("shopConnection");
@@ -85,14 +80,6 @@ try
         httpContext.Session.SetJson("BaseConfig", baseConfig);
 
         #endregion
-
-
-
-
-
-
-
-
 
        
         try

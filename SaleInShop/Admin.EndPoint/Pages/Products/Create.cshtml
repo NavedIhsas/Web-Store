@@ -13,6 +13,15 @@
 <link href="~/plugins/file-upload/file-upload-with-preview.min.css" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" type="text/css" href="~/plugins/editors/quill/quill.snow.css">
 
+<style>
+    input:invalid {
+        background-color: ivory;
+        border: none;
+        outline: 2px solid red;
+        border-radius: 5px;
+    }
+
+</style>
 <div id="content" class="main-content">
     <div class="layout-px-spacing">
 
@@ -35,13 +44,17 @@
                             <a class="nav-link" id="justify-pictures-tab" data-toggle="tab" href="#justify-pictures" role="tab" aria-controls="justify-contact" aria-selected="false">عکس های محصول</a>
                         </li>
                     </ul>
-                    <form enctype='multipart/form-data' method="post" id="createForm" name="createForm">
-                        <div class="tab-content" id="justifyTabContent">
+                    <form method="post" enctype='multipart/form-data' class="needs-validation" id="createForm" name="createForm">
+                    <div class="tab-content" id="justifyTabContent">
                             <div class="tab-pane fade show active" id="justify-home" role="tabpanel" aria-labelledby="justify-home-tab">
                                 <div class="row layout-top-spacing" id="cancel-row">
                                     <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
                                         <div class=" br-6">
-
+                                            <div asp-validation-summary="All" class="error"></div>
+                                            @if (ViewData["ErrorMessage"] != null)
+                                            {
+                                                <span class="alert alert-danger text-center">فرم هارا به درستی پر نکرده اید.</span>
+                                            }
                                             <div class="row">
                                                 <div class=" col-lg-8 col-sm-12">
                                                     <div class="form-row mb-8">
@@ -66,7 +79,7 @@
                                                         </div>
                                                         <div class="form-group col-md-4">
                                                             <label for="">نام</label>
-                                                            <input asp-for="Command.PrdName" type="text" class="form-control" id="" placeholder="نام">
+                                                            <input asp-for="Command.PrdName" type="text" class="form-control" id="" required="" placeholder="نام">
                                                             <span asp-validation-for="Command.PrdName" class="error"></span>
                                                         </div>
                                                     </div>
@@ -108,13 +121,13 @@
                                                     <div class="form-row mb-8">
                                                         <div class="form-group col-md-4">
                                                             <label for=""> بار کد</label>
-                                                            <input onchange="CheckControl()" asp-for="Command.PrdBarcode" type="text" class="form-control" id="" placeholder=" کد کالا">
+                                                            <input onchange="CheckControl()" asp-for="Command.PrdBarcode" type="text" class="form-control" id="" placeholder=" بارکد">
                                                             <span asp-validation-for="Command.PrdBarcode" class="error"></span>
                                                         </div>
 
                                                         <div class="form-group col-md-4">
                                                             <label for=""> ایران کد</label>
-                                                            <input asp-for="Command.PrdIranCode" type="text" class="form-control" id="" placeholder="واحد شمارش">
+                                                            <input asp-for="Command.PrdIranCode" type="text" class="form-control" id="" placeholder="ایران کد">
                                                             <span asp-validation-for="Command.PrdIranCode" class="error"></span>
                                                         </div>
                                                         <div class="form-group col-md-4">
@@ -133,6 +146,7 @@
                                                         <div class="form-group col-md-12">
                                                             <label for=""> توضیحات کوتاه</label>
                                                             <textarea asp-for=Command.ShortDescription type="text" class="form-control" rows="3" id="" placeholder=" توضیحات کوتاه"></textarea>
+                                                            <span asp-validation-for="Command.ShortDescription" class="error"></span>
                                                         </div>
 
 
@@ -144,19 +158,22 @@
                                                 </div>
 
                                                 <div class=" col-lg-4 col-sm-12">
-                                                    <img id="imgCourse " class="thumbnail" src="/defualtImg/10.png" />
+                                                    <p class="help-block error" id="validateImg"> </p>
+                                                    <img id="preViewImg" class="thumbnail" src="/defualtImg/10.png" alt="" style="max-width:60%" />
                                                     <div class="form-group">
                                                         <label class="control-label">عکس<span class="text-danger">*</span></label>
                                                         <input asp-for="Command.Images" id="imgCourseUp" type="file" class="form-control" accept="image/*" required>
                                                         <span class="text-danger"></span>
                                                         <p class="help-block"> مشخصۀ تصویر: width:185px و  Height:1200px</p>
                                                     </div>
+                                                    <span asp-validation-for="Command.Images" class="error"></span>
                                                 </div>
 
                                             </div>
 
                                         </div>
                                     </div>
+                                    <button id="final-submit" type="submit" class="btn btn-success btn-sm btn-rounded pull-left">تایید نهایی</button>
 
                                 </div>
                             </div>
@@ -173,19 +190,23 @@
                                                         <div class="form-group col-md-3">
                                                             <label for="">قیمت 1</label>
                                                             <input asp-for="Command.PrdPricePerUnit1" type="number" class="form-control" id="" placeholder="قیمت 5">
+                                                            <span asp-validation-for="Command.PrdPricePerUnit1" class="error"></span>
                                                         </div>
                                                         <div class="form-group col-md-3">
                                                             <label for="">قیمت 2</label>
                                                             <input asp-for="Command.PrdPricePerUnit2" type="number" class="form-control" id="" placeholder="قیمت 2">
+                                                            <span asp-validation-for="Command.PrdPricePerUnit2" class="error"></span>
                                                         </div>
                                                         <div class="form-group col-md-3">
                                                             <label for="">قیمت 3</label>
                                                             <input asp-for="Command.PrdPricePerUnit3" type="number" class="form-control" id="" placeholder="قیمت 3">
+                                                            <span asp-validation-for="Command.PrdPricePerUnit3" class="error"></span>
                                                         </div>
 
                                                         <div class="form-group col-md-3">
                                                             <label for="">قیمت 4</label>
                                                             <input asp-for="Command.PrdPricePerUnit4" type="number" class="form-control" id="" placeholder="قیمت 4">
+                                                            <span asp-validation-for="Command.PrdPricePerUnit4" class="error"></span>
                                                         </div>
                                                     </div>
 
@@ -194,19 +215,23 @@
                                                         <div class="form-group col-md-3">
                                                             <label for=""> قیمت 5</label>
                                                             <input asp-for="Command.PrdPricePerUnit5" type="number" class="form-control" id="" placeholder=" قیمت 5">
+                                                            <span asp-validation-for="Command.PrdPricePerUnit5" class="error"></span>
                                                         </div>
                                                         <div class="form-group col-md-3">
                                                             <label for="">حجم </label>
                                                             <input type="number" class="form-control" id="" placeholder=" حجم">
+                                                            <span asp-validation-for="Command.PrdPricePerUnit1" class="error"></span>
                                                         </div>
 
                                                         <div class="form-group col-md-3">
                                                             <label for=""> حداقل موجودی</label>
                                                             <input asp-for="Command.PrdMinQuantityOnHand" type="number" class="form-control" id="" placeholder="حداقل موجودی">
+                                                            <span asp-validation-for="Command.PrdMinQuantityOnHand" class="error"></span>
                                                         </div>
                                                         <div class="form-group col-md-3">
                                                             <label for="">حداکثر موجودی </label>
                                                             <input asp-for="Command.PrdMaxQuantityOnHand" type="number" class="form-control" id="" placeholder=" حداکثر موجودی">
+                                                            <span asp-validation-for="Command.PrdMaxQuantityOnHand" class="error"></span>
                                                         </div>
                                                     </div>
 
@@ -216,6 +241,7 @@
                                                         <div class="form-group col-md-3">
                                                             <label for=""> وزن</label>
                                                             <input asp-for="Command.PrdWareHouse" type="number" class="form-control" id="" placeholder=" وزن">
+                                                            <span asp-validation-for="Command.PrdWareHouse" class="error"></span>
                                                         </div>
 
 
@@ -231,19 +257,22 @@
                                                                 <label class="Current-color form-check-label mr-0" for="inlineRadio2">مبلغ</label>
                                                             </div>
 
+                                                            <span asp-validation-for="Command.PrdDiscountType" class="error"></span>
                                                         </div>
 
 
                                                         <div class="form-group col-md-3">
                                                             <label for="">  تخفیف</label>
-                                                            <input asp-for="Command.PrdDiscount" type="number" class="form-control" id="" placeholder=" ">
+                                                            <input asp-for="Command.PrdDiscount" max="" class="form-control" type="number" disabled="">
                                                             <span id="dicountDis" class="help-block text-warning"></span>
+                                                            <span asp-validation-for="Command.PrdDiscount" class="error"></span>
                                                         </div>
                                                         <div class="form-group col-md-3">
                                                             <label for="">نوع مالیات </label>
                                                             <select asp-for="Command.TaxUid" asp-items="@(new SelectList(Model.Tax,"Id","Name"))" class="form-control">
                                                                 <option selected>انتخاب کنید...</option>
                                                             </select>
+                                                            <span asp-validation-for="Command.TaxUid" class="error"></span>
                                                         </div>
                                                     </div>
 
@@ -262,6 +291,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <button id="final-submit" type="submit" class="btn btn-success btn-sm btn-rounded pull-left">تایید نهایی</button>
 
                                         </div>
                                     </div>
@@ -293,9 +323,7 @@
                                                             <div class="form-group col-md-4">
                                                                 <button type="submit" id="submit-property" class="btn btn-info btn-sm btn-rounded mt-35">افزودن به لیست</button>
                                                             </div>
-
                                                         </div>
-
                                                     </div>
                                                 </div>
                                             </form>
@@ -330,8 +358,10 @@
                                     </div>
                                 </div>
                             </div>
-                        <partial name="Partial/Pictures" />
+                            <partial name="Partial/Pictures" model="new List<ProductPicturesDto>()" />
                         </div>
+                        <button id="final-submit" type="submit" class="btn btn-success btn-sm btn-rounded pull-left">تایید نهایی</button>
+
                     </form>
                 </div>
             </div>
@@ -398,17 +428,21 @@
         </div>
     </div>
 </div>
-
-
 @section Scripts
     {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
     <script src="~/plugins/file-upload/file-upload-with-preview.min.js"></script>
     <script src="~/plugins/select2/custom-select2.js"></script>
     <script src="~/plugins/editors/quill/quill.js"></script>
     <script src="~/plugins/editors/quill/custom-quill.js"></script>
     <script src="~/source/js/product.js"></script>
+
+
+
+    <script>
+
+
+    </script>
 }

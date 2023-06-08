@@ -1,8 +1,6 @@
-﻿using System.Data;
-using Application.Common;
+﻿using Application.Common;
 using Application.Interfaces;
 using FluentValidation;
-using static Application.Product.Category.ProductCategory;
 
 namespace Application.Product
 {
@@ -13,15 +11,14 @@ namespace Application.Product
         public CreateProductValidate(IAuthHelper authHelper)
         {
             _authHelper = authHelper;
-        }
-        public CreateProductValidate()
-        {
-           
-            RuleFor(x=>x.PrdCode).Must(CheckLength).WithMessage("اندازه کد بیش از حد مجاز هست").NotEmpty().WithMessage(ValidateMessage.Required);
-            RuleFor(x=>x.PrdName).NotEmpty().WithMessage(ValidateMessage.Required);
-            RuleFor(x=>x.PrdLvlUid3).NotNull().Must(NotZero).WithMessage(ValidateMessage.Required);
-        }
 
+            RuleFor(x => x.PrdCode).Must(CheckLength).WithMessage("اندازه کد بیش از حد مجاز هست").NotEmpty().WithMessage(ValidateMessage.Required);
+            RuleFor(x => x.PrdName).NotEmpty().WithMessage(ValidateMessage.Required);
+            RuleFor(x => x.PrdLvlUid3).NotEmpty().Must(NotZero).WithMessage(ValidateMessage.Required);
+            RuleFor(x => x.PrdNameShow).NotNull().WithMessage(ValidateMessage.Required);
+            RuleFor(x => x.PrdPricePerUnit3).NotNull().WithMessage(ValidateMessage.Required);
+        }
+      
         private bool CheckLength(string arg)
         {
             var check= _authHelper.CheckLength(arg);
