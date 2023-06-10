@@ -133,18 +133,7 @@ namespace Application.Product
             return map;
         }
 
-        public static ValidationResult ValidateGuid(Guid value, ValidationContext validationContext)
-        {
-
-            if (value.ToString().Length < 36 || validationContext.ObjectType != typeof(Guid) ||
-                validationContext.ObjectType == typeof(Guid) &&
-                validationContext.ObjectType.ToString().Length < 36)
-            {
-                return new ValidationResult("not a valid GUID");
-            }
-            return ValidationResult.Success;
-
-        }
+        
         public ProductDetails GetDetails(Guid id)
         {
             return _shopContext.Products.AsNoTracking().Select(x => new

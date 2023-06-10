@@ -14,7 +14,7 @@ namespace Application.Product
 
             RuleFor(x => x.PrdCode).Must(CheckLength).WithMessage("اندازه کد بیش از حد مجاز هست").NotEmpty().WithMessage(ValidateMessage.Required);
             RuleFor(x => x.PrdName).NotEmpty().WithMessage(ValidateMessage.Required);
-            RuleFor(x => x.PrdLvlUid3).NotNull().NotEqual(Guid.Empty).WithMessage(ValidateMessage.Required);
+            RuleFor(x => x.PrdLvlUid3).NotEqual(Guid.Empty).NotEmpty().WithMessage(ValidateMessage.Required);
             RuleFor(x => x.PrdNameInPrint).NotNull().WithMessage(ValidateMessage.Required);
             RuleFor(x => x.PrdPricePerUnit1).NotNull().WithMessage(ValidateMessage.Required);
             RuleFor(x => x.FkProductUnit).NotNull().WithMessage(ValidateMessage.Required);
