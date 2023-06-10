@@ -42,7 +42,7 @@ public partial class Product
     public long? PrdMaxQuantityOnHand { get; set; }
 
     public string PrdTechnicalDescription { get; set; }
-
+    public string WebDescription { get; set; }
     public bool? PrdTax { get; set; }
 
     public bool? PrdStatus { get; set; }
@@ -120,6 +120,8 @@ public partial class Product
     public Guid? FkProductUnit { get; set; }
 
     public Guid? FkProductUnit2 { get; set; }
+    public string Volume { get; set; }
+    public string Weight { get; set; }
 
     public virtual ICollection<Barcode> Barcodes { get; set; } = new List<Barcode>();
 

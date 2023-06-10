@@ -48,7 +48,7 @@ namespace SaleInWeb.Pages.Products
                 return Page();
             }
             if (_authHelper.AutoCodeProduct())
-                command.PrdCode = _authHelper.AutoGenerateCode(command.PrdLvlUid3??new Guid());
+                command.PrdCode = _authHelper.AutoGenerateCode(command.PrdLvlUid3);
             return new JsonResult(_product.CreateProduct(command));
         }
 

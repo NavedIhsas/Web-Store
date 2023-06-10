@@ -93,10 +93,16 @@ $("input[name='Command.PrdDiscountType']").change(function () {
     var input = $("input[name='Command.PrdDiscount");
     input.prop('disabled', false);
 
-    if (this.value == "درصد")
-        input.prop('max', 99);
+    if (this.value == 0)
+        input.prop('max', 100);
     else input.prop('max', null);
-    $("#dicountDis").text("تخفیف را به " + this.value + " " + "وارد کنید  ")
+
+    var text = "";
+    if (this.value == 0)
+        text = "درصد";
+    else text = "مبلغ"
+
+    $("#dicountDis").text("تخفیف را به " + text + " " + "وارد کنید  ")
 });
 
 
@@ -232,10 +238,8 @@ function readURL(input) {
                     $("#validateImg").text("سایز عکس معتبر نیست")
 
                 }
-
             };
         });
-
         reader.readAsDataURL(input.files[0]);
     }
 }
@@ -244,22 +248,123 @@ $("#imgCourseUp").change(function () {
     readURL(this);
 });
 
+var submitForm1 = false;
+var submitForm2 = false;
+var submitForm3 = false;
 
-
-$("#final-submit").on('click', function (env) {
+$("#first-form").on('click', function (env) {
     env.preventDefault();
-
 
     debugger
     var form = $("#createForm");
-    form.submit();
     form.validate();
     if (form.valid() === false) {
+
+        var elements = document.getElementsByClassName("input-validation-error");
+        for (var i = 0; i < elements.length; i++) {
+            elements[i].style.backgroundColor = "ivory";
+            elements[i].style.border = "none";
+            elements[i].style.outline = "1px solid red";
+            elements[i].style.borderRadius = "5px";
+        }
+
         return false;
     }
     var vali = form.validate();
 
     if (!vali.valid()) {
+        notify("top center", "فرم را به درستی پر کنید", "error");
+        return false;
+    }
+
+
+    if ($("#productUnit").prop('checked') == true) {
+        var unit2 = $("#Command_FkProductUnit2").val();
+        var coeff = $("#Command_PrdCoefficient").val();
+        if (unit2 === "" || coeff === "") {
+            notify("top center", "واحد شمارش 2 و ضریب آن را وارد کنید!", "error")
+            return false;
+        }
+    };
+    notify("top center", "فرم تایید شد", "success");
+    submitForm1 = true;
+
+});
+
+
+
+$("#second-form").on('click', function (env) {
+    env.preventDefault();
+
+    var form = $("#createForm");
+    form.validate();
+    if (form.valid() === false) {
+
+        var elements = document.getElementsByClassName("input-validation-error");
+        for (var i = 0; i < elements.length; i++) {
+            elements[i].style.backgroundColor = "ivory";
+            elements[i].style.border = "none";
+            elements[i].style.outline = "1px solid red";
+            elements[i].style.borderRadius = "5px";
+        }
+
+        return false;
+    }
+    var vali = form.validate();
+
+    if (!vali.valid()) {
+        notify("top center", "فرم را به درستی پر کنید", "error");
+        return false;
+    }
+
+    debugger
+
+    var quill = new Quill('#editor-container', {
+        theme: 'snow'
+    });
+
+    var editor_content = quill.container.innerHTML
+    $("#Command_WebDescription").val(editor_content);
+    notify("top center", "فرم تایید شد", "success")
+    submitForm2 = true;
+
+});
+
+
+$("#final-submit").on('click', function (env) {
+    env.preventDefault();
+
+    if (!submitForm1 || !submitForm2) {
+        notify("top center", "ابتدا فرم ها را تایید کنید", "error");
+        return false;
+    }
+
+
+    var form = $("#createForm");
+    form.validate();
+    if (form.valid() === false) {
+
+        var elements = document.getElementsByClassName("input-validation-error");
+        for (var i = 0; i < elements.length; i++) {
+            elements[i].style.backgroundColor = "ivory";
+            elements[i].style.border = "none";
+            elements[i].style.outline = "1px solid red";
+            elements[i].style.borderRadius = "5px";
+        }
+        return false;
+    }
+    var vali = form.validate();
+
+    if (!vali.valid()) {
+
+        var elements = document.getElementsByClassName("input-validation-error");
+        for (var i = 0; i < elements.length; i++) {
+            elements[i].style.backgroundColor = "ivory";
+            elements[i].style.border = "none";
+            elements[i].style.outline = "1px solid red";
+            elements[i].style.borderRadius = "5px";
+        }
+
         notify("top center", "فرم را به درستی پر کنید", "error");
         return false;
     }

@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Validation.Annotations;
 
 namespace Application.Product
 {
@@ -132,7 +133,18 @@ namespace Application.Product
             return map;
         }
 
+        public static ValidationResult ValidateGuid(Guid value, ValidationContext validationContext)
+        {
 
+            if (value.ToString().Length < 36 || validationContext.ObjectType != typeof(Guid) ||
+                validationContext.ObjectType == typeof(Guid) &&
+                validationContext.ObjectType.ToString().Length < 36)
+            {
+                return new ValidationResult("not a valid GUID");
+            }
+            return ValidationResult.Success;
+
+        }
         public ProductDetails GetDetails(Guid id)
         {
             return _shopContext.Products.AsNoTracking().Select(x => new
@@ -327,7 +339,9 @@ public class CreateProduct
 
     public Guid? TaxUid { get; set; }
 
-    public Guid? PrdLvlUid3 { get; set; }
+    [ValidGuid(ErrorMessage = "guid معتیر نیست")]
+    [CustomValidation(typeof(Validator), "ValidateGuid")]
+    public Guid PrdLvlUid3 { get; set; }
 
     public string PrdName { get; set; }
 
@@ -367,14 +381,18 @@ public class CreateProduct
 
     public string PrdImage { get; set; }
 
-    public bool? PrdNameShow { get; set; }
+    public string PrdNameInPrint { get; set; }
 
     public int? PrdDiscountType { get; set; }
 
     public decimal? PrdDiscount { get; set; }
 
     public string ShortDescription { get; set; }
+    public string WebDescription { get; set; }
     public int? PrdLvlType { get; set; }
+    public string Volume { get; set; }
+    public string Weight { get; set; }
+    public bool? PrdIsUnit1Bigger { get; set; }
 
     public List<IFormFile> Files { get; set; }
     public IFormFile Images { get; set; }
@@ -383,3 +401,4 @@ public class CreateProduct
 
 
 }
+
