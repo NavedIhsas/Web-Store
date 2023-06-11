@@ -31,9 +31,6 @@
                 <div class="widget-content widget-content-area br-6">
                     <div class="text-center">
                         <a asp-page="/Products/Create" class="btn btn-secondary btn-rounded btn-sm">افزودن محصول جدید</a>
-                        <button class="btn btn-success" onclick="pictures()">تصاویر</button>
-                        <a class="btn btn-success" onclick="pictures()">تصاویر</a>
-
                     </div>
                     <div class="table-responsive mb-4 mt-4">
                         <table id="dataTable" class="table table-hover table-bordered cell-border row-border" style="width:100%">
@@ -79,7 +76,7 @@
                                                 <svg style="color:#2196f3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-info"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                                             </a>
                                             <a asp-page="/Products/Edit" asp-route-id="@item.PrdUid" title="ویرایش" class=" mb-2 mr-2"> <svg style="color:#e2a03f !important" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg></a>
-                                            <a class="" title="حذف">
+                                            <a class="" onclick="Remove('@item.PrdUid')" title="حذف">
                                                 <svg style="color:#e7515a" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                                             </a>
 
@@ -113,35 +110,57 @@
                     <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
             </div>
-            <form method="post" class="needs-validation" name="submitForm" id="submitForm">
+            <form method="post" class="needs-validation" name="submitForm" id="">
                 <div class="modal-body">
 
                     <div class="widget-content">
                         <div class="form-row">
-                            <div class="col-md-6 mb-4">
-                                <input type="text" class="form-control basic border-none" value="درصد تخفیف: " readonly>
+                            <div class="col-md-6 mb-5">
+                                <input id="discount" type="text" class="form-control basic border-none" value="تخفیف:&nbsp;&nbsp; " readonly>
                             </div>
 
-                            <div class="col-md-6 mb-4">
-                                <input id="price2" class="form-control basic border-none" value="قیمت2: " readonly="">
+                            <div class="col-md-6 mb-5">
+                                <input id="price2" class="form-control basic border-none" value="قیمت2:&nbsp;&nbsp; " readonly="">
                             </div>
                         </div>
                         <div class="form-row">
-                            <div class="col-md-6 mb-4">
-                                <input id="price3" type="text" class="form-control basic border-none" value="قیمت3: " readonly>
+                            <div class="col-md-6 mb-5">
+                                <input id="price3" type="text" class="form-control basic border-none" value="قیمت3:&nbsp;&nbsp; " readonly>
                             </div>
 
-                            <div class="col-md-6 mb-4">
-                                <input id="price4" class="form-control basic border-none" value="قیمت4: " readonly="">
+                            <div class="col-md-6 mb-5">
+                                <input id="price4" class="form-control basic border-none" value="قیمت4:&nbsp;&nbsp; " readonly="">
                             </div>
                         </div>
+
                         <div class="form-row">
-                            <div class="col-md-6 mb-4">
-                                <input id="price5" type="text" class="form-control basic border-none" value="قیمت3: " readonly>
+                            <div class="col-md-6 mb-5">
+                                <input id="unit1" type="text" class="form-control basic border-none" value="واحد شمارش 1:&nbsp;&nbsp; " readonly>
                             </div>
 
-                            <div class="col-md-6 mb-4">
-                                <input id="price45" class="form-control basic border-none" value="قیمت4: " readonly="">
+                            <div class="col-md-6 mb-5">
+                                <input id="unit2" class="form-control basic border-none" value="واحد شمارش 2:&nbsp;&nbsp; " readonly="">
+
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="col-md-6 mb-5">
+                                <input id="barcCode" type="text" class="form-control basic border-none" value="بارکد:&nbsp;&nbsp; " readonly>
+                            </div>
+
+                            <div class="col-md-6 mb-5">
+                                <input id="iranCode" class="form-control basic border-none" value="ایران کد:&nbsp;&nbsp;" readonly="">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="col-md-6 mb-5">
+                                <input id="weight" type="text" class="form-control basic border-none" value="وزن:&nbsp;&nbsp; " readonly>
+                            </div>
+
+                            <div class="col-md-6 mb-5">
+                                <input id="volume" class="form-control basic border-none" value=" حجم:&nbsp;&nbsp; " readonly="">
                             </div>
                         </div>
 
@@ -152,27 +171,13 @@
                             <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
                                 <div class="row">
 
-                                    <div class="col col-md-6">
+                                    <div class="col col-md-12">
                                         <strong class="text-info">ویژگی ها</strong>
                                         <table id="property-dataTable" class="Current-color table table-striped table-bordered">
                                             <thead>
                                                 <tr>
                                                     <th>نام ویژگی</th>
                                                     <th>مقدار ویژگی</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                            </tbody>
-                                        </table>
-                                    </div>
-
-
-                                    <div class="col col-md-6">
-                                        <strong class="text-info">تصاویر</strong>
-                                        <table id="picture-dataTable" class="Current-color table table-striped table-bordered">
-                                            <thead>
-                                                <tr>
-                                                    <th>تصویر</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -231,12 +236,54 @@
     </div>
 </div>
 
-
-
 @section Scripts
-    {
-    <script src="~/source/js/product.js"></script>
+{
+
     <script>
+
+
+        function Remove(id) {
+            debugger
+
+            swal({
+                title: 'آیا مطمئنید؟',
+                text: "این عمل قابل بازگشت نیست!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'حذف',
+                padding: '2em'
+            }).then(function (result) {
+
+                if (result.value) {
+
+                    $.ajax({
+                        url: "?handler=Remove&id=" + id,
+                        type: "get",
+                        success: function (result) {
+                            debugger
+                            if (result.isSucceeded) {
+                                swal(
+                                    'موفق!',
+                                    result.message,
+                                    'success'
+                                ).then(function () {
+                                    window.location = "/Products";
+                                    });
+                            } else {
+                                swal(
+                                    'خطا!',
+                                    result.message,
+                                    'error'
+                                )
+                            }
+                        }
+
+                    })
+
+                }
+            })
+        };
+
 
 
         const pictureTable1 = $('#picture-dataTable1').DataTable({
@@ -246,6 +293,78 @@
             searching: false,
         });
 
+        const table = $('#property-dataTable').DataTable({
+            paging: false,
+            ordering: true,
+            info: false,
+            searching: false,
+        });
+
+
+        $('#detailsProduct').on('hidden.bs.modal', function () {
+            debugger
+            $(this).find('form').trigger('reset');
+        })
+
+
+
+        function showModal(id) {
+            $("#detailsProduct").modal('show')
+            $.ajax({
+                type: "GET",
+                url: "?handler=Details&id=" + id,
+                success: function (result) {
+                    debugger
+
+                    var discountTotal = "";
+                    if (result.prdDiscountType == 0)
+                        discountTotal = result.prdDiscount + " درصد  ";
+                    if (result.prdDiscountType == 1)
+                        discountTotal = result.prdDiscount + "ریال";
+
+                    $("#productName").text(result.prdName);
+                    $("#discount").val($("#discount").val() + discountTotal.toLocaleString() ?? "");
+                    $("#price2").val($("#price2").val() + result.prdPricePerUnit2.toLocaleString());
+                    $("#price3").val($("#price3").val() + result.prdPricePerUnit3.toLocaleString());
+                    $("#price4").val($("#price4").val() + result.prdPricePerUnit4.toLocaleString() ?? "");
+                    $("#unit1").val($("#unit1").val() + result.unit1 ?? "");
+                    $("#unit2").val($("#unit2").val() + result.unit2 ?? "");
+                    $("#iranCode").val($("#iranCode").val() + result.iranCode ?? "");
+                    $("#barCode").val($("#barCode").val() + result.barCode ?? "");
+                    $("#weight").val($("#weight").val() + result.weight ?? "");
+                    $("#volume").val($("#volume").val() + result.volume ?? "");
+
+
+                    table.clear().draw();
+                    result.properties.forEach(x => {
+                        const list =
+                            `
+                                             <tr>
+                                                 <td>${x.propertyName ?? ""}</td>
+                                                  <td>${x.value ?? ""}</td>
+                                             </tr>
+                                                                                                 `
+                        table.row.add($(list)).draw();
+                    });
+
+                    debugger
+                    pictureTable.clear().draw();
+                    result.pictures.forEach(x => {
+                        const list1 =
+                            `
+                                             <tr>
+                                                 <td>
+                                                      <img src="data:image/png;base64,${x.image ?? ""}" style="max-width:80px;max-height:90px" />
+                                                 </td>
+                                             </tr>
+                                             `
+                        debugger
+                        pictureTable.row.add($(list1)).draw();
+                    });
+                }
+
+            });
+        }
 
 
         function pictures(id) {
@@ -255,45 +374,26 @@
                 type: "GET",
                 url: "?handler=pictures&id=" + id,
                 success: function (result) {
-                
+
                     $("#gallery").html("")
                     result.forEach(x => {
                         const list1 =
                             `
-                                            <div class="col-lg-4 mb-4 mb-lg-0">
-                                                         <img src="data:image/png;base64,${x.image ?? ""}"
-                                                     class="w-100 shadow-1-strong rounded mb-4"
-                                                     alt="Mountains in the Clouds" />
-                                            </div>
-                                 `
+                                                 <div class="col-lg-4 mb-4 mb-lg-0">
+                                                              <img src="data:image/png;base64,${x.image ?? ""}"
+                                                          class="w-100 shadow-1-strong rounded mb-4"
+                                                          alt="Mountains in the Clouds" />
+                                                 </div>
+                                                 `
                         debugger
                         $("#gallery").append(list1)
                     });
-
-
-
-
                 }
-
-
             });
         }
 
 
 
-
-        function Details(id) {
-
-            $.ajax({
-                url: "?handler=Details&id=" + id,
-                type: "get",
-                success: function (list) {
-                    debugger
-
-
-                }
-            })
-        }
 
     </script>
 }

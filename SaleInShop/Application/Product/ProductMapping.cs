@@ -8,10 +8,11 @@ namespace Application.Product
         public ProductMapping()
         {
             CreateMap<ProductDto, Domain.ShopModels.Product>();
-            CreateMap<CreateProduct, Domain.ShopModels.Product>();
+            CreateMap<CreateProduct, Domain.ShopModels.Product>().ReverseMap();
             CreateMap<ProductProperty, ProductPropertiesDto>();
             CreateMap<ProductPicture, ProductPicturesDto>();
-            CreateMap<Domain.ShopModels.Product, EditProduct>();
+
+            CreateMap<Domain.ShopModels.Product, EditProduct>().ReverseMap();
         }
     }
 }

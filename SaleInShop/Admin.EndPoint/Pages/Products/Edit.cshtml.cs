@@ -29,7 +29,7 @@ namespace SaleInWeb.Pages.Products
         public void OnGet(Guid id)
         {
             Command = _product.GetDetailsForEdit(id);
-            ProductPictures = HttpContext.Session.GetJson<List<ProductPicturesDto>>("Product-picture") ?? new List<ProductPicturesDto>();
+            ProductPictures = HttpContext.Session.GetJson<List<ProductPicturesDto>>("edit-picture") ?? new List<ProductPicturesDto>();
             Category = _category.SelectOptions();
             Tax = _category.TaxSelectOption();
             Properties = _product.PropertySelectOption();
@@ -38,17 +38,48 @@ namespace SaleInWeb.Pages.Products
             Unit = _product.UnitOfMeasurement();
         }
 
-
+        public IActionResult OnPost(EditProduct command)
+        {
+           var result= _product.UpdateProduct(command);
+            return new JsonResult(result);
+        }
 
         public IActionResult OnGetRemovePictures(Guid id)
         {
-            var getPictures = HttpContext.Session.GetJson<List<ProductPicturesDto>>("Product-picture") ?? new List<ProductPicturesDto>();
+            var getPictures = HttpContext.Session.GetJson<List<ProductPicturesDto>>("edit-picture") ?? new List<ProductPicturesDto>();
             var get = getPictures.SingleOrDefault(x => x.Id == id);
             if (get != null)
                 getPictures.Remove(get);
 
-            HttpContext.Session.SetJson("Product-picture", getPictures);
+            HttpContext.Session.SetJson("edit-picture", getPictures);
             return new JsonResult(getPictures);
+        }
+
+        public IActionResult OnGetRemoveProperty(Guid id)
+        {
+            var getProperty = HttpContext.Session.GetJson<List<PropertySelectOptionDto>>("edit-Property") ?? new List<PropertySelectOptionDto>();
+            var get = getProperty.SingleOrDefault(x => x.Id == id);
+            if (get != null)
+                getProperty.Remove(get);
+
+            HttpContext.Session.SetJson("edit-Property", getProperty);
+            return new JsonResult(getProperty);
+        }
+
+
+        public IActionResult OnGetAddProperty(CreateProperty property)
+        {
+            var getProperty = HttpContext.Session.GetJson<List<PropertySelectOptionDto>>("edit-Property") ?? new List<PropertySelectOptionDto>();
+            if (getProperty.Any(x => x.Id == property.Id))
+                return new JsonResult("Duplicate");
+            getProperty.Add(new PropertySelectOptionDto()
+            {
+                Name = property.Name,
+                Id = property.Id,
+                Value = property.Value,
+            });
+            HttpContext.Session.SetJson("edit-Property", getProperty);
+            return new JsonResult(getProperty);
         }
     }
 }

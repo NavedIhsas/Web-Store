@@ -33,5 +33,10 @@ namespace SaleInWeb.Pages.Products
         {
             return new JsonResult(_productService.GetProductPictures(id));
         }
+
+        public IActionResult OnGetRemove(Guid id)
+        {
+            return new JsonResult(_productService.Remove(id));
+        }
     }
 }

@@ -1,7 +1,16 @@
-﻿$('#detailsProduct').on('hidden.bs.modal', function () {
-    debugger
-    $(this).find('form').trigger('reset');
-})
+﻿
+var quill = new Quill('#editor-container', {
+    modules: {
+        toolbar: [
+            [{ header: [1, 2, false] }],
+            ['bold', 'italic', 'underline'],
+            ['image', 'code-block']
+        ]
+    },
+    placeholder: 'توضیحات را وارد نمایید...',
+    theme: 'snow'  // or 'bubble'
+});
+
 
 const table = $('#property-dataTable').DataTable({
     paging: false,
@@ -9,6 +18,7 @@ const table = $('#property-dataTable').DataTable({
     info: false,
     searching: false,
 });
+
 
 const pictureTable = $('#picture-dataTable').DataTable({
     paging: false,
@@ -18,59 +28,6 @@ const pictureTable = $('#picture-dataTable').DataTable({
 });
 
 var secondUpload = new FileUploadWithPreview('mySecondImage');
-
-function showModal(id) {
-    $("#detailsProduct").modal('show')
-    $.ajax({
-        type: "GET",
-        url: "?handler=Details&id=" + id,
-        success: function (result) {
-            debugger
-            $("#productName").text($("#productName").text() + result.prdName);
-
-            $("#price2").val($("#price2").val() + result.prdPricePerUnit2.toLocaleString());
-            $("#price3").val($("#price3").val() + result.prdPricePerUnit3.toLocaleString());
-            $("#price4").val($("#price4").val() + result.prdPricePerUnit4.toLocaleString() ?? "");
-            // $("#price5").val($("#price5").val() + result.prdPricePerUnit5.toLocaleString()??"");
-
-
-            table.clear().draw();
-            result.properties.forEach(x => {
-                const list =
-                    `
-                     <tr>
-                         <td>${x.propertyName ?? ""}</td>
-                          <td>${x.value ?? ""}</td>
-                     </tr>
-                                                                         `
-                table.row.add($(list)).draw();
-            });
-
-            debugger
-            pictureTable.clear().draw();
-            result.pictures.forEach(x => {
-                const list1 =
-                    `
-                     <tr>
-                         <td>
-                              <img src="data:image/png;base64,${x.image ?? ""}" style="max-width:80px;max-height:90px" />
-                         </td>
-                     </tr>
-                     `
-                debugger
-                pictureTable.row.add($(list1)).draw();
-            });
-
-
-
-
-        }
-
-
-    });
-}
-
-
 
 
 
@@ -154,6 +111,79 @@ $("#submit-property").on("click", function (env) {
 })
 
 
+$("#submit-propertyEdit").on("click", function (env) {
+    env.preventDefault();
+    debugger
+    var value = $("#propertyValue").val();
+    var id = $("#propertyName").val();
+    if (value === "" || id == 0) {
+        notify("top center", "فرم را به درستی پر کنید", "error")
+        return false;
+    }
+
+
+    var name = $("#propertyName option:selected").text();
+    $.ajax({
+        type: "get",
+        url: "?handler=AddProperty&id=" + id + "&name=" + name + "&value=" + value,
+
+        success: function (list) {
+            debugger
+            if (list === "Duplicate") {
+                notify("top center", "این ویژگی از قبل وجود دارد", "warning");
+                return false;
+            }
+            table.clear().draw();
+            $("#propertyName").val(0);
+            $("#propertyValue").val("");
+            list.forEach(x => {
+                const result =
+                    `
+    <tr>
+        <td>${x.name ?? ""}</td>
+        <td>${x.value ?? ""}</td>
+        <td>
+            <button type="button" class="btn btn-sm btn-danger btn-rounded" onclick="(removePropertyEdit('${x.id}'))">حذف</button>
+        </td>
+    </tr>
+    `
+                table.row.add($(result)).draw();
+            });
+
+        }
+
+    });
+
+})
+
+
+function removePropertyEdit(id) {
+
+    $.ajax({
+        url: "?handler=removeProperty&id=" + id,
+        type: "get",
+        success: function (list) {
+            debugger
+            table.clear().draw();
+            list.forEach(x => {
+                const result =
+                    `
+                     <tr>
+                         <td>${x.name ?? ""}</td>
+                          <td>${x.value ?? ""}</td>
+                          <td>
+                               <button type="button" class="btn btn-sm btn-danger btn-rounded" onclick="(removePropertyEdit('${x.id}'))">حذف</button>
+                            </td>
+                       </tr>
+                                            `
+                table.row.add($(result)).draw();
+            });
+
+        }
+    })
+}
+
+
 function removeProperty(id) {
 
     $.ajax({
@@ -208,8 +238,17 @@ function removePicture(id) {
 }
 
 
-function CheckControl() {
+function CheckControl(value) {
     debugger
+    $.ajax({
+        url: "?handler=CheckCode&Code=" + value,
+        type: "Get",
+        success: function (result) {
+            debugger
+            $("#validateCode").text("")
+            $("#validateCode").text(result)
+        }
+    })
 }
 
 
@@ -279,14 +318,22 @@ $("#first-form").on('click', function (env) {
 
 
     if ($("#productUnit").prop('checked') == true) {
-        var unit2 = $("#Command_FkProductUnit2").val();
-        var coeff = $("#Command_PrdCoefficient").val();
-        if (unit2 === "" || coeff === "") {
+
+        var unit2 = $("#FkProductUnit2").val();
+        var Coefficient = $("#PrdCoefficient").val();
+        var bigger = $("input[name='inlineRadioOptions']").val();
+
+        $("#Command_FkProductUnit2").val(unit2);
+        $("#Command_PrdCoefficient").val(Coefficient);
+        $("#Command_PrdIsUnit1Bigger").val(bigger);
+
+        if (unit2 === "" || Coefficient === "") {
             notify("top center", "واحد شمارش 2 و ضریب آن را وارد کنید!", "error")
             return false;
         }
     };
     notify("top center", "فرم تایید شد", "success");
+    $("#justify-profile-tab").removeClass("disabled");
     submitForm1 = true;
 
 });
@@ -318,14 +365,12 @@ $("#second-form").on('click', function (env) {
     }
 
     debugger
-
-    var quill = new Quill('#editor-container', {
-        theme: 'snow'
-    });
-
     var editor_content = quill.container.innerHTML
     $("#Command_WebDescription").val(editor_content);
-    notify("top center", "فرم تایید شد", "success")
+    notify("top center", "فرم تایید شد", "success");
+    $("#justify-contact-tab").removeClass("disabled");
+    $("#justify-pictures-tab").removeClass("disabled");
+
     submitForm2 = true;
 
 });
@@ -338,8 +383,9 @@ $("#final-submit").on('click', function (env) {
         notify("top center", "ابتدا فرم ها را تایید کنید", "error");
         return false;
     }
-
-
+   
+   
+    debugger
     var form = $("#createForm");
     form.validate();
     if (form.valid() === false) {

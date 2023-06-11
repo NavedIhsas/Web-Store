@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using static Application.Product.Category.ProductCategory;
 using static Application.Product.ProductService;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace SaleInWeb.Pages.Products
 {
@@ -76,6 +77,15 @@ namespace SaleInWeb.Pages.Products
             
             HttpContext.Session.SetJson("Product-Property", getProperty);
             return new JsonResult(getProperty);
+        }
+
+
+        public IActionResult OnGetCheckCode(string code)
+        {
+            var isNumeric = int.TryParse(code, out _);
+            if (!isNumeric) return new JsonResult("کد معتبر نیست");
+            var result = _authHelper.CheckLength(code);
+            return result==true ? new JsonResult("") : new JsonResult("کد کالا بیش از حد مجاز هست");
         }
     }
 }

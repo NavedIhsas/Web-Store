@@ -163,9 +163,11 @@ namespace Application.Interfaces
         {
             try
             {
+                var isNumeric = int.TryParse(code, out _);
+                if(!isNumeric) return false;
                 var auto = AutoCodeProduct();
                 if (auto) return true;
-                if (code== null) return false;
+                if (string.IsNullOrWhiteSpace(code)) return false;
                
                 var length = _context.Settings.FirstOrDefault(x => x.SetKey == ConstantParameter.ProductCodeLength)?.SetValue;
                 if (length == null) return null;

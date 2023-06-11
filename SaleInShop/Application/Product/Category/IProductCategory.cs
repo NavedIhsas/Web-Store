@@ -111,13 +111,13 @@ namespace Application.Product.Category
                 {
                     PrdLvlName = x.PrdLvlName,
                     PrdLvlUId = x.PrdLvlUid
-                }).AsNoTracking().ToList();
+                }).ToList();
         }
 
         public List<TaxSelectOptionDto> TaxSelectOption()
         {
           return  _context.Taxes.Select(x => new { x.TaxUid, x.TaxName })
-                .Select(x => new TaxSelectOptionDto() { Id = x.TaxUid, Name = x.TaxName }).AsNoTracking().ToList();
+                .Select(x => new TaxSelectOptionDto() { Id = x.TaxUid, Name = x.TaxName }).ToList();
         }
 
         public ResultDto Remove(Guid id)

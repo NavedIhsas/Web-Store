@@ -11,6 +11,7 @@ using Domain.ShopModels;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Validation.Annotations;
@@ -33,6 +34,8 @@ namespace Application.Product
         EditProduct GetDetailsForEdit(Guid id);
         List<ProductPicturesDto> GetProductPictures(Guid productId);
 
+        ResultDto Remove(Guid id);
+        ResultDto UpdateProduct(EditProduct command);
     }
 
     public class ProductService : IProductService
@@ -64,6 +67,31 @@ namespace Application.Product
             return map.ToList();
         }
 
+        public ResultDto Remove(Guid id)
+        {
+            var result = new ResultDto();
+            try
+            {
+                var product = _shopContext.Products.Find(id);
+                if (product == null)
+                {
+                    _logger.LogError($"Don't Any Record width Id {id} of Table Product");
+                    throw new Exception($"Don't Any Record width Id {id} of Table Product");
+                }
+
+                _shopContext.ProductPictures.RemoveRange(_shopContext.ProductPictures.Where(x => x.ProductId == id));
+                _shopContext.ProductProperties.RemoveRange(_shopContext.ProductProperties.Where(x => x.ProductId == id));
+                _shopContext.Products.Remove(product);
+                _shopContext.SaveChanges();
+                return result.Succeeded();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"حین حذف محصول با آیدی {id} خطای زیر رخ داد {e}");
+                return result.Failed("عملیات با خطا مواجه شد");
+            }
+        }
+
         public List<ProductDto> GetAll()
         {
             var result = _shopContext.Products.
@@ -80,6 +108,12 @@ namespace Application.Product
                     x.TaxU.TaxValue,
                     x.PrdStatus,
                     x.PrdPricePerUnit1,
+                    x.PrdUnit,
+                    x.PrdUnit2,
+                    x.PrdIranCode,
+                    x.PrdBarcode,
+                    x.Weight,
+                    x.Volume,
                     x.PrdLvlUid3Navigation.PrdLvlName,
                 }).Select(x => new ProductDto
                 {
@@ -96,6 +130,12 @@ namespace Application.Product
                     TaxValue = x.TaxValue,
                     PrdLvlName = x.PrdLvlName,
                     Image64 = Convert.FromBase64String(x.PrdImage ?? ""),
+                    IranCode = x.PrdIranCode,
+                    Weight = x.Weight,
+                    Volume = x.Volume,
+                    BarCode = x.PrdBarcode,
+                    Unit1 = x.PrdUnit,
+                    Unit2 = x.PrdUnit2,
                 }).ToList();
 
             // var products = _mapper.Map<List<ProductDto>>(result);
@@ -106,9 +146,14 @@ namespace Application.Product
         {
             var product = _shopContext.Products.Include(x => x.PrdLvlUid3Navigation).Include(x => x.ProductPictures).Include(x => x.ProductProperties).ThenInclude(x => x.Property).SingleOrDefault(x => x.PrdUid == id);
             var map = _mapper.Map<EditProduct>(product);
+            map.Image = Convert.FromBase64String(map.PrdImage);
+
+            _contextAccessor.HttpContext.Session.Remove("edit-Property");
+            _contextAccessor.HttpContext.Session.Remove("edit-picture");
+
             foreach (var property in map.ProductProperties)
             {
-                var getProperty = _contextAccessor.HttpContext.Session.GetJson<List<PropertySelectOptionDto>>("Product-Property") ?? new List<PropertySelectOptionDto>();
+                var getProperty = _contextAccessor.HttpContext.Session.GetJson<List<PropertySelectOptionDto>>("edit-Property") ?? new List<PropertySelectOptionDto>();
 
                 getProperty.Add(new PropertySelectOptionDto()
                 {
@@ -116,9 +161,9 @@ namespace Application.Product
                     Id = property.PropertyId,
                     Value = property.Value,
                 });
-                _contextAccessor.HttpContext.Session.SetJson("Product-Property", getProperty);
+                _contextAccessor.HttpContext.Session.SetJson("edit-Property", getProperty);
             }
-            var getPictures = _contextAccessor.HttpContext.Session.GetJson<List<ProductPicturesDto>>("Product-picture") ?? new List<ProductPicturesDto>();
+            var getPictures = _contextAccessor.HttpContext.Session.GetJson<List<ProductPicturesDto>>("edit-picture") ?? new List<ProductPicturesDto>();
 
             foreach (var picture in map.ProductPictures)
             {
@@ -128,15 +173,15 @@ namespace Application.Product
                     Id = picture.Id,
                 });
             }
-            _contextAccessor.HttpContext.Session.SetJson("Product-picture", getPictures);
+            _contextAccessor.HttpContext.Session.SetJson("edit-picture", getPictures);
 
             return map;
         }
 
-        
+
         public ProductDetails GetDetails(Guid id)
         {
-            return _shopContext.Products.AsNoTracking().Select(x => new
+            return _shopContext.Products.Include(x => x.UomUid1Navigation).Include(x => x.FkProductUnit2Navigation).Select(x => new
             {
                 x.PrdName,
                 x.PrdUid,
@@ -146,7 +191,14 @@ namespace Application.Product
                 x.PrdPricePerUnit2,
                 x.PrdPricePerUnit3,
                 x.PrdPricePerUnit4,
-                x.PrdTaxValue
+                x.PrdTaxValue,
+                x.FkProductUnitNavigation,
+                x.FkProductUnit2Navigation,
+                x.PrdUnit2,
+                x.PrdIranCode,
+                x.PrdBarcode,
+                x.Weight,
+                x.Volume,
             }).Select(x => new ProductDetails
             {
                 PrdName = x.PrdName,
@@ -158,6 +210,13 @@ namespace Application.Product
                 PrdPricePerUnit3 = x.PrdPricePerUnit3 ?? 0,
                 PrdPricePerUnit4 = x.PrdPricePerUnit4 ?? 0,
                 PrdTaxValue = x.PrdTaxValue ?? 0,
+                IranCode = x.PrdIranCode ?? "",
+                Weight = x.Weight ?? "",
+                Volume = x.Volume ?? "",
+                BarCode = x.PrdBarcode ?? "",
+                Unit1 = x.FkProductUnitNavigation.UomName ?? "",
+                Unit2 = x.FkProductUnit2Navigation.UomName ?? "",
+
             }).SingleOrDefault(x => x.PrdUid == id);
         }
 
@@ -180,7 +239,6 @@ namespace Application.Product
         {
             var result = new ResultDto();
 
-
             var code = _authHelper.CheckLength(command.PrdCode);
             if (code == null) return result.Failed("حین چک کردن کد کالا خطای رخ داد،لطفا جدول تنظیمات را بررسی کنید");
             if (code == false) return result.Failed("طول کد کالا بیش تر حد مجاز هست");
@@ -188,6 +246,7 @@ namespace Application.Product
             using var transaction = _shopContext.Database.BeginTransaction();
             try
             {
+                command.PrdUid=Guid.NewGuid();
                 if (_shopContext.Products.Any(x =>
                         x.PrdName == command.PrdName.Fix() && x.PrdLvlUid3 == command.PrdLvlUid3))
                     return result.Failed(ValidateMessage.Duplicate);
@@ -197,23 +256,112 @@ namespace Application.Product
                 _shopContext.Products.Add(product);
                 _shopContext.SaveChanges();
 
-                foreach (var picture in command.Files.Select(commandFile =>
-                             Image.FromStream(commandFile.OpenReadStream(),
-                                 true, true)).Select(image1 =>
-                             ToBase64.Image(image1, ImageFormat.Jpeg)).Select(base64String => new ProductPicture()
-                             {
-                                 Id = Guid.NewGuid(),
-                                 Image = base64String,
-                                 ProductId = product.PrdUid,
-                             }))
+                if (command.Files.Any())
                 {
-                    _shopContext.ProductPictures.Add(picture);
-                    _shopContext.SaveChanges();
+                    foreach (var picture in command.Files.Select(commandFile =>
+                                 Image.FromStream(commandFile.OpenReadStream(),
+                                     true, true)).Select(image1 =>
+                                 ToBase64.Image(image1, ImageFormat.Jpeg)).Select(base64String => new ProductPicture()
+                                 {
+                                     Id = Guid.NewGuid(),
+                                     Image = base64String,
+                                     ProductId = product.PrdUid,
+                                 }))
+                    {
+                        _shopContext.ProductPictures.Add(picture);
+                        _shopContext.SaveChanges();
+                    }
                 }
 
 
                 var getProperty =
                     _contextAccessor.HttpContext.Session.GetJson<List<PropertySelectOptionDto>>("Product-Property");
+                if (getProperty != null && getProperty.Any())
+                {
+                    foreach (var newProp in getProperty.Select(property => new ProductProperty()
+                    {
+                        Id = Guid.NewGuid(),
+                        Value = property.Value,
+                        ProductId = product.PrdUid,
+                        PropertyId = property.Id,
+                    }))
+                    {
+                        _shopContext.ProductProperties.Add(newProp);
+                        _shopContext.SaveChanges();
+                    }
+                }
+                transaction.Commit();
+                return result.Succeeded();
+            }
+            catch (Exception exception)
+            {
+                transaction.Rollback();
+                _logger.LogError($"حین ثبت سفارش خطای زیر رخ داده است {exception}");
+                throw new Exception($"حین ثبت سفارش خطای زیر رخ داده است {exception.Message}");
+            }
+        }
+
+
+
+        public ResultDto UpdateProduct(EditProduct command)
+        {
+            var result = new ResultDto();
+
+            var code = _authHelper.CheckLength(command.PrdCode);
+            if (code == null) return result.Failed("حین چک کردن کد کالا خطای رخ داد،لطفا جدول تنظیمات را بررسی کنید");
+            if (code == false) return result.Failed("طول کد کالا بیش تر حد مجاز هست");
+
+            using var transaction = _shopContext.Database.BeginTransaction();
+            try
+            {
+                var product = _shopContext.Products.Find(command.PrdUid);
+                if (product == null)
+                {
+                    _logger.LogError($"Don't found Any Product With Id {command.PrdUid} on table product");
+                    throw new Exception($"Don't found Any Product With Id {command.PrdUid} on table product");
+                }
+                if (_shopContext.Products.Any(x =>
+                       (x.PrdName == product.PrdName && x.PrdLvlUid3 == product.PrdLvlUid3) && x.PrdUid != product.PrdUid))
+                    return result.Failed(ValidateMessage.Duplicate);
+                if (command.Images != null)
+                    command.PrdImage = ToBase64.Image(Image.FromStream(command.Images.OpenReadStream()), ImageFormat.Jpeg);
+
+                ;
+                command.PrdUid = product.PrdUid;
+                if (string.IsNullOrWhiteSpace(command.PrdImage))
+                    command.PrdImage = product.PrdImage;
+
+                var productMap = _mapper.Map(command,product);
+
+                productMap.PrdUniqid = 0;
+                _shopContext.Products.Update(productMap).Property(x=>x.PrdUniqid).IsModified=false;
+                _shopContext.SaveChanges();
+
+
+                var pictures = _contextAccessor.HttpContext.Session.GetJson<List<PropertySelectOptionDto>>("edit-picture");
+                var getProperty1 =
+                    _contextAccessor.HttpContext.Session.GetJson<List<PropertySelectOptionDto>>("edit-Property");
+                if (command.Files.Any())
+                {
+
+                    foreach (var picture in command.Files.Select(commandFile =>
+                                 Image.FromStream(commandFile.OpenReadStream(),
+                                     true, true)).Select(image1 =>
+                                 ToBase64.Image(image1, ImageFormat.Jpeg)).Select(base64String => new ProductPicture()
+                                 {
+                                     Id = Guid.NewGuid(),
+                                     Image = base64String,
+                                     ProductId = product.PrdUid,
+                                 }))
+                    {
+                        _shopContext.ProductPictures.Add(picture);
+                        _shopContext.SaveChanges();
+                    }
+                }
+
+
+                var getProperty =
+                    _contextAccessor.HttpContext.Session.GetJson<List<PropertySelectOptionDto>>("edit-Property");
                 if (getProperty != null && getProperty.Any())
                 {
                     foreach (var newProp in getProperty.Select(property => new ProductProperty()
@@ -265,6 +413,12 @@ public class ProductDetails
     public decimal PrdPricePerUnit3 { get; set; }
     public decimal PrdPricePerUnit4 { get; set; }
     public decimal PrdTaxValue { get; set; }
+    public string Unit1 { get; set; }
+    public string Unit2 { get; set; }
+    public string Weight { get; set; }
+    public string Volume { get; set; }
+    public string IranCode { get; set; }
+    public string BarCode { get; set; }
     public List<ProductPropertiesDto> Properties { get; set; }
     public List<ProductPicturesDto> Pictures { get; set; }
 }
@@ -289,6 +443,7 @@ public class ProductPicturesDto
 
 public class CreateProperty
 {
+    [BindRequired]
     public Guid Id { get; set; }
     public string Value { get; set; }
     public string Name { get; set; }
@@ -307,6 +462,12 @@ public class ProductDto
     public decimal? TaxValue { get; set; }
     public string PrdLvlName { get; set; }
     public byte[] Image64 { get; set; }
+    public string Unit1 { get; set; }
+    public string Unit2 { get; set; }
+    public string Weight { get; set; }
+    public string Volume { get; set; }
+    public string IranCode { get; set; }
+    public string BarCode { get; set; }
 
 }
 
@@ -320,16 +481,11 @@ public class EditProduct : CreateProduct
 
 public class CreateProduct
 {
-    public Guid PrdUid { get; set; } = Guid.NewGuid();
-
-    public Guid? BusUnitUid { get; set; }
-
-    public Guid? FisPeriodUid { get; set; }
+    public Guid PrdUid { get; set; } 
 
     public Guid? TaxUid { get; set; }
 
-    [ValidGuid(ErrorMessage = "guid معتیر نیست")]
-    [CustomValidation(typeof(Validator), "ValidateGuid")]
+    [BindRequired]
     public Guid PrdLvlUid3 { get; set; }
 
     public string PrdName { get; set; }
@@ -350,16 +506,6 @@ public class CreateProduct
 
     public long? PrdMaxQuantityOnHand { get; set; }
 
-    public DateTime? SysUsrCreatedon { get; set; }
-
-    public Guid? SysUsrCreatedby { get; set; }
-
-    public DateTime? SysUsrModifiedon { get; set; }
-
-    public Guid? SysUsrModifiedby { get; set; }
-
-    public string PrdUnit2 { get; set; }
-
     public Guid? PrdWareHouse { get; set; }
 
     public decimal? PrdPricePerUnit3 { get; set; }
@@ -369,6 +515,7 @@ public class CreateProduct
     public decimal? PrdPricePerUnit5 { get; set; }
 
     public string PrdImage { get; set; }
+    public byte[] Image { get; set; }
 
     public string PrdNameInPrint { get; set; }
 
@@ -383,8 +530,10 @@ public class CreateProduct
     public string Weight { get; set; }
     public bool? PrdIsUnit1Bigger { get; set; }
 
-    public List<IFormFile> Files { get; set; }
+    public List<IFormFile> Files { get; set; } = new List<IFormFile>();
     public IFormFile Images { get; set; }
+
+    [BindRequired]
     public Guid? FkProductUnit { get; set; }
     public Guid? FkProductUnit2 { get; set; }
 
