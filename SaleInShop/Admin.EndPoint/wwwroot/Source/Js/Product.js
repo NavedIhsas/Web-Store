@@ -125,7 +125,7 @@ $("#submit-propertyEdit").on("click", function (env) {
     var name = $("#propertyName option:selected").text();
     $.ajax({
         type: "get",
-        url: "?handler=AddProperty&id=" + id + "&name=" + name + "&value=" + value,
+        url: "?handler=AddProperty&propertyId=" + id + "&name=" + name + "&value=" + value,
 
         success: function (list) {
             debugger

@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Linq;
 using Application.Common;
 using Application.Interfaces;
 using Application.Interfaces.Context;
@@ -157,8 +158,9 @@ namespace Application.Product
 
                 getProperty.Add(new PropertySelectOptionDto()
                 {
+                    PropertyId = property.PropertyId,
                     Name = property.Property.Name,
-                    Id = property.PropertyId,
+                    Id = property.Id,
                     Value = property.Value,
                 });
                 _contextAccessor.HttpContext.Session.SetJson("edit-Property", getProperty);
@@ -246,29 +248,26 @@ namespace Application.Product
             using var transaction = _shopContext.Database.BeginTransaction();
             try
             {
-                command.PrdUid=Guid.NewGuid();
+                command.PrdUid = Guid.NewGuid();
                 if (_shopContext.Products.Any(x =>
                         x.PrdName == command.PrdName.Fix() && x.PrdLvlUid3 == command.PrdLvlUid3))
                     return result.Failed(ValidateMessage.Duplicate);
                 if (command.Images != null)
-                    command.PrdImage = ToBase64.Image(Image.FromStream(command.Images.OpenReadStream()), ImageFormat.Jpeg);
+                    command.PrdImage = ToBase64.Image(command.Images, ImageFormat.Jpeg);
                 var product = _mapper.Map<Domain.ShopModels.Product>(command);
                 _shopContext.Products.Add(product);
                 _shopContext.SaveChanges();
 
                 if (command.Files.Any())
                 {
-                    foreach (var picture in command.Files.Select(commandFile =>
-                                 Image.FromStream(commandFile.OpenReadStream(),
-                                     true, true)).Select(image1 =>
-                                 ToBase64.Image(image1, ImageFormat.Jpeg)).Select(base64String => new ProductPicture()
-                                 {
-                                     Id = Guid.NewGuid(),
-                                     Image = base64String,
-                                     ProductId = product.PrdUid,
-                                 }))
+                    foreach (var addPicture in command.Files.Select(picture => ToBase64.Image(picture)).Select(image => new ProductPicture()
                     {
-                        _shopContext.ProductPictures.Add(picture);
+                        Id = Guid.NewGuid(),
+                        Image = image,
+                        ProductId = product.PrdUid,
+                    }))
+                    {
+                        _shopContext.ProductPictures.Add(addPicture);
                         _shopContext.SaveChanges();
                     }
                 }
@@ -324,30 +323,45 @@ namespace Application.Product
                        (x.PrdName == product.PrdName && x.PrdLvlUid3 == product.PrdLvlUid3) && x.PrdUid != product.PrdUid))
                     return result.Failed(ValidateMessage.Duplicate);
                 if (command.Images != null)
-                    command.PrdImage = ToBase64.Image(Image.FromStream(command.Images.OpenReadStream()), ImageFormat.Jpeg);
+                    command.PrdImage = ToBase64.Image(command.Images);
 
-                ;
+
                 command.PrdUid = product.PrdUid;
                 if (string.IsNullOrWhiteSpace(command.PrdImage))
                     command.PrdImage = product.PrdImage;
 
-                var productMap = _mapper.Map(command,product);
+                var productMap = _mapper.Map(command, product);
 
                 productMap.PrdUniqid = 0;
-                _shopContext.Products.Update(productMap).Property(x=>x.PrdUniqid).IsModified=false;
+                _shopContext.Products.Update(productMap).Property(x => x.PrdUniqid).IsModified = false;
                 _shopContext.SaveChanges();
 
 
-                var pictures = _contextAccessor.HttpContext.Session.GetJson<List<PropertySelectOptionDto>>("edit-picture");
-                var getProperty1 =
-                    _contextAccessor.HttpContext.Session.GetJson<List<PropertySelectOptionDto>>("edit-Property");
+                var pictures = _contextAccessor.HttpContext.Session.GetJson<List<ProductPicturesDto>>("edit-picture").ToList();
+                if (pictures.Any())
+                {
+                    var list=new List<ProductPicture>();
+                    foreach (var picture in pictures)
+                    {
+                        var productPictures = _shopContext.ProductPictures.FirstOrDefault(x => x.ProductId == product.PrdUid && x.Id ==picture.Id);
+                        list.Add(productPictures);
+                    }
+                    foreach (var picture in pictures)
+                    {
+
+                        var update = _shopContext.ProductPictures.SingleOrDefault(x => x.Id == picture.Id);
+                        if (update == null) continue;
+                        update.Image = Convert.ToBase64String(picture.ImageBase64);
+                        _shopContext.ProductPictures.Update(update);
+                        _shopContext.SaveChanges();
+                    }
+                }
+
                 if (command.Files.Any())
                 {
 
-                    foreach (var picture in command.Files.Select(commandFile =>
-                                 Image.FromStream(commandFile.OpenReadStream(),
-                                     true, true)).Select(image1 =>
-                                 ToBase64.Image(image1, ImageFormat.Jpeg)).Select(base64String => new ProductPicture()
+                    foreach (var picture in command.Files.Select(image1 =>
+                                 ToBase64.Image(image1)).Select(base64String => new ProductPicture()
                                  {
                                      Id = Guid.NewGuid(),
                                      Image = base64String,
@@ -364,16 +378,37 @@ namespace Application.Product
                     _contextAccessor.HttpContext.Session.GetJson<List<PropertySelectOptionDto>>("edit-Property");
                 if (getProperty != null && getProperty.Any())
                 {
-                    foreach (var newProp in getProperty.Select(property => new ProductProperty()
+
+                    var find = getProperty.Where(x => x.Id != Guid.Empty).ToList();
+                    var newAdd = getProperty.Where(x => x.Id == Guid.Empty).ToList();
+                    if (find.Any())
                     {
-                        Id = Guid.NewGuid(),
-                        Value = property.Value,
-                        ProductId = product.PrdUid,
-                        PropertyId = property.Id,
-                    }))
+                        foreach (var dto in find)
+                        {
+                            var update = _shopContext.ProductProperties.SingleOrDefault(x => x.Id == dto.Id);
+                            if (update != null)
+                            {
+                                update.Value = dto.Value;
+                                update.PropertyId = dto.PropertyId;
+                                _shopContext.ProductProperties.Update(update);
+                            }
+
+                            _shopContext.SaveChanges();
+                        }
+                    }
+                    if (newAdd.Any())
                     {
-                        _shopContext.ProductProperties.Add(newProp);
-                        _shopContext.SaveChanges();
+                        foreach (var update in newAdd.Select(dto => new ProductProperty
+                        {
+                            Id = Guid.NewGuid(),
+                            Value = dto.Value,
+                            PropertyId = dto.PropertyId,
+                            ProductId = product.PrdUid,
+                        }))
+                        {
+                            _shopContext.ProductProperties.Add(update);
+                            _shopContext.SaveChanges();
+                        }
                     }
                 }
                 transaction.Commit();
@@ -400,6 +435,7 @@ public class PropertySelectOptionDto
     public Guid Id { get; set; }
     public string Name { get; set; }
     public string Value { get; set; }
+    public Guid PropertyId { get; set; }
 }
 
 public class ProductDetails
@@ -434,10 +470,7 @@ public class ProductPropertiesDto
 public class ProductPicturesDto
 {
     public Guid Id { get; set; }
-
     public string Image { get; set; }
-
-    public Guid ProductId { get; set; }
     public byte[] ImageBase64 { get; set; }
 }
 
@@ -447,6 +480,7 @@ public class CreateProperty
     public Guid Id { get; set; }
     public string Value { get; set; }
     public string Name { get; set; }
+    public Guid PropertyId { get; set; }
 }
 public class ProductDto
 {
@@ -481,7 +515,7 @@ public class EditProduct : CreateProduct
 
 public class CreateProduct
 {
-    public Guid PrdUid { get; set; } 
+    public Guid PrdUid { get; set; }
 
     public Guid? TaxUid { get; set; }
 

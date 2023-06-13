@@ -41,7 +41,7 @@
                                         <div class=" br-6">
                                             @if (ViewData["ErrorMessage"] != null)
                                             {
-                                                <span class="alert alert-danger text-center">فرم هارا به درستی پر نکرده اید.</span>
+                                                    <span class="alert alert-danger text-center">فرم هارا به درستی پر نکرده اید.</span>
                                             }
                                             <div class="row">
                                                 <div class=" col-lg-8 col-sm-12">
@@ -289,10 +289,10 @@
                                                         <div class="form-row mb-4">
                                                             <div class="form-group col-md-4">
                                                                 <label for=""> نام ویژگی</label>
-                                                                <select asp-for="Property.Id" id="propertyName" asp-items="@(new SelectList(Model.Properties,"Id","Name"))" class="form-control" id="">
+                                                                <select asp-for="Property.PropertyId" id="propertyName" asp-items="@(new SelectList(Model.Properties,"Id","Name"))" class="form-control" id="">
                                                                     <option value="0">انتخاب...</option>
                                                                 </select>
-                                                                <span asp-validation-for="Property.Id" class="error"></span>
+                                                                <span asp-validation-for="Property.PropertyId" class="error"></span>
                                                             </div>
 
                                                             <div class="form-group col-md-4">
@@ -330,13 +330,13 @@
                                                                         <tbody>
                                                                             @foreach (var item in Model.Command.ProductProperties)
                                                                             {
-                                                                                <tr>
-                                                                                    <td>@item.Property.Name</td>
-                                                                                    <td>@item.Value</td>
-                                                                                    <td>
-                                                                                            <button type="button" class="btn btn-sm btn-danger btn-rounded" onclick="removePropertyEdit('@item.PropertyId')">حذف</button>
-                                                                                    </td>
-                                                                                </tr>
+                                                                                    <tr>
+                                                                                        <td>@item.Property.Name</td>
+                                                                                        <td>@item.Value</td>
+                                                                                        <td>
+                                                                                                <button type="button" class="btn btn-sm btn-danger btn-rounded" onclick="removePropertyEdit('@item.Id')">حذف</button>
+                                                                                        </td>
+                                                                                    </tr>
                                                                             }
 
                                                                         </tbody>
@@ -356,9 +356,9 @@
                             </div>
 
                         <partial name="Partial/Pictures" model="Model.ProductPictures" />
-                        
-                        
-                        
+
+
+
                          <div class="modal fade" id="related-products" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content" style="width:600px !Important">
@@ -429,34 +429,34 @@
 
 
 @section Scripts
-{
+    {
 
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
-    <script src="~/plugins/file-upload/file-upload-with-preview.min.js"></script>
-    <script src="~/plugins/select2/custom-select2.js"></script>
-    <script src="~/plugins/editors/quill/quill.js"></script>
-    <script src="~/plugins/editors/quill/custom-quill.js"></script>
-    <script src="~/source/js/product.js"></script>
-  
-    <script>
-        var fkUnit = @Html.Raw(Json.Serialize(Model.Command.FkProductUnit2.HasValue));
+        <script src="~/plugins/file-upload/file-upload-with-preview.min.js"></script>
+        <script src="~/plugins/select2/custom-select2.js"></script>
+        <script src="~/plugins/editors/quill/quill.js"></script>
+        <script src="~/plugins/editors/quill/custom-quill.js"></script>
+        <script src="~/source/js/product.js"></script>
 
-        $(document).ready(function () {
-            debugger
-            if (fkUnit==true)
-               {
-                   $("#productUnit").prop("checked", true)
-                  $("#FkProductUnit2").val($("#Command_FkProductUnit2").val());
-                      $("#PrdCoefficient").val($("#Command_PrdCoefficient").val());
-    
-                     $("input[name='inlineRadioOptions']").val($("#Command_PrdIsUnit1Bigger").val());
-               
-               }
-        });
-    </script>
+        <script>
+            var fkUnit = @Html.Raw(Json.Serialize(Model.Command.FkProductUnit2.HasValue));
+
+            $(document).ready(function () {
+                debugger
+                if (fkUnit==true)
+                   {
+                       $("#productUnit").prop("checked", true)
+                      $("#FkProductUnit2").val($("#Command_FkProductUnit2").val());
+                          $("#PrdCoefficient").val($("#Command_PrdCoefficient").val());
+
+                         $("input[name='inlineRadioOptions']").val($("#Command_PrdIsUnit1Bigger").val());
+
+                   }
+            });
+        </script>
 
 
 

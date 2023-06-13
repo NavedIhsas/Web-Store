@@ -10,7 +10,8 @@ namespace Application.Product
             CreateMap<ProductDto, Domain.ShopModels.Product>();
             CreateMap<CreateProduct, Domain.ShopModels.Product>().ReverseMap();
             CreateMap<ProductProperty, ProductPropertiesDto>();
-            CreateMap<ProductPicture, ProductPicturesDto>();
+            CreateMap<ProductPicture, ProductPicturesDto>().ReverseMap();
+      
 
             CreateMap<Domain.ShopModels.Product, EditProduct>().ReverseMap();
         }

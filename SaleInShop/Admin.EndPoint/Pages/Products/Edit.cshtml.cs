@@ -46,11 +46,12 @@ namespace SaleInWeb.Pages.Products
 
         public IActionResult OnGetRemovePictures(Guid id)
         {
-            var getPictures = HttpContext.Session.GetJson<List<ProductPicturesDto>>("edit-picture") ?? new List<ProductPicturesDto>();
+            var getPictures =HttpContext.Session.GetJson<List<ProductPicturesDto>>("edit-picture") ?? new List<ProductPicturesDto>();
             var get = getPictures.SingleOrDefault(x => x.Id == id);
             if (get != null)
                 getPictures.Remove(get);
 
+            HttpContext.Session.Remove("edit-picture");
             HttpContext.Session.SetJson("edit-picture", getPictures);
             return new JsonResult(getPictures);
         }
@@ -61,7 +62,7 @@ namespace SaleInWeb.Pages.Products
             var get = getProperty.SingleOrDefault(x => x.Id == id);
             if (get != null)
                 getProperty.Remove(get);
-
+            HttpContext.Session.Remove("edit-Property");
             HttpContext.Session.SetJson("edit-Property", getProperty);
             return new JsonResult(getProperty);
         }
@@ -70,12 +71,13 @@ namespace SaleInWeb.Pages.Products
         public IActionResult OnGetAddProperty(CreateProperty property)
         {
             var getProperty = HttpContext.Session.GetJson<List<PropertySelectOptionDto>>("edit-Property") ?? new List<PropertySelectOptionDto>();
-            if (getProperty.Any(x => x.Id == property.Id))
+            if (getProperty.Any(x => x.PropertyId == property.PropertyId))
                 return new JsonResult("Duplicate");
             getProperty.Add(new PropertySelectOptionDto()
             {
+                PropertyId = property.PropertyId,
                 Name = property.Name,
-                Id = property.Id,
+                Id = Guid.Empty,
                 Value = property.Value,
             });
             HttpContext.Session.SetJson("edit-Property", getProperty);
