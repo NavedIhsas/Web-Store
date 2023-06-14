@@ -122,7 +122,7 @@ public partial class Product
     public Guid? FkProductUnit2 { get; set; }
     public string Volume { get; set; }
     public string Weight { get; set; }
-
+    public int Type { get; set; }
     public virtual ICollection<Barcode> Barcodes { get; set; } = new List<Barcode>();
 
     public virtual UnitOfMeasurement FkProductUnit2Navigation { get; set; }

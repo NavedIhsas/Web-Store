@@ -11,6 +11,12 @@ namespace Application.Common
     {
         public static void SetJson(this ISession session, string key, object value)
         {
+            if(value.ToString()=="")
+            {
+                session.Remove(key);
+                return;
+
+            }
             session.SetString(key, JsonConvert.SerializeObject(value));
         }
 

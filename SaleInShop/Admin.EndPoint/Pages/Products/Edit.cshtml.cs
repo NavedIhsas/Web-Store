@@ -25,10 +25,10 @@ namespace SaleInWeb.Pages.Products
             _category = category;
         }
 
-
-        public void OnGet(Guid id)
+        public IActionResult OnGet(Guid productId, bool load=false)
         {
-            Command = _product.GetDetailsForEdit(id);
+            Command = _product.GetDetailsForEdit(productId);
+         
             ProductPictures = HttpContext.Session.GetJson<List<ProductPicturesDto>>("edit-picture") ?? new List<ProductPicturesDto>();
             Category = _category.SelectOptions();
             Tax = _category.TaxSelectOption();
@@ -36,11 +36,14 @@ namespace SaleInWeb.Pages.Products
 
             //HttpContext.Session.Remove("Product-Property");
             Unit = _product.UnitOfMeasurement();
+           
+            return Page();
         }
 
         public IActionResult OnPost(EditProduct command)
         {
-           var result= _product.UpdateProduct(command);
+
+            var result = _product.UpdateProduct(command);
             return new JsonResult(result);
         }
 
@@ -53,6 +56,7 @@ namespace SaleInWeb.Pages.Products
 
             HttpContext.Session.Remove("edit-picture");
             HttpContext.Session.SetJson("edit-picture", getPictures);
+           
             return new JsonResult(getPictures);
         }
 

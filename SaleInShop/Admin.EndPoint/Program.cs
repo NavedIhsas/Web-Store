@@ -50,6 +50,13 @@ try
 
 
 
+    builder.Services.AddSession(options =>
+    {
+        options.IdleTimeout = TimeSpan.FromSeconds(30);
+        options.Cookie.HttpOnly = true;
+        options.Cookie.IsEssential = true;
+    });
+
     #region connection string
 
     var saleInConnection = configuration.GetConnectionString("SaleInConnection");

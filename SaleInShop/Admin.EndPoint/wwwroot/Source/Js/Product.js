@@ -63,6 +63,24 @@ $("input[name='Command.PrdDiscountType']").change(function () {
 });
 
 
+function ChangeDiscountValue() {
+    debugger
+  
+    var input = $("input[name='Command.PrdDiscountType']:checked");
+   
+    if (input.val() == 0)
+        input.prop('max', 100);
+    else input.prop('max', null);
+
+    var text = "";
+    if (input.val() == 0)
+        text = "درصد";
+    else text = "مبلغ"
+
+    $("#dicountDis").text("تخفیف را به " + text + " " + "وارد کنید  ")
+};
+
+
 
 
 $("#submit-property").on("click", function (env) {
@@ -378,14 +396,13 @@ $("#second-form").on('click', function (env) {
 
 $("#final-submit").on('click', function (env) {
     env.preventDefault();
-
+    
     if (!submitForm1 || !submitForm2) {
         notify("top center", "ابتدا فرم ها را تایید کنید", "error");
         return false;
     }
    
    
-    debugger
     var form = $("#createForm");
     form.validate();
     if (form.valid() === false) {
