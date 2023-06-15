@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.SaleInModels;
 
-namespace Domain.SaleInModels;
-
-public partial class Operator
+public class Operator
 {
     public Guid OprUid { get; set; }
 
     /// <summary>
-    /// عملگر
+    ///     عملگر
     /// </summary>
     public string OprName { get; set; }
 
     /// <summary>
-    /// نام نمایشی فیلد در برنامه
+    ///     نام نمایشی فیلد در برنامه
     /// </summary>
     public string OprText { get; set; }
 

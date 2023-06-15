@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.SaleInModels;
 
-namespace Domain.SaleInModels;
-
-public partial class WareHouse
+public class WareHouse
 {
     public Guid WarHosUid { get; set; }
 
@@ -31,13 +28,16 @@ public partial class WareHouse
 
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 
-    public virtual ICollection<ProductQuantityOnHand> ProductQuantityOnHands { get; set; } = new List<ProductQuantityOnHand>();
+    public virtual ICollection<ProductQuantityOnHand> ProductQuantityOnHands { get; set; } =
+        new List<ProductQuantityOnHand>();
 
     public virtual ICollection<PurchaseDetail> PurchaseDetails { get; set; } = new List<PurchaseDetail>();
 
     public virtual ICollection<QuoteDetail> QuoteDetails { get; set; } = new List<QuoteDetail>();
 
-    public virtual ICollection<StockTransferDetail> StockTransferDetails { get; set; } = new List<StockTransferDetail>();
+    public virtual ICollection<StockTransferDetail> StockTransferDetails { get; set; } =
+        new List<StockTransferDetail>();
 
-    public virtual ICollection<WarehouseRecieptDetail> WarehouseRecieptDetails { get; set; } = new List<WarehouseRecieptDetail>();
+    public virtual ICollection<WarehouseRecieptDetail> WarehouseRecieptDetails { get; set; } =
+        new List<WarehouseRecieptDetail>();
 }

@@ -1,8 +1,7 @@
-﻿namespace Application.Common
+﻿namespace Application.Common;
+
+public class BaseConfigDto
 {
-    public class BaseConfigDto
-    {
-        public Guid FisPeriodUId { get; set; }
-        public Guid BusUnitUId { get; set; }
-    }
+    public Guid FisPeriodUId { get; set; }
+    public Guid BusUnitUId { get; set; }
 }

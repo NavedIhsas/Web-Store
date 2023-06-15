@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.ShopModels;
 
-namespace Domain.ShopModels;
-
-public partial class ProductQuantity
+public class ProductQuantity
 {
     public Guid PrdQuanUid { get; set; }
 
@@ -21,5 +18,6 @@ public partial class ProductQuantity
 
     public Guid? SysUsrModifiedby { get; set; }
 
-    public virtual ICollection<ProductQuantityOnHand> ProductQuantityOnHands { get; set; } = new List<ProductQuantityOnHand>();
+    public virtual ICollection<ProductQuantityOnHand> ProductQuantityOnHands { get; set; } =
+        new List<ProductQuantityOnHand>();
 }

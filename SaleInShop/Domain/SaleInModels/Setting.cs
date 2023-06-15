@@ -1,6 +1,6 @@
 ﻿namespace Domain.SaleInModels;
 
-public partial class Setting
+public class Setting
 {
     public Guid SetUid { get; set; }
 

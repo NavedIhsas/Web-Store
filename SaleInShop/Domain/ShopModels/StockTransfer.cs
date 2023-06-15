@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.ShopModels;
 
-namespace Domain.ShopModels;
-
-public partial class StockTransfer
+public class StockTransfer
 {
     public Guid StkTrnsUid { get; set; }
 
@@ -59,7 +56,9 @@ public partial class StockTransfer
 
     public virtual Account AccU { get; set; }
 
-    public virtual ICollection<PaymentRecieptSheet> PaymentRecieptSheets { get; set; } = new List<PaymentRecieptSheet>();
+    public virtual ICollection<PaymentRecieptSheet> PaymentRecieptSheets { get; set; } =
+        new List<PaymentRecieptSheet>();
 
-    public virtual ICollection<StockTransferDetail> StockTransferDetails { get; set; } = new List<StockTransferDetail>();
+    public virtual ICollection<StockTransferDetail> StockTransferDetails { get; set; } =
+        new List<StockTransferDetail>();
 }

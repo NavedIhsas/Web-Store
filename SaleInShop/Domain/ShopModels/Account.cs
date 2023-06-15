@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.ShopModels;
 
-namespace Domain.ShopModels;
-
-public partial class Account
+public class Account
 {
     public Guid AccUid { get; set; }
 
@@ -30,17 +27,17 @@ public partial class Account
     public string AccCode { get; set; }
 
     /// <summary>
-    /// نوع حساب: 1- حقیقی 2- حقوقی 3- حقوقی دولتی 4-سایر
+    ///     نوع حساب: 1- حقیقی 2- حقوقی 3- حقوقی دولتی 4-سایر
     /// </summary>
     public int? AccKind { get; set; }
 
     /// <summary>
-    /// نوع خریدار: 1- عادی 2- مصرف کننده نهایی 3- صادرات 4- سایر
+    ///     نوع خریدار: 1- عادی 2- مصرف کننده نهایی 3- صادرات 4- سایر
     /// </summary>
     public int? AccPurchaserType { get; set; }
 
     /// <summary>
-    /// نوع شخص: 1- تامین کننده 2- مصرف کننده 3- هردو
+    ///     نوع شخص: 1- تامین کننده 2- مصرف کننده 3- هردو
     /// </summary>
     public int? AccPersonalType { get; set; }
 
@@ -82,7 +79,8 @@ public partial class Account
 
     public virtual ICollection<AccountClub> AccountClubs { get; set; } = new List<AccountClub>();
 
-    public virtual ICollection<AccountRemainCredit> AccountRemainCredits { get; set; } = new List<AccountRemainCredit>();
+    public virtual ICollection<AccountRemainCredit> AccountRemainCredits { get; set; } =
+        new List<AccountRemainCredit>();
 
     public virtual ICollection<Agreement> AgreementAccUidBuyerNavigations { get; set; } = new List<Agreement>();
 
@@ -98,7 +96,8 @@ public partial class Account
 
     public virtual ICollection<CostDetail> CostDetailCstDetAccUs { get; set; } = new List<CostDetail>();
 
-    public virtual ICollection<DefualtAccountDefinition> DefualtAccountDefinitions { get; set; } = new List<DefualtAccountDefinition>();
+    public virtual ICollection<DefualtAccountDefinition> DefualtAccountDefinitions { get; set; } =
+        new List<DefualtAccountDefinition>();
 
     public virtual ICollection<DocumentDetail> DocumentDetails { get; set; } = new List<DocumentDetail>();
 
@@ -106,9 +105,11 @@ public partial class Account
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
-    public virtual ICollection<PaymentRecieptDetail> PaymentRecieptDetails { get; set; } = new List<PaymentRecieptDetail>();
+    public virtual ICollection<PaymentRecieptDetail> PaymentRecieptDetails { get; set; } =
+        new List<PaymentRecieptDetail>();
 
-    public virtual ICollection<PaymentRecieptSheet> PaymentRecieptSheets { get; set; } = new List<PaymentRecieptSheet>();
+    public virtual ICollection<PaymentRecieptSheet> PaymentRecieptSheets { get; set; } =
+        new List<PaymentRecieptSheet>();
 
     public virtual PhoneBook PhbU { get; set; }
 

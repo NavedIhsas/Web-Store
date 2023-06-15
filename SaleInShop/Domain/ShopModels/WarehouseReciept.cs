@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.ShopModels;
 
-namespace Domain.ShopModels;
-
-public partial class WarehouseReciept
+public class WarehouseReciept
 {
     public Guid WarHosRecUid { get; set; }
 
@@ -63,7 +60,8 @@ public partial class WarehouseReciept
 
     public virtual Order OrdU { get; set; }
 
-    public virtual ICollection<PaymentRecieptSheet> PaymentRecieptSheets { get; set; } = new List<PaymentRecieptSheet>();
+    public virtual ICollection<PaymentRecieptSheet> PaymentRecieptSheets { get; set; } =
+        new List<PaymentRecieptSheet>();
 
     public virtual Quote QutU { get; set; }
 

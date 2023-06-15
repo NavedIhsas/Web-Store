@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.SaleInModels;
 
-namespace Domain.SaleInModels;
-
-public partial class BusinessUnit
+public class BusinessUnit
 {
     public Guid BusUnitUid { get; set; }
 

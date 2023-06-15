@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.ShopModels;
 
-namespace Domain.ShopModels;
-
-public partial class AtelierCategory
+public class AtelierCategory
 {
     public Guid AtlCatUid { get; set; }
 

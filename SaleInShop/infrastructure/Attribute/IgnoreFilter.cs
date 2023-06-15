@@ -1,6 +1,5 @@
-﻿namespace infrastructure.Attribute
+﻿namespace infrastructure.Attribute;
+
+public class IgnoreFilter : System.Attribute
 {
-    public class IgnoreFilter:System.Attribute
-    {
-    }
 }

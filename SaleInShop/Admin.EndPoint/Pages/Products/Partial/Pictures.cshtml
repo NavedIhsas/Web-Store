@@ -1,4 +1,4 @@
-﻿@model List<ProductPicturesDto>
+﻿@model List<Application.Product.ProductDto.ProductPicturesDto>
 
 @if (!Model.Any())
 {
@@ -12,7 +12,7 @@
                                 <label>بارگذاری (میتوانید چندین عکس را باهم آپلود کنید) <a href="javascript:void(0)" class="custom-file-container__image-clear" title="Clear Image">x</a></label>
                                 <label class="custom-file-container__custom-file">
                                     <input name="Command.Files" id="files" type="file" class="custom-file-container__custom-file__custom-file-input" multiple>
-                                    <input type="hidden" name="MAX_FILE_SIZE" value="10485760" />
+                                    <input type="hidden" name="MAX_FILE_SIZE" value="10485760"/>
                                     <span class="custom-file-container__custom-file__custom-file-control"></span>
                                 </label>
                                 <div class="custom-file-container__image-preview"></div>
@@ -22,10 +22,9 @@
                 </div>
             </div>
             <button id="final-submit" type="submit" class="btn btn-success btn-sm btn-rounded pull-left">تایید نهایی</button>
-            <br />
+            <br/>
         </div>
     </div>
-
 }
 else
 {

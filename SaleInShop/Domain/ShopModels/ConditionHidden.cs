@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.ShopModels;
 
-namespace Domain.ShopModels;
-
-public partial class ConditionHidden
+public class ConditionHidden
 {
     public Guid ConditionHiddenUid { get; set; }
 

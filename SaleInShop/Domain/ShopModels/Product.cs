@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.ShopModels;
 
-namespace Domain.ShopModels;
-
-public partial class Product
+public class Product
 {
     public Guid PrdUid { get; set; }
 
@@ -139,13 +136,15 @@ public partial class Product
 
     public virtual ICollection<ProductProperty> ProductProperties { get; set; } = new List<ProductProperty>();
 
-    public virtual ICollection<ProductQuantityOnHand> ProductQuantityOnHands { get; set; } = new List<ProductQuantityOnHand>();
+    public virtual ICollection<ProductQuantityOnHand> ProductQuantityOnHands { get; set; } =
+        new List<ProductQuantityOnHand>();
 
     public virtual ICollection<PurchaseDetail> PurchaseDetails { get; set; } = new List<PurchaseDetail>();
 
     public virtual ICollection<QuoteDetail> QuoteDetails { get; set; } = new List<QuoteDetail>();
 
-    public virtual ICollection<StockTransferDetail> StockTransferDetails { get; set; } = new List<StockTransferDetail>();
+    public virtual ICollection<StockTransferDetail> StockTransferDetails { get; set; } =
+        new List<StockTransferDetail>();
 
     public virtual ICollection<SystemGame> SystemGames { get; set; } = new List<SystemGame>();
 
@@ -155,5 +154,6 @@ public partial class Product
 
     public virtual UnitOfMeasurement UomUid2Navigation { get; set; }
 
-    public virtual ICollection<WarehouseRecieptDetail> WarehouseRecieptDetails { get; set; } = new List<WarehouseRecieptDetail>();
+    public virtual ICollection<WarehouseRecieptDetail> WarehouseRecieptDetails { get; set; } =
+        new List<WarehouseRecieptDetail>();
 }

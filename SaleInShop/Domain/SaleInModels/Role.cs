@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.SaleInModels;
 
-namespace Domain.SaleInModels;
-
-public partial class Role
+public class Role
 {
     public Guid RolUid { get; set; }
 
     public string RolName { get; set; }
 
     /// <summary>
-    /// 1- admin 2 - supervisor 3 - user
+    ///     1- admin 2 - supervisor 3 - user
     /// </summary>
     public int? RolType { get; set; }
 

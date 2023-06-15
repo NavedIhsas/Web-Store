@@ -1,16 +1,13 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using Application.Common;
+﻿using Application.Common;
 using FluentValidation;
 using static Application.Product.Category.ProductCategory;
 
-namespace Application.Product.Category
+namespace Application.Product.Category;
+
+public class CategoryPrdValidator : AbstractValidator<CreateProductLevel>
 {
-    public class CategoryPrdValidator : AbstractValidator<CreateProductLevel>
+    public CategoryPrdValidator()
     {
-        public CategoryPrdValidator()
-        {
-            RuleFor(x => x.Name).NotEmpty().WithMessage(ValidateMessage.Required);
-            
-        }
+        RuleFor(x => x.Name).NotEmpty().WithMessage(ValidateMessage.Required);
     }
 }

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.SaleInModels;
 
-namespace Domain.SaleInModels;
-
-public partial class Invoice
+public class Invoice
 {
     public Guid InvUid { get; set; }
 
@@ -127,9 +124,11 @@ public partial class Invoice
 
     public virtual Order OrdU { get; set; }
 
-    public virtual ICollection<PaymentReceiptRelatedPurchaseInvoice> PaymentReceiptRelatedPurchaseInvoices { get; set; } = new List<PaymentReceiptRelatedPurchaseInvoice>();
+    public virtual ICollection<PaymentReceiptRelatedPurchaseInvoice>
+        PaymentReceiptRelatedPurchaseInvoices { get; set; } = new List<PaymentReceiptRelatedPurchaseInvoice>();
 
-    public virtual ICollection<PaymentRecieptSheet> PaymentRecieptSheets { get; set; } = new List<PaymentRecieptSheet>();
+    public virtual ICollection<PaymentRecieptSheet> PaymentRecieptSheets { get; set; } =
+        new List<PaymentRecieptSheet>();
 
     public virtual Quote QutU { get; set; }
 

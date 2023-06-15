@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.ShopModels;
 
-namespace Domain.ShopModels;
-
-public partial class PaymentRecieptDetail
+public class PaymentRecieptDetail
 {
     public Guid PayRciptDetUid { get; set; }
 
@@ -30,7 +27,7 @@ public partial class PaymentRecieptDetail
     public Guid? SysUsrModifiedby { get; set; }
 
     /// <summary>
-    /// [1 - نقد]-[2 - کارت خوان]-[3 - بن]-[4 - باشگاه]-[5 - اعتباری]
+    ///     [1 - نقد]-[2 - کارت خوان]-[3 - بن]-[4 - باشگاه]-[5 - اعتباری]
     /// </summary>
     public int? PayRciptDetType { get; set; }
 

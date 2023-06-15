@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.ShopModels;
 
-namespace Domain.ShopModels;
-
-public partial class InvoiceDetail
+public class InvoiceDetail
 {
     public Guid InvDetUid { get; set; }
 

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.SaleInModels;
 
-namespace Domain.SaleInModels;
-
-public partial class UnitOfMeasurement
+public class UnitOfMeasurement
 {
     public Guid UomUid { get; set; }
 
@@ -37,7 +34,9 @@ public partial class UnitOfMeasurement
 
     public virtual ICollection<QuoteDetail> QuoteDetails { get; set; } = new List<QuoteDetail>();
 
-    public virtual ICollection<StockTransferDetail> StockTransferDetails { get; set; } = new List<StockTransferDetail>();
+    public virtual ICollection<StockTransferDetail> StockTransferDetails { get; set; } =
+        new List<StockTransferDetail>();
 
-    public virtual ICollection<WarehouseRecieptDetail> WarehouseRecieptDetails { get; set; } = new List<WarehouseRecieptDetail>();
+    public virtual ICollection<WarehouseRecieptDetail> WarehouseRecieptDetails { get; set; } =
+        new List<WarehouseRecieptDetail>();
 }

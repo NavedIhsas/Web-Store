@@ -20,6 +20,8 @@ public partial class ShopContext : DbContext, IShopContext
         _httpContext = httpContext;
     }
 
+    public virtual DbSet<InvoiceDetails2> InvoiceDetails2s { get; set; }
+
     public virtual DbSet<Account> Accounts { get; set; }
 
     public virtual DbSet<AccountClub> AccountClubs { get; set; }
@@ -101,8 +103,6 @@ public partial class ShopContext : DbContext, IShopContext
     public virtual DbSet<Invoice> Invoices { get; set; }
 
     public virtual DbSet<InvoiceDetail> InvoiceDetails { get; set; }
-
-    public virtual DbSet<InvoiceDetails2> InvoiceDetails2s { get; set; }
 
     public virtual DbSet<Language> Languages { get; set; }
 
@@ -206,13 +206,11 @@ public partial class ShopContext : DbContext, IShopContext
 
     public virtual DbSet<WorkStation> WorkStations { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("name=shopConnection1");
-
 
     public override int SaveChanges()
     {
-        var modifiedEntries = ChangeTracker.Entries().Where(x => x.State == EntityState.Modified || x.State == EntityState.Deleted || x.State == EntityState.Added);
+        var modifiedEntries = ChangeTracker.Entries().Where(x =>
+            x.State == EntityState.Modified || x.State == EntityState.Deleted || x.State == EntityState.Added);
         foreach (var entry in modifiedEntries)
         {
             var baseConfig = _httpContext.HttpContext.Session.GetJson<BaseConfigDto>("BaseConfig");
@@ -229,18 +227,30 @@ public partial class ShopContext : DbContext, IShopContext
                 var fisPeriodUid = getEntityType.FindProperty("FisPeriodUid");
 
 
-                if (entry.State == EntityState.Added && busUnitUid != null) entry.Property("BusUnitUid").CurrentValue = baseConfig.BusUnitUId;
-                if (entry.State == EntityState.Added && fisPeriodUid != null) entry.Property("FisPeriodUid").CurrentValue = baseConfig.FisPeriodUId;//TODO current user
+                if (entry.State == EntityState.Added && busUnitUid != null)
+                    entry.Property("BusUnitUid").CurrentValue = baseConfig.BusUnitUId;
+                if (entry.State == EntityState.Added && fisPeriodUid != null)
+                    entry.Property("FisPeriodUid").CurrentValue = baseConfig.FisPeriodUId; //TODO current user
 
-                if (entry.State == EntityState.Added && insert != null) entry.Property("SysUsrCreatedon").CurrentValue = DateTime.Now;
-                if (entry.State == EntityState.Added && insertBy != null) entry.Property("SysUsrCreatedby").CurrentValue = new Guid();//TODO current user
+                if (entry.State == EntityState.Added && insert != null)
+                    entry.Property("SysUsrCreatedon").CurrentValue = DateTime.Now;
+                if (entry.State == EntityState.Added && insertBy != null)
+                    entry.Property("SysUsrCreatedby").CurrentValue = new Guid(); //TODO current user
 
-                if (entry.State == EntityState.Modified && updateBy != null) entry.Property("SysUsrModifiedon").CurrentValue = DateTime.Now;
+                if (entry.State == EntityState.Modified && updateBy != null)
+                    entry.Property("SysUsrModifiedon").CurrentValue = DateTime.Now;
                 if (entry.State == EntityState.Modified && updateDate != null)
-                    entry.Property("SysUsrModifiedby").CurrentValue = entry.Property("SysUsrCreatedby").CurrentValue = new Guid();//TODO current user
+                    entry.Property("SysUsrModifiedby").CurrentValue =
+                        entry.Property("SysUsrCreatedby").CurrentValue = new Guid(); //TODO current user
             }
         }
+
         return base.SaveChanges();
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlServer("name=shopConnection1");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -335,7 +345,8 @@ public partial class ShopContext : DbContext, IShopContext
 
             entity.HasIndex(e => e.AccClbName, "IX_ACC_CLB_NAME");
 
-            entity.HasIndex(e => new { e.BusUnitUid, e.FisPeriodUid, e.AccClbStatus, e.AccClbCode, e.AccClbSync }, "IX_BUS_UNIT_UID_FIS_PERIOD_UID_ACC_CLB_STATUS_ACC_CLB_CODE_ACC_CLB_SYNC");
+            entity.HasIndex(e => new { e.BusUnitUid, e.FisPeriodUid, e.AccClbStatus, e.AccClbCode, e.AccClbSync },
+                "IX_BUS_UNIT_UID_FIS_PERIOD_UID_ACC_CLB_STATUS_ACC_CLB_CODE_ACC_CLB_SYNC");
 
             entity.Property(e => e.AccClbUid)
                 .ValueGeneratedNever()
@@ -1894,8 +1905,10 @@ public partial class ShopContext : DbContext, IShopContext
             entity.Property(e => e.BusUnitUid).HasColumnName("BUS_UNIT_UID");
             entity.Property(e => e.DftAccDfinIsUsedInCheque).HasColumnName("DFT_ACC_DFIN_IS_USED_IN_CHEQUE");
             entity.Property(e => e.DftAccDfinIsUsedInDocuments).HasColumnName("DFT_ACC_DFIN_IS_USED_IN_DOCUMENTS");
-            entity.Property(e => e.DftAccDfinIsUsedInPaymentSheet).HasColumnName("DFT_ACC_DFIN_IS_USED_IN_PAYMENT_SHEET");
-            entity.Property(e => e.DftAccDfinIsUsedInRecieptSheet).HasColumnName("DFT_ACC_DFIN_IS_USED_IN_RECIEPT_SHEET");
+            entity.Property(e => e.DftAccDfinIsUsedInPaymentSheet)
+                .HasColumnName("DFT_ACC_DFIN_IS_USED_IN_PAYMENT_SHEET");
+            entity.Property(e => e.DftAccDfinIsUsedInRecieptSheet)
+                .HasColumnName("DFT_ACC_DFIN_IS_USED_IN_RECIEPT_SHEET");
             entity.Property(e => e.DftAccDfinName)
                 .HasMaxLength(100)
                 .HasColumnName("DFT_ACC_DFIN_NAME");
@@ -2179,7 +2192,8 @@ public partial class ShopContext : DbContext, IShopContext
 
             entity.ToTable("Invoice");
 
-            entity.HasIndex(e => new { e.BusUnitUid, e.FisPeriodUid, e.SalCatUid, e.InvReference }, "IX_BUS_UNIT_UID_FIS_PERIOD_UID_SAL_CAT_UID_INV_REFERENCE");
+            entity.HasIndex(e => new { e.BusUnitUid, e.FisPeriodUid, e.SalCatUid, e.InvReference },
+                "IX_BUS_UNIT_UID_FIS_PERIOD_UID_SAL_CAT_UID_INV_REFERENCE");
 
             entity.HasIndex(e => e.InvDate, "IX_INV_DATE");
 
@@ -2837,7 +2851,8 @@ public partial class ShopContext : DbContext, IShopContext
 
             entity.ToTable("PaymentRecieptSheet");
 
-            entity.HasIndex(e => new { e.BusUnitUid, e.FisPeriodUid, e.PayRciptSheetType, e.PayRciptSheetStatus }, "IX_BUS_UNIT_UID_FIS_PERIOD_UID_PAY_RCIPT_SHEET_TYPE_PAY_RCIPT_SHEET_STATUS");
+            entity.HasIndex(e => new { e.BusUnitUid, e.FisPeriodUid, e.PayRciptSheetType, e.PayRciptSheetStatus },
+                "IX_BUS_UNIT_UID_FIS_PERIOD_UID_PAY_RCIPT_SHEET_TYPE_PAY_RCIPT_SHEET_STATUS");
 
             entity.HasIndex(e => e.PayRciptSheetUid, "IX_PAY_RCIPT_SHEET_UID");
 
@@ -3207,7 +3222,8 @@ public partial class ShopContext : DbContext, IShopContext
 
             entity.ToTable("ProductLevel");
 
-            entity.HasIndex(e => new { e.PrdLvlParentUid, e.BusUnitUid, e.FisPeriodUid, e.PrdLvlStatus }, "IX_PRD_LVL_PARENT_UID_BUS_UNIT_UID_FIS_PERIOD_UID_PRD_LVL_STATUS");
+            entity.HasIndex(e => new { e.PrdLvlParentUid, e.BusUnitUid, e.FisPeriodUid, e.PrdLvlStatus },
+                "IX_PRD_LVL_PARENT_UID_BUS_UNIT_UID_FIS_PERIOD_UID_PRD_LVL_STATUS");
 
             entity.Property(e => e.PrdLvlUid)
                 .ValueGeneratedNever()
@@ -4712,5 +4728,4 @@ public partial class ShopContext : DbContext, IShopContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-
 }

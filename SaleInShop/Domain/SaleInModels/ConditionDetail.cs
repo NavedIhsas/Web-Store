@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.SaleInModels;
 
-namespace Domain.SaleInModels;
-
-public partial class ConditionDetail
+public class ConditionDetail
 {
     public Guid ConDetUid { get; set; }
 

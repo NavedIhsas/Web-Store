@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.ShopModels;
 
-namespace Domain.ShopModels;
-
-public partial class AccountClubType
+public class AccountClubType
 {
     public Guid AccClbTypUid { get; set; }
 

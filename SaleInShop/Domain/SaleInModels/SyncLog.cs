@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.SaleInModels;
 
-namespace Domain.SaleInModels;
-
-public partial class SyncLog
+public class SyncLog
 {
     public Guid SynUid { get; set; }
 
@@ -12,7 +9,7 @@ public partial class SyncLog
     public string SynUnsuccessful { get; set; }
 
     /// <summary>
-    /// [1-kala][2-hesab][3-moshtari][4-factor][5-karbar]
+    ///     [1-kala][2-hesab][3-moshtari][4-factor][5-karbar]
     /// </summary>
     public int? SynType { get; set; }
 

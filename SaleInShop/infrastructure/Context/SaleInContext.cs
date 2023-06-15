@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace infrastructure.Context;
 
-public partial class SaleInContext : DbContext,ISaleInContext
+public partial class SaleInContext : DbContext, ISaleInContext
 {
     public SaleInContext()
     {
@@ -15,7 +15,6 @@ public partial class SaleInContext : DbContext,ISaleInContext
     {
     }
 
-   
 
     public virtual DbSet<Account> Accounts { get; set; }
 
@@ -290,7 +289,8 @@ public partial class SaleInContext : DbContext,ISaleInContext
 
             entity.HasIndex(e => e.AccClbName, "IX_ACC_CLB_NAME");
 
-            entity.HasIndex(e => new { e.BusUnitUid, e.FisPeriodUid, e.AccClbStatus, e.AccClbCode, e.AccClbSync }, "IX_BUS_UNIT_UID_FIS_PERIOD_UID_ACC_CLB_STATUS_ACC_CLB_CODE_ACC_CLB_SYNC");
+            entity.HasIndex(e => new { e.BusUnitUid, e.FisPeriodUid, e.AccClbStatus, e.AccClbCode, e.AccClbSync },
+                "IX_BUS_UNIT_UID_FIS_PERIOD_UID_ACC_CLB_STATUS_ACC_CLB_CODE_ACC_CLB_SYNC");
 
             entity.Property(e => e.AccClbUid)
                 .ValueGeneratedNever()
@@ -1848,8 +1848,10 @@ public partial class SaleInContext : DbContext,ISaleInContext
             entity.Property(e => e.BusUnitUid).HasColumnName("BUS_UNIT_UID");
             entity.Property(e => e.DftAccDfinIsUsedInCheque).HasColumnName("DFT_ACC_DFIN_IS_USED_IN_CHEQUE");
             entity.Property(e => e.DftAccDfinIsUsedInDocuments).HasColumnName("DFT_ACC_DFIN_IS_USED_IN_DOCUMENTS");
-            entity.Property(e => e.DftAccDfinIsUsedInPaymentSheet).HasColumnName("DFT_ACC_DFIN_IS_USED_IN_PAYMENT_SHEET");
-            entity.Property(e => e.DftAccDfinIsUsedInRecieptSheet).HasColumnName("DFT_ACC_DFIN_IS_USED_IN_RECIEPT_SHEET");
+            entity.Property(e => e.DftAccDfinIsUsedInPaymentSheet)
+                .HasColumnName("DFT_ACC_DFIN_IS_USED_IN_PAYMENT_SHEET");
+            entity.Property(e => e.DftAccDfinIsUsedInRecieptSheet)
+                .HasColumnName("DFT_ACC_DFIN_IS_USED_IN_RECIEPT_SHEET");
             entity.Property(e => e.DftAccDfinName)
                 .HasMaxLength(100)
                 .HasColumnName("DFT_ACC_DFIN_NAME");
@@ -2133,7 +2135,8 @@ public partial class SaleInContext : DbContext,ISaleInContext
 
             entity.ToTable("Invoice");
 
-            entity.HasIndex(e => new { e.BusUnitUid, e.FisPeriodUid, e.SalCatUid, e.InvReference }, "IX_BUS_UNIT_UID_FIS_PERIOD_UID_SAL_CAT_UID_INV_REFERENCE");
+            entity.HasIndex(e => new { e.BusUnitUid, e.FisPeriodUid, e.SalCatUid, e.InvReference },
+                "IX_BUS_UNIT_UID_FIS_PERIOD_UID_SAL_CAT_UID_INV_REFERENCE");
 
             entity.HasIndex(e => e.InvDate, "IX_INV_DATE");
 
@@ -2788,7 +2791,8 @@ public partial class SaleInContext : DbContext,ISaleInContext
 
             entity.ToTable("PaymentRecieptSheet");
 
-            entity.HasIndex(e => new { e.BusUnitUid, e.FisPeriodUid, e.PayRciptSheetType, e.PayRciptSheetStatus }, "IX_BUS_UNIT_UID_FIS_PERIOD_UID_PAY_RCIPT_SHEET_TYPE_PAY_RCIPT_SHEET_STATUS");
+            entity.HasIndex(e => new { e.BusUnitUid, e.FisPeriodUid, e.PayRciptSheetType, e.PayRciptSheetStatus },
+                "IX_BUS_UNIT_UID_FIS_PERIOD_UID_PAY_RCIPT_SHEET_TYPE_PAY_RCIPT_SHEET_STATUS");
 
             entity.HasIndex(e => e.PayRciptSheetUid, "IX_PAY_RCIPT_SHEET_UID");
 
@@ -3147,7 +3151,8 @@ public partial class SaleInContext : DbContext,ISaleInContext
 
             entity.ToTable("ProductLevel");
 
-            entity.HasIndex(e => new { e.PrdLvlParentUid, e.BusUnitUid, e.FisPeriodUid, e.PrdLvlStatus }, "IX_PRD_LVL_PARENT_UID_BUS_UNIT_UID_FIS_PERIOD_UID_PRD_LVL_STATUS");
+            entity.HasIndex(e => new { e.PrdLvlParentUid, e.BusUnitUid, e.FisPeriodUid, e.PrdLvlStatus },
+                "IX_PRD_LVL_PARENT_UID_BUS_UNIT_UID_FIS_PERIOD_UID_PRD_LVL_STATUS");
 
             entity.Property(e => e.PrdLvlUid)
                 .ValueGeneratedNever()

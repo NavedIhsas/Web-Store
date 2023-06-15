@@ -1,39 +1,30 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Linq;
-using Application.Common;
+﻿using Application.Common;
 using Application.Interfaces;
 using Application.Interfaces.Context;
+using Application.Product.ProductDto;
 using AutoMapper;
-using AutoMapper.Internal;
-using Domain.SaleInModels;
 using Domain.ShopModels;
-using FluentValidation;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Validation.Annotations;
-using ProductLevel = Domain.ShopModels.ProductLevel;
 
 namespace Application.Product
 {
     public interface IProductService
     {
         ResultDto CreateProduct(CreateProduct command);
-        List<ProductDto> GetAll();
+        List<ProductDto.ProductDto> GetAll();
         ProductDetails GetDetails(Guid id);
         List<PropertySelectOptionDto> PropertySelectOption();
         List<UnitOfMeasurementDto> UnitOfMeasurement();
+
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="id">PropertyId</param>
         /// <returns></returns>
         List<ProductPropertiesDto> GetProductProperty(Guid id);
+
         EditProduct GetDetailsForEdit(Guid id);
         List<ProductPicturesDto> GetProductPictures(Guid productId);
 
@@ -43,13 +34,14 @@ namespace Application.Product
 
     public class ProductService : IProductService
     {
-        private readonly IShopContext _shopContext;
-        private readonly IMapper _mapper;
-        private readonly ILogger<ProductService> _logger;
-        private readonly IHttpContextAccessor _contextAccessor;
         private readonly IAuthHelper _authHelper;
+        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly ILogger<ProductService> _logger;
+        private readonly IMapper _mapper;
+        private readonly IShopContext _shopContext;
 
-        public ProductService(IShopContext shopContext, IMapper mapper, ILogger<ProductService> logger, IHttpContextAccessor contextAccessor, IAuthHelper authHelper)
+        public ProductService(IShopContext shopContext, IMapper mapper, ILogger<ProductService> logger,
+            IHttpContextAccessor contextAccessor, IAuthHelper authHelper)
         {
             _shopContext = shopContext;
             _mapper = mapper;
@@ -58,8 +50,11 @@ namespace Application.Product
             _authHelper = authHelper;
         }
 
-        public List<ProductPropertiesDto> GetProductProperty(Guid id) =>
-        _mapper.Map<List<ProductPropertiesDto>>(_shopContext.ProductProperties.Include(x => x.Property).Where(x => x.ProductId == id).AsNoTracking());
+        public List<ProductPropertiesDto> GetProductProperty(Guid id)
+        {
+            return _mapper.Map<List<ProductPropertiesDto>>(_shopContext.ProductProperties.Include(x => x.Property)
+                .Where(x => x.ProductId == id).AsNoTracking());
+        }
 
         public List<ProductPicturesDto> GetProductPictures(Guid productId)
         {
@@ -83,7 +78,8 @@ namespace Application.Product
                 }
 
                 _shopContext.ProductPictures.RemoveRange(_shopContext.ProductPictures.Where(x => x.ProductId == id));
-                _shopContext.ProductProperties.RemoveRange(_shopContext.ProductProperties.Where(x => x.ProductId == id));
+                _shopContext.ProductProperties.RemoveRange(
+                    _shopContext.ProductProperties.Where(x => x.ProductId == id));
                 _shopContext.Products.Remove(product);
                 _shopContext.SaveChanges();
                 return result.Succeeded();
@@ -95,11 +91,9 @@ namespace Application.Product
             }
         }
 
-        public List<ProductDto> GetAll()
+        public List<ProductDto.ProductDto> GetAll()
         {
-            var result = _shopContext.Products.
-                Include(x => x.TaxU).
-                Include(x => x.PrdLvlUid3Navigation)
+            var result = _shopContext.Products.Include(x => x.TaxU).Include(x => x.PrdLvlUid3Navigation)
                 .AsNoTracking().Select(x => new
                 {
                     x.PrdUid,
@@ -117,10 +111,9 @@ namespace Application.Product
                     x.PrdBarcode,
                     x.Weight,
                     x.Volume,
-                    x.PrdLvlUid3Navigation.PrdLvlName,
-                }).Select(x => new ProductDto
+                    x.PrdLvlUid3Navigation.PrdLvlName
+                }).Select(x => new ProductDto.ProductDto
                 {
-
                     PrdUid = x.PrdUid,
                     PrdName = x.PrdName,
                     PrdCode = x.PrdCode,
@@ -138,7 +131,7 @@ namespace Application.Product
                     Volume = x.Volume,
                     BarCode = x.PrdBarcode,
                     Unit1 = x.PrdUnit,
-                    Unit2 = x.PrdUnit2,
+                    Unit2 = x.PrdUnit2
                 }).ToList();
 
             // var products = _mapper.Map<List<ProductDto>>(result);
@@ -147,11 +140,12 @@ namespace Application.Product
 
         public EditProduct GetDetailsForEdit(Guid id)
         {
-
-            var product = _shopContext.Products.Include(x => x.PrdLvlUid3Navigation).Include(x => x.ProductPictures).Include(x => x.ProductProperties).ThenInclude(x => x.Property).SingleOrDefault(x => x.PrdUid == id);
+            var product = _shopContext.Products.Include(x => x.PrdLvlUid3Navigation).Include(x => x.ProductPictures)
+                .Include(x => x.ProductProperties).ThenInclude(x => x.Property).SingleOrDefault(x => x.PrdUid == id);
             var map = _mapper.Map<EditProduct>(product);
             map.Image = Convert.FromBase64String(map.PrdImage);
-            var getProperty = _contextAccessor.HttpContext.Session.GetJson<List<PropertySelectOptionDto>>("edit-Property");
+            var getProperty =
+                _contextAccessor.HttpContext.Session.GetJson<List<PropertySelectOptionDto>>("edit-Property");
             var getPictures = _contextAccessor.HttpContext.Session.GetJson<List<ProductPicturesDto>>("edit-picture");
             if (getProperty != null && getPictures != null)
             {
@@ -160,39 +154,36 @@ namespace Application.Product
                 return map;
             }
 
-            map.ProductProperty = map.ProductProperties.Select(x => new PropertySelectOptionDto()
+            map.ProductProperty = map.ProductProperties.Select(x => new PropertySelectOptionDto
             {
                 Id = x.Id,
                 Name = x.Property.Name,
                 PropertyId = x.PropertyId,
-                Value = x.Value,
+                Value = x.Value
             }).ToList();
 
             _contextAccessor.HttpContext.Session.Remove("edit-Property");
             _contextAccessor.HttpContext.Session.Remove("edit-picture");
-            getProperty = new();
-            getPictures = new();
+            getProperty = new List<PropertySelectOptionDto>();
+            getPictures = new List<ProductPicturesDto>();
             foreach (var property in map.ProductProperty)
             {
-
-                getProperty.Add(new PropertySelectOptionDto()
+                getProperty.Add(new PropertySelectOptionDto
                 {
                     PropertyId = property.PropertyId,
                     Name = property.Name,
                     Id = property.Id,
-                    Value = property.Value,
+                    Value = property.Value
                 });
                 _contextAccessor.HttpContext.Session.SetJson("edit-Property", getProperty);
             }
 
             foreach (var picture in map.ProductPictures)
-            {
-                getPictures.Add(new ProductPicturesDto()
+                getPictures.Add(new ProductPicturesDto
                 {
                     ImageBase64 = Convert.FromBase64String(picture.Image),
-                    Id = picture.Id,
+                    Id = picture.Id
                 });
-            }
 
             _contextAccessor.HttpContext.Session.SetJson("edit-picture", getPictures);
 
@@ -202,58 +193,56 @@ namespace Application.Product
 
         public ProductDetails GetDetails(Guid id)
         {
-            return _shopContext.Products.Include(x => x.UomUid1Navigation).Include(x => x.FkProductUnit2Navigation).Select(x => new
-            {
-                x.PrdName,
-                x.PrdUid,
-                x.PrdMaxSale,
-                x.PrdDiscount,
-                x.PrdDiscountType,
-                x.PrdPricePerUnit2,
-                x.PrdPricePerUnit3,
-                x.PrdPricePerUnit4,
-                x.PrdTaxValue,
-                x.FkProductUnitNavigation,
-                x.FkProductUnit2Navigation,
-                x.PrdUnit2,
-                x.PrdIranCode,
-                x.PrdBarcode,
-                x.Weight,
-                x.Volume,
-            }).Select(x => new ProductDetails
-            {
-                PrdName = x.PrdName,
-                PrdUid = x.PrdUid,
-                PrdMaxSale = x.PrdMaxSale ?? 0,
-                PrdDiscount = x.PrdDiscount ?? 0,
-                PrdDiscountType = x.PrdDiscountType ?? 0,
-                PrdPricePerUnit2 = x.PrdPricePerUnit2 ?? 0,
-                PrdPricePerUnit3 = x.PrdPricePerUnit3 ?? 0,
-                PrdPricePerUnit4 = x.PrdPricePerUnit4 ?? 0,
-                PrdTaxValue = x.PrdTaxValue ?? 0,
-                IranCode = x.PrdIranCode ?? "",
-                Weight = x.Weight ?? "",
-                Volume = x.Volume ?? "",
-                BarCode = x.PrdBarcode ?? "",
-                Unit1 = x.FkProductUnitNavigation.UomName ?? "",
-                Unit2 = x.FkProductUnit2Navigation.UomName ?? "",
-
-            }).SingleOrDefault(x => x.PrdUid == id);
+            return _shopContext.Products.Include(x => x.UomUid1Navigation).Include(x => x.FkProductUnit2Navigation)
+                .Select(x => new
+                {
+                    x.PrdName,
+                    x.PrdUid,
+                    x.PrdMaxSale,
+                    x.PrdDiscount,
+                    x.PrdDiscountType,
+                    x.PrdPricePerUnit2,
+                    x.PrdPricePerUnit3,
+                    x.PrdPricePerUnit4,
+                    x.PrdTaxValue,
+                    x.FkProductUnitNavigation,
+                    x.FkProductUnit2Navigation,
+                    x.PrdUnit2,
+                    x.PrdIranCode,
+                    x.PrdBarcode,
+                    x.Weight,
+                    x.Volume
+                }).Select(x => new ProductDetails
+                {
+                    PrdName = x.PrdName,
+                    PrdUid = x.PrdUid,
+                    PrdMaxSale = x.PrdMaxSale ?? 0,
+                    PrdDiscount = x.PrdDiscount ?? 0,
+                    PrdDiscountType = x.PrdDiscountType ?? 0,
+                    PrdPricePerUnit2 = x.PrdPricePerUnit2 ?? 0,
+                    PrdPricePerUnit3 = x.PrdPricePerUnit3 ?? 0,
+                    PrdPricePerUnit4 = x.PrdPricePerUnit4 ?? 0,
+                    PrdTaxValue = x.PrdTaxValue ?? 0,
+                    IranCode = x.PrdIranCode ?? "",
+                    Weight = x.Weight ?? "",
+                    Volume = x.Volume ?? "",
+                    BarCode = x.PrdBarcode ?? "",
+                    Unit1 = x.FkProductUnitNavigation.UomName ?? "",
+                    Unit2 = x.FkProductUnit2Navigation.UomName ?? ""
+                }).SingleOrDefault(x => x.PrdUid == id);
         }
 
         public List<PropertySelectOptionDto> PropertySelectOption()
         {
-            return _shopContext.Properties.Select(x => new PropertySelectOptionDto() { Id = x.Id, Name = x.Name })
-                 .AsNoTracking().ToList();
+            return _shopContext.Properties.Select(x => new PropertySelectOptionDto { Id = x.Id, Name = x.Name })
+                .AsNoTracking().ToList();
         }
 
         public List<UnitOfMeasurementDto> UnitOfMeasurement()
         {
-
             return _shopContext.UnitOfMeasurements.Select(x => new { x.UomUid, x.UomName })
-                 .Select(x => new UnitOfMeasurementDto() { Name = x.UomName, Id = x.UomUid })
-                 .AsNoTracking().ToList();
-
+                .Select(x => new UnitOfMeasurementDto { Name = x.UomName, Id = x.UomUid })
+                .AsNoTracking().ToList();
         }
 
         public ResultDto CreateProduct(CreateProduct command)
@@ -274,41 +263,39 @@ namespace Application.Product
                 if (command.Images != null)
                     command.PrdImage = ToBase64.Image(command.Images);
                 var product = _mapper.Map<Domain.ShopModels.Product>(command);
-                
+
                 _shopContext.Products.Add(product);
                 _shopContext.SaveChanges();
 
                 if (command.Files.Any())
-                {
-                    foreach (var addPicture in command.Files.Select(picture => ToBase64.Image(picture)).Select(image => new ProductPicture()
-                    {
-                        Id = Guid.NewGuid(),
-                        Image = image,
-                        ProductId = product.PrdUid,
-                    }))
+                    foreach (var addPicture in command.Files.Select(picture => ToBase64.Image(picture)).Select(image =>
+                                 new ProductPicture
+                                 {
+                                     Id = Guid.NewGuid(),
+                                     Image = image,
+                                     ProductId = product.PrdUid
+                                 }))
                     {
                         _shopContext.ProductPictures.Add(addPicture);
                         _shopContext.SaveChanges();
                     }
-                }
 
 
                 var getProperty =
                     _contextAccessor.HttpContext.Session.GetJson<List<PropertySelectOptionDto>>("Product-Property");
                 if (getProperty != null && getProperty.Any())
-                {
-                    foreach (var newProp in getProperty.Select(property => new ProductProperty()
-                    {
-                        Id = Guid.NewGuid(),
-                        Value = property.Value,
-                        ProductId = product.PrdUid,
-                        PropertyId = property.Id,
-                    }))
+                    foreach (var newProp in getProperty.Select(property => new ProductProperty
+                             {
+                                 Id = Guid.NewGuid(),
+                                 Value = property.Value,
+                                 ProductId = product.PrdUid,
+                                 PropertyId = property.Id
+                             }))
                     {
                         _shopContext.ProductProperties.Add(newProp);
                         _shopContext.SaveChanges();
                     }
-                }
+
                 transaction.Commit();
                 return result.Succeeded();
             }
@@ -319,7 +306,6 @@ namespace Application.Product
                 throw new Exception($"حین ثبت سفارش خطای زیر رخ داده است {exception.Message}");
             }
         }
-
 
 
         public ResultDto UpdateProduct(EditProduct command)
@@ -339,8 +325,10 @@ namespace Application.Product
                     _logger.LogError($"Don't found Any Product With Id {command.PrdUid} on table product");
                     throw new Exception($"Don't found Any Product With Id {command.PrdUid} on table product");
                 }
+
                 if (_shopContext.Products.Any(x =>
-                       (x.PrdName == product.PrdName && x.PrdLvlUid3 == product.PrdLvlUid3) && x.PrdUid != product.PrdUid))
+                        x.PrdName == product.PrdName && x.PrdLvlUid3 == product.PrdLvlUid3 &&
+                        x.PrdUid != product.PrdUid))
                     return result.Failed(ValidateMessage.Duplicate);
                 if (command.Images != null)
                     command.PrdImage = ToBase64.Image(command.Images);
@@ -373,13 +361,14 @@ namespace Application.Product
         private void UpdateProperties(Guid productId)
         {
             var getProperty =
-                   _contextAccessor.HttpContext.Session.GetJson<List<PropertySelectOptionDto>>("edit-Property") ?? new List<PropertySelectOptionDto>();
+                _contextAccessor.HttpContext.Session.GetJson<List<PropertySelectOptionDto>>("edit-Property") ??
+                new List<PropertySelectOptionDto>();
 
             _shopContext.ProductProperties.Where(x => x.ProductId == productId).ExecuteDelete();
 
             foreach (var dto in getProperty)
             {
-                var update = new ProductProperty()
+                var update = new ProductProperty
                 {
                     PropertyId = dto.PropertyId,
                     Value = dto.Value,
@@ -390,11 +379,12 @@ namespace Application.Product
                 _shopContext.ProductProperties.Add(update);
                 _shopContext.SaveChanges();
             }
-
         }
+
         private void UpdatePictures(Guid productId, List<IFormFile> files)
         {
-            var pictures = _contextAccessor.HttpContext.Session.GetJson<List<ProductPicturesDto>>("edit-picture").ToList();
+            var pictures = _contextAccessor.HttpContext.Session.GetJson<List<ProductPicturesDto>>("edit-picture")
+                .ToList();
 
             if (!pictures.Any())
                 _shopContext.ProductPictures.Where(x => x.ProductId == productId).ExecuteDelete();
@@ -403,7 +393,9 @@ namespace Application.Product
                 var list = new List<ProductPicture>();
                 foreach (var picture in pictures)
                 {
-                    var productPictures = _shopContext.ProductPictures.FirstOrDefault(x => x.ProductId == productId && x.Id == picture.Id);
+                    var productPictures =
+                        _shopContext.ProductPictures.FirstOrDefault(x =>
+                            x.ProductId == productId && x.Id == picture.Id);
                     list.Add(productPictures);
                 }
 
@@ -411,17 +403,17 @@ namespace Application.Product
                 var list3 = list2.Except(list).ToList();
                 _shopContext.ProductPictures.RemoveRange(list3);
                 _shopContext.SaveChanges();
-
             }
 
             if (files.Any())
             {
-                var getPictures = _contextAccessor.HttpContext.Session.GetJson<List<ProductPicturesDto>>("edit-picture");
+                var getPictures =
+                    _contextAccessor.HttpContext.Session.GetJson<List<ProductPicturesDto>>("edit-picture");
 
                 foreach (var picture in files)
                 {
                     var base64String = ToBase64.Image(picture);
-                    var add = new ProductPicture()
+                    var add = new ProductPicture
                     {
                         Image = base64String,
                         Id = Guid.NewGuid(),
@@ -430,172 +422,15 @@ namespace Application.Product
                     _shopContext.ProductPictures.Add(add);
                     _shopContext.SaveChanges();
 
-                    getPictures.Add(new ProductPicturesDto()
+                    getPictures.Add(new ProductPicturesDto
                     {
                         Id = add.Id,
                         ImageBase64 = Convert.FromBase64String(add.Image),
-                        Image = add.Image,
+                        Image = add.Image
                     });
                     _contextAccessor.HttpContext.Session.SetJson("edit-picture", getPictures);
-
                 }
-
-
             }
-
-
         }
     }
 }
-
-public class UnitOfMeasurementDto
-{
-    public Guid Id { get; set; }
-    public string Name { get; set; }
-}
-
-public class PropertySelectOptionDto
-{
-    public Guid Id { get; set; }
-    public string Name { get; set; }
-    public string Value { get; set; }
-    public Guid PropertyId { get; set; }
-}
-
-public class ProductDetails
-{
-    public Guid PrdUid { get; set; }
-    public string PrdName { get; set; }
-    public int PrdMaxSale { get; set; }
-    public decimal PrdDiscount { get; set; }
-    public decimal PrdDiscountType { get; set; }
-    public decimal PrdPricePerUnit2 { get; set; }
-    public decimal PrdPricePerUnit3 { get; set; }
-    public decimal PrdPricePerUnit4 { get; set; }
-    public decimal PrdTaxValue { get; set; }
-    public string Unit1 { get; set; }
-    public string Unit2 { get; set; }
-    public string Weight { get; set; }
-    public string Volume { get; set; }
-    public string IranCode { get; set; }
-    public string BarCode { get; set; }
-    public List<ProductPropertiesDto> Properties { get; set; }
-    public List<ProductPicturesDto> Pictures { get; set; }
-}
-
-public class ProductPropertiesDto
-{
-    public Guid Id { get; set; }
-    public string Value { get; set; }
-    public string PropertyName { get; set; }
-
-}
-
-public class ProductPicturesDto
-{
-    public Guid Id { get; set; }
-    public string Image { get; set; }
-    public byte[] ImageBase64 { get; set; }
-}
-
-public class CreateProperty
-{
-    [BindRequired]
-    public Guid Id { get; set; }
-    public string Value { get; set; }
-    public string Name { get; set; }
-    public Guid PropertyId { get; set; }
-}
-public class ProductDto
-{
-    public Guid PrdUid { get; set; }
-    public string PrdName { get; set; }
-    public string PrdCode { get; set; }
-    public string PrdLevelId { get; set; }
-    public string PrdImage { get; set; }
-    public string PrdLvlUId { get; set; }
-    public bool? PrdStatus { get; set; }
-    public decimal PrdPricePerUnit1 { get; set; }
-    public string TaxName { get; set; }
-    public decimal? TaxValue { get; set; }
-    public string PrdLvlName { get; set; }
-    public byte[] Image64 { get; set; }
-    public string Unit1 { get; set; }
-    public string Unit2 { get; set; }
-    public string Weight { get; set; }
-    public string Volume { get; set; }
-    public string IranCode { get; set; }
-    public string BarCode { get; set; }
-
-}
-
-public class EditProduct : CreateProduct
-{
-    public virtual ICollection<ProductPicturesDto> ProductPictures { get; set; }
-    public virtual ICollection<PropertySelectOptionDto> ProductProperty { get; set; }
-
-    public virtual ICollection<ProductProperty> ProductProperties { get; set; }
-}
-
-public class CreateProduct
-{
-    public Guid PrdUid { get; set; }
-
-    public Guid? TaxUid { get; set; }
-
-    [BindRequired]
-    public Guid PrdLvlUid3 { get; set; }
-
-    public string PrdName { get; set; }
-
-    public string PrdCode { get; set; }
-
-    public string PrdBarcode { get; set; }
-
-    public string PrdIranCode { get; set; }
-
-    public decimal? PrdCoefficient { get; set; }
-
-    public decimal? PrdPricePerUnit1 { get; set; }
-
-    public decimal? PrdPricePerUnit2 { get; set; }
-
-    public long? PrdMinQuantityOnHand { get; set; }
-
-    public long? PrdMaxQuantityOnHand { get; set; }
-
-    public Guid? PrdWareHouse { get; set; }
-
-    public decimal? PrdPricePerUnit3 { get; set; }
-
-    public decimal? PrdPricePerUnit4 { get; set; }
-
-    public decimal? PrdPricePerUnit5 { get; set; }
-
-    public string PrdImage { get; set; }
-    public byte[] Image { get; set; }
-
-    public string PrdNameInPrint { get; set; }
-
-    public int? PrdDiscountType { get; set; }
-
-    public decimal? PrdDiscount { get; set; }
-
-    public string ShortDescription { get; set; }
-    public string WebDescription { get; set; }
-    public int? PrdLvlType { get; set; }
-    public string Volume { get; set; }
-    public string Weight { get; set; }
-    public bool? PrdIsUnit1Bigger { get; set; }
-    public int Type { get; set; }
-
-    public List<IFormFile> Files { get; set; } = new List<IFormFile>();
-    public IFormFile Images { get; set; }
-
-    [BindRequired]
-    public Guid? FkProductUnit { get; set; }
-    public Guid? FkProductUnit2 { get; set; }
-
-
-}
-

@@ -21,25 +21,23 @@
                     <div class="table-responsive mb-4 mt-4">
                         <table id="dataTable" class="table table-hover table-bordered cell-border row-border" style="width:100%">
                             <thead>
-                                <tr>
-                                    <th>SetKey</th>
-                                    <th>SetValue</th>
-                                    <th> SetBase </th>
-                                </tr>
+                            <tr>
+                                <th>SetKey</th>
+                                <th>SetValue</th>
+                                <th> SetBase </th>
+                            </tr>
                             </thead>
                             <tbody>
-                                @foreach (var item in Model.List)
-                                {
-                                    <tr>
-                                        <td>@item.SetKey</td>
-                                        <td>@item.SetValue</td>
-                                        <td>
-                                            @item.SetBase
-                                        </td>
-                                    </tr>
-
-
-                                }
+                            @foreach (var item in Model.List)
+                            {
+                                <tr>
+                                    <td>@item.SetKey</td>
+                                    <td>@item.SetValue</td>
+                                    <td>
+                                        @item.SetBase
+                                    </td>
+                                </tr>
+                            }
                             </tbody>
                         </table>
                     </div>

@@ -1,25 +1,16 @@
 using Application.Common;
-using Microsoft.EntityFrameworkCore;
-using Serilog;
-using Domain.ShopModels;
-using Application.Interfaces;
 using Application.Interfaces.Context;
-using Domain.SaleInModels;
+using Application.Product;
+using FluentValidation.AspNetCore;
 using infrastructure.Context;
 using Microsoft.AspNetCore.Connections;
-using Microsoft.AspNetCore.Mvc;
-using FluentValidation;
-using FluentValidation.AspNetCore;
-using System.ComponentModel.DataAnnotations;
-using Application.Product;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
 using SaleInWeb;
-using System.Reflection;
+using Serilog;
 
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
-    
     .CreateLogger();
 
 Log.Information("شروع راه اندازی");
@@ -34,7 +25,7 @@ try
     var configuration = builder.Configuration;
     Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(configuration).CreateLogger();
 
-    builder.Services.AddRazorPages().AddMvcOptions(x=>x.Filters.Add<Security>());
+    builder.Services.AddRazorPages().AddMvcOptions(x => x.Filters.Add<Security>());
 
     #region IOC
 
@@ -45,9 +36,8 @@ try
     builder.Services.AddFluentValidationAutoValidation();
     builder.Services.AddFluentValidationClientsideAdapters();
     RegisterServices.Configure(builder.Services);
+
     #endregion
-
-
 
 
     builder.Services.AddSession(options =>
@@ -70,7 +60,7 @@ try
 
         if (httpContext == null) return;
         string session = null;
-        
+
         #region Implement Manual Select Branch
 
         var connectionString = configuration.GetConnectionString("shopConnection");
@@ -79,7 +69,7 @@ try
             InitialCatalog = "876812d7-85ec-4706-9eef-fe26f206e794"
         };
         httpContext.Session.SetStringText("Branch", connection);
-        var baseConfig = httpContext.Session.GetJson<BaseConfigDto>("BaseConfig") ?? new BaseConfigDto()
+        var baseConfig = httpContext.Session.GetJson<BaseConfigDto>("BaseConfig") ?? new BaseConfigDto
         {
             FisPeriodUId = new Guid("876812d7-85ec-4706-9eef-fe26f206e794"),
             BusUnitUId = new Guid("c75701ae-e064-4718-a96f-09ae5858b0c2")
@@ -88,10 +78,10 @@ try
 
         #endregion
 
-       
+
         try
         {
-             session = httpContext.Session.GetConnectionString("Branch"); //branch connection
+            session = httpContext.Session.GetConnectionString("Branch"); //branch connection
             options.UseSqlServer(session);
         }
         catch (Exception exception)
@@ -100,6 +90,7 @@ try
             throw new ConnectionAbortedException($"Can't Connect to this Connection {session} because {exception}");
         }
     });
+
     #endregion
 
     builder.Services.AddEndpointsApiExplorer();
@@ -126,7 +117,6 @@ try
     app.MapRazorPages();
 
     app.Run();
-
 }
 catch (Exception ex)
 {
@@ -137,4 +127,3 @@ finally
     Log.Information("Shut down complete");
     Log.CloseAndFlush();
 }
-

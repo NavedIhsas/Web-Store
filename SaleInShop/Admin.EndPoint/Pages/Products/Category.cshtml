@@ -31,43 +31,41 @@
                     <div class="table-responsive mb-4 mt-4">
                         <table id="dataTable" class="table table-hover table-bordered cell-border row-border" style="width:100%">
                             <thead>
-                                <tr>
-                                    <th>نام</th>
-                                    <th>کد</th>
-                                    <th> وضعیت </th>
-                                    <th> گروه اصلی </th>
-                                    <th class="no-content"></th>
-                                </tr>
+                            <tr>
+                                <th>نام</th>
+                                <th>کد</th>
+                                <th> وضعیت </th>
+                                <th> گروه اصلی </th>
+                                <th class="no-content"></th>
+                            </tr>
                             </thead>
                             <tbody>
-                                @foreach (var item in Model.List)
-                                {
-                                    <tr>
-                                        <td>@item.Name</td>
-                                        <td>@item.Code</td>
-                                        <td>
-                                            @if (item.Status == false)
-                                            {
-                                                <span class="text text-danger">غیرفعال</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="text text-success">فعال</span>
-                                            }
-                                        </td>
-                                        <td>
-                                            @item.Sub
-                                        </td>
+                            @foreach (var item in Model.List)
+                            {
+                                <tr>
+                                    <td>@item.Name</td>
+                                    <td>@item.Code</td>
+                                    <td>
+                                        @if (item.Status == false)
+                                        {
+                                            <span class="text text-danger">غیرفعال</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text text-success">فعال</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @item.Sub
+                                    </td>
 
 
-                                        <td>
-                                            <button onclick="Edit('@item.Id','@item.Name','@item.Code','@item.CodeValue','@item.ParentId','@item.Status')" class="btn btn-warning btn-rounded btn-sm">ویرایش</button>
-                                            <button onclick="Remove('@item.Id')" class="btn btn-danger btn-rounded btn-sm">حذف</button>
-                                        </td>
-                                    </tr>
-
-
-                                }
+                                    <td>
+                                        <button onclick="Edit('@item.Id','@item.Name','@item.Code','@item.CodeValue','@item.ParentId','@item.Status')" class="btn btn-warning btn-rounded btn-sm">ویرایش</button>
+                                        <button onclick="Remove('@item.Id')" class="btn btn-danger btn-rounded btn-sm">حذف</button>
+                                    </td>
+                                </tr>
+                            }
                             </tbody>
                         </table>
                     </div>
@@ -83,9 +81,11 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content" style="width:700px !Important">
             <div class="modal-header">
-                <h5 class="modal-title text-center" id="exampleModalLabel1">  ویرایش گروه جدید</h5>
+                <h5 class="modal-title text-center" id="exampleModalLabel1"> ویرایش گروه جدید</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+                        <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
                 </button>
             </div>
             <form method="post" class="needs-validation" name="submitEditForm" id="submitEditForm">
@@ -104,11 +104,11 @@
                             </div>
 
                             <div class="col-md-6 mb-4">
-                              
-                                <label for="Group">کد گروه  </label>
+
+                                <label for="Group">کد گروه </label>
                                 <input asp-for="Command.Code" oninput="getCode(this.value)" onkeypress="validate(event)" type="text" class="form-control basic" placeholder="کد گروه">
                                 <span asp-validation-for="Command.Code" class="error"></span>
-                              
+
                             </div>
 
 
@@ -116,8 +116,8 @@
 
                         <div class="form-row">
                             <div class="col-md-6 mb-4">
-                                <label for="Group">گروه اصلی  </label>
-                                <select type="text" onchange="changeGroup()" id="editParentId" asp-for="Command.ParentId" class="form-control pb-5" asp-items="@(new SelectList(Model.SelectList,"Id","Name"))" >
+                                <label for="Group">گروه اصلی </label>
+                                <select type="text" onchange="changeGroup()" id="editParentId" asp-for="Command.ParentId" class="form-control pb-5" asp-items="@(new SelectList(Model.SelectList, "Id", "Name"))">
                                     <option value="0">-- گروه اصلی --</option>
                                 </select>
                                 <span asp-validation-for="Command.ParentId" class="error"></span>
@@ -133,13 +133,13 @@
                             </div>
                         </div>
                         <input type="hidden" class="hidden" asp-for="Command.CodeValue"/>
-                        <input type="hidden" class="hidden" asp-for="Command.Id" />
+                        <input type="hidden" class="hidden" asp-for="Command.Id"/>
                     </div>
 
                 </div>
                 <div class="modal-footer">
                     <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> انصراف</button>
-                    <a  id="editCategory" class="btn btn-primary">ذخیره</a>
+                    <a id="editCategory" class="btn btn-primary">ذخیره</a>
                 </div>
             </form>
 
@@ -148,14 +148,15 @@
 </div>
 
 
-
 <div class="modal fade" id="add-category" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content" style="width:700px !Important">
             <div class="modal-header">
-                <h5 class="modal-title text-center" id="exampleModalLabel">  افزودن گروه جدید</h5>
+                <h5 class="modal-title text-center" id="exampleModalLabel"> افزودن گروه جدید</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+                        <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
                 </button>
             </div>
             <form method="post" class="needs-validation" name="submitForm" id="submitForm">
@@ -188,8 +189,8 @@
 
                         <div class="form-row">
                             <div class="col-md-6 mb-4">
-                                <label for="Group">گروه اصلی  </label>
-                                <select type="text" onchange="changeGroup()" asp-for="Command.ParentId" class="form-control pb-5" id="Group" asp-items="@(new SelectList(Model.SelectList,"Id","Name"))" placeholder="وضعیت" value="شاپ" required>
+                                <label for="Group">گروه اصلی </label>
+                                <select type="text" onchange="changeGroup()" asp-for="Command.ParentId" class="form-control pb-5" id="Group" asp-items="@(new SelectList(Model.SelectList, "Id", "Name"))" placeholder="وضعیت" value="شاپ" required>
                                     <option value="0">-- گروه اصلی --</option>
                                 </select>
                                 <span asp-validation-for="Command.ParentId" class="error"></span>
@@ -204,8 +205,8 @@
                                 <span asp-validation-for="Command.Status" class="error"></span>
                             </div>
                         </div>
-                        <input type="hidden" id="id" asp-for="Command.Id" value="@(Guid.NewGuid())" />
-                        <input type="hidden" class="hidden" asp-for="Command.CodeValue" id="setCode" />
+                        <input type="hidden" id="id" asp-for="Command.Id" value="@(Guid.NewGuid())"/>
+                        <input type="hidden" class="hidden" asp-for="Command.CodeValue" id="setCode"/>
                     </div>
 
                 </div>
@@ -219,6 +220,7 @@
     </div>
 </div>
 <!--  END CONTENT AREA  -->
+
 @section Scripts
 {
 
@@ -272,7 +274,7 @@
                 return false;
 
             $.ajax({
-                url: '@Url.Page(null,"Edit")',
+                url: '@Url.Page(null, "Edit")',
                 data: new FormData(document.forms.submitEditForm),
                 contentType: false,
                 processData: false,
