@@ -2,25 +2,40 @@
 {
     public class CreateUnit
     {
+        public CreateUnit()=> Id = Guid.NewGuid();
         public Guid Id{ get; set; }
         public string Name { get; set; }
         public string Code { get; set; }
-        public string Status { get; set; }
+        public bool Status { get; set; } = true;
     }
 
-    public class EditUnit:CreateUnit{}
+    public class EditUnit : CreateUnit
+    {
+        public EditUnit()=> Id = Guid.NewGuid();
+    }
     public class UnitDto : CreateUnit { }
 
     public class CreateWareHouse
     {
+        public Guid Id { get; set; }=Guid.NewGuid();
+        public string Name { get; set; }
+        public string Code { get; set; }
+        public bool Status { get; set; } = true;
+    }
+
+    public class UpdateWareHouse : CreateWareHouse
+    {
+        public UpdateWareHouse() => Id = Guid.NewGuid();
+    }
+
+
+    public class WareHouseDto
+    {
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Code { get; set; }
-        public string Status { get; set; }
+        public bool Status { get; set; } = true;
     }
-
-    public class UpdateWareHouse:CreateWareHouse{}
-    public class WareHouseDto:CreateWareHouse{}
 
 
     public class CreateAccountClubType

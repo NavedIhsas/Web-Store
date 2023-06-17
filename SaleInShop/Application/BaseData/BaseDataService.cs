@@ -1,10 +1,12 @@
-﻿using Application.BaseData.Dto;
+﻿using System.Data;
+using Application.BaseData.Dto;
 using Application.Common;
 using Application.Interfaces.Context;
 using AutoMapper;
 using Domain.ShopModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
@@ -16,9 +18,10 @@ namespace Application.BaseData
     {
         JsonResult GetAllUnit(JqueryDatatableParam param);
         ResultDto CreateUnit(CreateUnit command);
-        ResultDto RemoveUnit(Guid id);
+        ResultDto<List<UnitDto>> RemoveUnit(Guid id);
         ResultDto UpdateUnit(EditUnit command);
 
+        JsonResult GetAllWareHouse(JqueryDatatableParam param);
         ResultDto CreateWareHouse(CreateWareHouse command);
         ResultDto RemoveWareHouse(Guid id);
         ResultDto UpdateWareHouse(UpdateWareHouse command);
@@ -47,46 +50,40 @@ namespace Application.BaseData
 
         public JsonResult GetAllUnit(JqueryDatatableParam param)
         {
-            
+
             var list = _shopContext.UnitOfMeasurements.AsNoTracking();
 
             if (!string.IsNullOrEmpty(param.SSearch))
-            {
-                list = list.Where(x => x.UomName.ToLower().Contains(param.SSearch.ToLower())
-                                                 || x.UomCode.ToLower().Contains(param.SSearch.ToLower()));
-
-            }
+                list = list.Where(x => x.UomName.ToLower().Contains(param.SSearch.ToLower()));
 
             var sortColumnIndex = Convert.ToInt32(_contextAccessor.HttpContext.Request.Query["iSortCol_0"]);
             var sortDirection = _contextAccessor.HttpContext.Request.Query["sSortDir_0"];
 
-            if (sortColumnIndex == 3)
+            switch (sortColumnIndex)
             {
-                list = sortDirection == "asc" ? list.OrderBy(c => c.UomCode) : list.OrderByDescending(c => c.UomCode);
-            }
-            else if (sortColumnIndex == 4)
-            {
-                list = sortDirection == "asc" ? list.OrderBy(c => c.UomName) : list.OrderByDescending(c => c.UomName);
-            }
+                case 3:
+                    list = sortDirection == "asc" ? list.OrderBy(c => c.UomCode) : list.OrderByDescending(c => c.UomCode);
+                    break;
+                case 4:
+                    list = sortDirection == "asc" ? list.OrderBy(c => c.UomName) : list.OrderByDescending(c => c.UomName);
+                    break;
+                default:
+                {
+                    string OrderingFunction(UnitOfMeasurement e) => sortColumnIndex == 0 ? e.UomName : e.UomCode;
+                    IOrderedEnumerable<UnitOfMeasurement> rr = null;
+                    rr = sortDirection == "asc" ? list.AsEnumerable().OrderBy((Func<UnitOfMeasurement, string>)OrderingFunction) : list.AsEnumerable().OrderByDescending((Func<UnitOfMeasurement, string>)OrderingFunction);
 
-            else
-            {
-                Func<UnitOfMeasurement, string> orderingFunction = e => sortColumnIndex == 0 ? e.UomName :
-                                                               sortColumnIndex == 1 ? e.UomCode :
-                                                               e.UomCode;
-                IOrderedEnumerable<UnitOfMeasurement> rr = null;
-                rr = sortDirection == "asc" ? list.AsEnumerable().OrderBy(orderingFunction) : list.AsEnumerable().OrderByDescending(orderingFunction);
-
-                list = rr.AsQueryable();
+                    list = rr.AsQueryable();
+                    break;
+                }
             }
 
             IQueryable<UnitOfMeasurement> displayResult;
             if (param.IDisplayLength != 0)
-                displayResult = list.Skip(param.iDisplayStart)
+                displayResult = list.Skip(param.IDisplayStart)
                 .Take(param.IDisplayLength);
             else displayResult = list;
             var totalRecords = list.Count();
-
             var map = _mapper.Map<List<UnitDto>>(displayResult.ToList());
 
             var result = (new
@@ -131,7 +128,7 @@ namespace Application.BaseData
 
                 if (_shopContext.UnitOfMeasurements.Any(x => x.UomName == command.Name.Fix() && x.UomUid != command.Id))
                     return result.Failed(ValidateMessage.Duplicate);
-                var addUnit = _mapper.Map(command, unit);
+                var addUnit = _mapper.Map(command,unit);
                 _shopContext.UnitOfMeasurements.Update(addUnit);
                 _shopContext.SaveChanges();
                 return result.Succeeded();
@@ -144,9 +141,9 @@ namespace Application.BaseData
         }
 
 
-        public ResultDto RemoveUnit(Guid id)
+        public ResultDto<List<UnitDto>> RemoveUnit(Guid id)
         {
-            var result = new ResultDto();
+            var result = new ResultDto<List<UnitDto>>();
             try
             {
                 var unit = _shopContext.UnitOfMeasurements.Find(id);
@@ -158,7 +155,12 @@ namespace Application.BaseData
 
                 _shopContext.UnitOfMeasurements.Remove(unit);
                 _shopContext.SaveChanges();
-                return result.Succeeded();
+                return result.Succeeded(null);
+            }
+
+            catch (DbUpdateException ex)
+            {
+                return result.Failed("این رکورد در جا های دیگری از برنامه استفاده شده و قابل حذف نمیباشد.");
             }
             catch (Exception exception)
             {
@@ -170,6 +172,55 @@ namespace Application.BaseData
         #endregion
 
         #region Unit Of WareHouse
+
+        
+        public JsonResult GetAllWareHouse(JqueryDatatableParam param)
+        {
+
+            var list = _shopContext.WareHouses.AsNoTracking();
+
+            if (!string.IsNullOrEmpty(param.SSearch))
+                list = list.Where(x => x.WarHosName.ToLower().Contains(param.SSearch.ToLower()));
+
+            var sortColumnIndex = Convert.ToInt32(_contextAccessor.HttpContext.Request.Query["iSortCol_0"]);
+            var sortDirection = _contextAccessor.HttpContext.Request.Query["sSortDir_0"];
+
+            switch (sortColumnIndex)
+            {
+                case 3:
+                    list = sortDirection == "asc" ? list.OrderBy(c => c.WarHosCode) : list.OrderByDescending(c => c.WarHosCode);
+                    break;
+                case 4:
+                    list = sortDirection == "asc" ? list.OrderBy(c => c.WarHosName) : list.OrderByDescending(c => c.WarHosName);
+                    break;
+                default:
+                    {
+                        string OrderingFunction(WareHouse e) => sortColumnIndex == 0 ? e.WarHosName : e.WarHosCode;
+                        IOrderedEnumerable<WareHouse> rr = null;
+                        rr = sortDirection == "asc" ? list.AsEnumerable().OrderBy((Func<WareHouse, string>)OrderingFunction) : list.AsEnumerable().OrderByDescending((Func<WareHouse, string>)OrderingFunction);
+
+                        list = rr.AsQueryable();
+                        break;
+                    }
+            }
+
+            IQueryable<WareHouse> displayResult;
+            if (param.IDisplayLength != 0)
+                displayResult = list.Skip(param.IDisplayStart)
+                .Take(param.IDisplayLength);
+            else displayResult = list;
+            var totalRecords = list.Count();
+            var map = _mapper.Map<List<WareHouseDto>>(displayResult.ToList());
+
+            var result = (new
+            {
+                param.SEcho,
+                iTotalRecords = totalRecords,
+                iTotalDisplayRecords = totalRecords,
+                aaData = map
+            });
+            return new JsonResult(result, new JsonSerializerOptions { PropertyNamingPolicy = null });
+        }
 
         public ResultDto CreateWareHouse(CreateWareHouse command)
         {

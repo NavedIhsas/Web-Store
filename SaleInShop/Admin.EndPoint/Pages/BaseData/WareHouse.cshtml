@@ -1,16 +1,14 @@
 ﻿@page
-@using Microsoft.EntityFrameworkCore.Metadata.Internal
-@model SaleInWeb.Pages.BaseData.UnitMeasurementModel
+@model SaleInWeb.Pages.BaseData.WareHouseModel
 @{
-    ViewData["Title"] = "واحد شمارش";
+    ViewData["Title"] = "انبار";
 }
-
 <div id="content" class="main-content">
     <div class="layout-px-spacing">
 
         <div class="page-header">
             <div class="page-title">
-                <h3>واحد شمارش</h3>
+                <h3>انبار</h3>
             </div>
         </div>
 
@@ -19,7 +17,7 @@
             <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
                 <div class="widget-content widget-content-area br-6">
                     <div class="text-center">
-                        <button onclick="Add()" class="btn btn-success ">افزودن واحد شمارش جدید</button>
+                        <button onclick="Add()" class="btn btn-success ">افزودن انبار جدید</button>
                     </div>
                     <div class="table-responsive mb-4 mt-4">
                         <table id="dataTable_1" class="table table-hover table-bordered cell-border row-border" style="width:100%">
@@ -49,7 +47,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content" style="width:700px !Important">
             <div class="modal-header">
-                <h5 class="modal-title text-center" id="exampleModalLabel1"> ویرایش واحد شمارش </h5>
+                <h5 class="modal-title text-center" id="exampleModalLabel1"> ویرایش انبار </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -101,7 +99,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content" style="width:700px !Important">
             <div class="modal-header">
-                <h5 class="modal-title text-center" id="exampleModalLabel1"> ویرایش واحد شمارش </h5>
+                <h5 class="modal-title text-center" id="exampleModalLabel1"> ویرایش انبار </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -155,7 +153,7 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
-    <script src="~/source/js/basedata/unitmeasurement.js"></script>
+    <script src="~/source/js/basedata/wareHouse.js"></script>
 
 
 }

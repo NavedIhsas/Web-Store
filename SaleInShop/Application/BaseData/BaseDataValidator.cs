@@ -12,4 +12,16 @@ namespace Application.BaseData
             this.RuleFor(x=>x.Code).NotEmpty().WithMessage(ValidateMessage.Required);
         }
     }
+
+     internal class WareHouseValidator:AbstractValidator<CreateWareHouse>
+    {
+        public WareHouseValidator()
+        {
+            this.RuleFor(x=>x.Name).NotEmpty().WithMessage(ValidateMessage.Required);
+            this.RuleFor(x=>x.Code).NotEmpty().WithMessage(ValidateMessage.Required);
+        }
+    }
+
+
+
 }
