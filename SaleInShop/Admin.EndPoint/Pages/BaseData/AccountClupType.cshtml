@@ -1,0 +1,259 @@
+﻿@page
+@model SaleInWeb.Pages.BaseData.AccountClupTypeModel
+@{
+}
+
+<div id="content" class="main-content">
+    <div class="layout-px-spacing">
+
+        <div class="page-header">
+            <div class="page-title">
+                <h3>نوع اشتراک</h3>
+            </div>
+        </div>
+
+        <div class="row layout-top-spacing" id="cancel-row">
+
+            <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
+                <div class="widget-content widget-content-area br-6">
+                    <div class="text-center">
+                        <button onclick="Add()" class="btn btn-success ">افزودن نوع اشتراک جدید</button>
+                    </div>
+                    <div class="table-responsive mb-4 mt-4">
+                        <table id="dataTable_1" class="table table-hover table-bordered cell-border row-border" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>نام</th>
+                                    <th>نوع اشتراک</th>
+                                    <th>قیمت کالا</th>
+                                    <th>درصد تخفیف</th>
+                                    <th>تخفیف شعبه</th>
+                                    <th>عملیات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width:700px !Important">
+            <div class="modal-header">
+                <h5 class="modal-title text-center" id="exampleModalLabel1"> ویرایش نوع اشتراک </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <form method="post" class="needs-validation" name="submitAddForm" id="submitAddForm">
+                <div class="modal-body">
+
+                    <div class="widget-content">
+                        <div class="form-row">
+                            <div class="col-md-6 mb-4">
+                                <label for="">
+                                    قیمت کالا در فاکتور
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select asp-for="Command1.PriceInvoice" type="text" class="form-control basic" placeholder="قیمت کالا ">
+                                    <option>--انتخاب--</option>
+                                    <option value="0">صفر</option>
+                                    <option value="1">سطح 1</option>
+                                    <option value="2">سطح 2</option>
+                                    <option value="3">سطح 3</option>
+                                    <option value="4">سطح 4</option>
+                                    <option value="5">سطح 5</option>
+                                </select>
+                                <span asp-validation-for="Command1.PriceInvoice" class="error"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+
+                                <label asp-for="Command1.DetDiscount">
+                                    نوع اشتراک
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select asp-for="Command1.Name" type="text" class="form-control basic" placeholder="  نوع اشتراک ">
+                                    <option>--انتخاب--</option>
+                                    <option value="0">عادی</option>
+                                    <option value="1">عامل فروش</option>
+                                    <option value="2">پرسنل</option>
+                                    <option value="3">سایر</option>
+                                </select>
+                                <span asp-validation-for="Command1.Name" class="error"></span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-6 mb-4">
+                                <label for="">
+                                    درصد تخفیف
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="number" max="100" class="form-control basic" asp-for="Command1.PercentDiscount" placeholder="درصد تخفیف ">
+                                <span asp-validation-for="Command1.PercentDiscount" class="error"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+
+                                <label asp-for="Command1.DetDiscount">
+                                    نوع تخفیف
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select asp-for="Command1.DiscountType" type="text" class="form-control basic" placeholder="نوع تخفیف ">
+                                    <option>انتخاب</option>
+                                    <option value="0">کسر از فاکتور</option>
+                                    <option value="1">شارژ باشگاه</option>
+                                </select>
+                                <span asp-validation-for="Command1.DiscountType" class="error"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="col-md-6 mb-4">
+                                <label for="">
+                                    تخفیف شعبه
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="number" class="form-control basic" asp-for="Command1.DetDiscount" placeholder=" تخفیف شعبه ">
+                                <span asp-validation-for="Command1.DetDiscount" class="error"></span>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> انصراف</button>
+                    <a id="addSubmit" class="btn btn-primary">ویرایش</a>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width:700px !Important">
+            <div class="modal-header">
+                <h5 class="modal-title text-center" id="exampleModalLabel1"> ویرایش نوع اشتراک </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <form method="post" class="needs-validation" name="submitEditForm" id="submitEditForm">
+                <div class="modal-body">
+
+                    <div class="widget-content">
+                        <div class="form-row">
+                            <div class="col-md-6 mb-4">
+                                <label for="">
+                                    قیمت کالا در فاکتور
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select asp-for="Command1.PriceInvoice" type="text" class="form-control basic" placeholder="قیمت کالا ">
+                                    <option>--انتخاب--</option>
+                                    <option value="0">صفر</option>
+                                    <option value="1">سطح 1</option>
+                                    <option value="2">سطح 2</option>
+                                    <option value="3">سطح 3</option>
+                                    <option value="4">سطح 4</option>
+                                    <option value="5">سطح 5</option>
+                                </select>
+                                <span asp-validation-for="Command1.PriceInvoice" class="error"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+
+                                <label asp-for="Command1.DetDiscount">
+                                    نوع اشتراک
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select asp-for="Command1.Name" type="text" class="form-control basic" placeholder="  نوع اشتراک ">
+                                    <option>--انتخاب--</option>
+                                    <option value="0">عادی</option>
+                                    <option value="1">عامل فروش</option>
+                                    <option value="2">پرسنل</option>
+                                    <option value="3">سایر</option>
+                                </select>
+                                <span asp-validation-for="Command1.Name" class="error"></span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-6 mb-4">
+                                <label for="">
+                                    درصد تخفیف
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="number" max="100" class="form-control basic" asp-for="Command1.PercentDiscount" placeholder="درصد تخفیف ">
+                                <span asp-validation-for="Command1.PercentDiscount" class="error"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+
+                                <label asp-for="Command1.DetDiscount">
+                                    نوع تخفیف
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select asp-for="Command1.DiscountType" type="text" class="form-control basic" placeholder="نوع تخفیف ">
+                                    <option>انتخاب</option>
+                                    <option value="0">کسر از فاکتور</option>
+                                    <option value="1">شارژ باشگاه</option>
+                                </select>
+                                <span asp-validation-for="Command1.DiscountType" class="error"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="col-md-6 mb-4">
+                                <label for="">
+                                    تخفیف شعبه
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="number" class="form-control basic" asp-for="Command1.DetDiscount" placeholder=" تخفیف شعبه ">
+                                <span asp-validation-for="Command1.DetDiscount" class="error"></span>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> انصراف</button>
+                    <a id="editSubmit" class="btn btn-primary">ویرایش</a>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts
+    {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script src="~/source/js/basedata/AccountClup.js"></script>
+
+
+}

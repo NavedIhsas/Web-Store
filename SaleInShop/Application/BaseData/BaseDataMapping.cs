@@ -41,6 +41,31 @@ namespace Application.BaseData
                 .ForMember(x => x.Status, opt => opt.MapFrom(x => x.WarHosStatus ));
 
 
+             this.CreateMap<AccountClubType, AccountClubTypeDto>()
+                 .ForMember(x => x.Id, opt => opt.MapFrom(x => x.AccClbTypUid))
+                 .ForMember(x => x.Name, opt => opt.MapFrom(x => x.AccClbTypName))
+                 .ForMember(x => x.PriceInvoice, opt => opt.MapFrom(x => x.AccClbTypDefaultPriceInvoice))
+                 .ForMember(x => x.DiscountType, opt => opt.MapFrom(x => x.AccClbTypDiscountType))
+                 .ForMember(x => x.DetDiscount, opt => opt.MapFrom(x => x.AccClbTypDetDiscount))
+                 .ForMember(x => x.PercentDiscount, opt => opt.MapFrom(x => x.AccClbTypPercentDiscount));
+
+             this.CreateMap<CreateAccountClubType, AccountClubType>()
+                 .ForMember(x => x.AccClbTypUid, opt => opt.MapFrom(x => x.Id))
+                 .ForMember(x => x.AccClbTypName, opt => opt.MapFrom(x => x.Name))
+                 .ForMember(x => x.AccClbTypDefaultPriceInvoice, opt => opt.MapFrom(x => x.PriceInvoice))
+                 .ForMember(x => x.AccClbTypDiscountType, opt => opt.MapFrom(x => x.DiscountType))
+                 .ForMember(x => x.AccClbTypPercentDiscount, opt => opt.MapFrom(x => x.PercentDiscount))
+                 .ForMember(x => x.AccClbTypDetDiscount, opt => opt.MapFrom(x => x.DetDiscount));
+           
+             this.CreateMap<UpdateAccountClubType, AccountClubType>()
+                 .ForMember(x => x.AccClbTypUid, opt => opt.MapFrom(x => x.Id))
+                 .ForMember(x => x.AccClbTypName, opt => opt.MapFrom(x => x.Name))
+                 .ForMember(x => x.AccClbTypDefaultPriceInvoice, opt => opt.MapFrom(x => x.PriceInvoice))
+                 .ForMember(x => x.AccClbTypDiscountType, opt => opt.MapFrom(x => x.DiscountType))
+                 .ForMember(x => x.AccClbTypPercentDiscount, opt => opt.MapFrom(x => x.PercentDiscount))
+                 .ForMember(x => x.AccClbTypDetDiscount, opt => opt.MapFrom(x => x.DetDiscount));
+
+
         }
     }
 }

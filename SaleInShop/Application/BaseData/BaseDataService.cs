@@ -26,6 +26,7 @@ namespace Application.BaseData
         ResultDto RemoveWareHouse(Guid id);
         ResultDto UpdateWareHouse(UpdateWareHouse command);
 
+        JsonResult GetAllAccountClupType(JqueryDatatableParam param);
         ResultDto CreateAccountClubType(CreateAccountClubType command);
         ResultDto RemoveAccountClubType(Guid id);
         ResultDto UpdateAccountClubType(UpdateAccountClubType command);
@@ -102,6 +103,11 @@ namespace Application.BaseData
             {
                 if (_shopContext.UnitOfMeasurements.Any(x => x.UomName == command.Name.Fix()))
                     return result.Failed(ValidateMessage.Duplicate);
+                
+                if (_shopContext.UnitOfMeasurements.Any(x => x.UomCode == command.Code.Fix()))
+                    return result.Failed(ValidateMessage.DuplicateCode);
+
+
                 var unit = _mapper.Map<UnitOfMeasurement>(command);
                 _shopContext.UnitOfMeasurements.Add(unit);
                 _shopContext.SaveChanges();
@@ -229,6 +235,10 @@ namespace Application.BaseData
             {
                 if (_shopContext.WareHouses.Any(x => x.WarHosName == command.Name.Fix()))
                     return result.Failed(ValidateMessage.Duplicate);
+
+                if (_shopContext.WareHouses.Any(x => x.WarHosName == command.Code.Fix()))
+                    return result.Failed(ValidateMessage.DuplicateCode);
+
                 var unit = _mapper.Map<WareHouse>(command);
                 _shopContext.WareHouses.Add(unit);
                 _shopContext.SaveChanges();
@@ -255,6 +265,11 @@ namespace Application.BaseData
 
                 if (_shopContext.WareHouses.Any(x => x.WarHosName == command.Name.Fix() && x.WarHosUid != command.Id))
                     return result.Failed(ValidateMessage.Duplicate);
+
+                if (_shopContext.WareHouses.Any(x => x.WarHosCode == command.Code.Fix() && x.WarHosUid !=command.Id))
+                    return result.Failed(ValidateMessage.DuplicateCode);
+
+
                 var map = _mapper.Map(command, wareHouse);
                 _shopContext.WareHouses.Update(map);
                 _shopContext.SaveChanges();
@@ -295,6 +310,78 @@ namespace Application.BaseData
 
         #region Unit Of AccountClubType
 
+
+
+        public JsonResult GetAllAccountClupType(JqueryDatatableParam param)
+        {
+
+            var list = _shopContext.AccountClubTypes.AsNoTracking();
+
+            if (!string.IsNullOrEmpty(param.SSearch))
+            {
+                list = list.Where(x => 
+                    x.AccClbTypName.ToLower().Contains(param.SSearch.ToLower())
+                   
+                    );
+            }
+
+            var sortColumnIndex = Convert.ToInt32(_contextAccessor.HttpContext.Request.Query["iSortCol_0"]);
+            var sortDirection = _contextAccessor.HttpContext.Request.Query["sSortDir_0"];
+
+            switch (sortColumnIndex)
+            {
+                case 3:
+                    list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbTypName) : list.OrderByDescending(c => c.AccClbTypName);
+                    break;
+                case 4:
+                    list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbTypDefaultPriceInvoice) : list.OrderByDescending(c => c.AccClbTypDefaultPriceInvoice);
+                    break;
+
+                    case 5:
+                    list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbTypDiscountType) : list.OrderByDescending(c => c.AccClbTypDiscountType);
+                    break;
+                 
+                    case 6:
+                    list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbTypDetDiscount) : list.OrderByDescending(c => c.AccClbTypDetDiscount);
+                    break;
+
+
+                default:
+                {
+                    string OrderingFunction(AccountClubType e) => sortColumnIndex == 0 ? e.AccClbTypName :"";
+                    IOrderedEnumerable<AccountClubType> rr = null;
+
+                  rr = sortDirection == "asc"
+                      ? list.AsEnumerable().OrderBy((Func<AccountClubType, string>)OrderingFunction)
+                      : list.AsEnumerable().OrderByDescending((Func<AccountClubType, string>)OrderingFunction);
+
+                    list = rr.AsQueryable();
+                    break;
+                }
+            }
+
+            IQueryable<AccountClubType> displayResult;
+            if (param.IDisplayLength != 0)
+                displayResult = list.Skip(param.IDisplayStart)
+                .Take(param.IDisplayLength);
+            else displayResult = list;
+            var totalRecords = list.Count();
+            var map = _mapper.Map<List<AccountClubTypeDto>>(displayResult.ToList());
+
+            var result = (new
+            {
+                param.SEcho,
+                iTotalRecords = totalRecords,
+                iTotalDisplayRecords = totalRecords,
+                aaData = map
+            });
+            return new JsonResult(result, new JsonSerializerOptions { PropertyNamingPolicy = null });
+        }
+
+
+
+
+
         public ResultDto CreateAccountClubType(CreateAccountClubType command)
         {
             var result = new ResultDto();
@@ -302,6 +389,8 @@ namespace Application.BaseData
             {
                 if (_shopContext.AccountClubTypes.Any(x => x.AccClbTypName == command.Name.Fix()))
                     return result.Failed(ValidateMessage.Duplicate);
+
+
                 var account = _mapper.Map<AccountClubType>(command);
                 _shopContext.AccountClubTypes.Add(account);
                 _shopContext.SaveChanges();

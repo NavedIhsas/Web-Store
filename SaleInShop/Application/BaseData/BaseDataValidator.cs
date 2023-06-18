@@ -22,6 +22,15 @@ namespace Application.BaseData
         }
     }
 
+      internal class AccountClupTypeValidator:AbstractValidator<CreateAccountClubType>
+    {
+        public AccountClupTypeValidator()
+        {
+            this.RuleFor(x=>x.Name).NotEmpty().WithMessage(ValidateMessage.Required);
+            this.RuleFor(x=>x.DiscountType).NotEmpty().WithMessage(ValidateMessage.Required);
+        }
+    }
+
 
 
 }

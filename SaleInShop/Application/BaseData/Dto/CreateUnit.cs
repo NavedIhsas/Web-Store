@@ -40,7 +40,7 @@
 
     public class CreateAccountClubType
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; set; }=Guid.NewGuid();
         public string Name { get; set; }
         public string DiscountType { get; set; }
         public string Status { get; set; }
@@ -58,7 +58,32 @@
         public double? DetDiscount { get; set; }
     }
 
-    public class UpdateAccountClubType : CreateAccountClubType { }
-    public class WareAccountClubType : CreateAccountClubType { }
+    public class UpdateAccountClubType : CreateAccountClubType
+    {
+        public UpdateAccountClubType()
+        {
+            Id = new Guid();
+        }
+    }
+
+    public class AccountClubTypeDto
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string DiscountType { get; set; }
+        public bool Status { get; set; }
+        /// <summary>
+        /// قیمت کالا
+        /// </summary>
+        public int? PriceInvoice { get; set; }
+        /// <summary>
+        /// درصد تخفیف
+        /// </summary>
+        public double? PercentDiscount { get; set; }
+        /// <summary>
+        /// تخفیف شعبه
+        /// </summary>
+        public double? DetDiscount { get; set; }
+    }
    
 }

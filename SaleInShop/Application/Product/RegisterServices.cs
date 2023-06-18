@@ -25,6 +25,7 @@ public class RegisterServices
         services.AddScoped<IValidator<CreateProperty>, CreatePropertyValidate>();
         services.AddScoped<IValidator<CreateUnit>, BaseDataValidator>();
         services.AddScoped<IValidator<CreateWareHouse>, WareHouseValidator>();
+        services.AddScoped<IValidator<CreateAccountClubType>, AccountClupTypeValidator>();
 
         services.AddAutoMapper(typeof(CategoryPrdMap));
         services.AddAutoMapper(typeof(ProductMapping));
