@@ -31,6 +31,11 @@ namespace Application.BaseData
         ResultDto RemoveAccountClubType(Guid id);
         ResultDto UpdateAccountClubType(UpdateAccountClubType command);
 
+        JsonResult GetAllAccountRating(JqueryDatatableParam param);
+        ResultDto CreateAccountRating(CreateAccountRating command);
+        ResultDto RemoveAccountRating(Guid id);
+        ResultDto UpdateAccountRating(UpdateAccountRating command);
+
 
     }
     internal class BaseDataService : IBaseDataService
@@ -69,14 +74,14 @@ namespace Application.BaseData
                     list = sortDirection == "asc" ? list.OrderBy(c => c.UomName) : list.OrderByDescending(c => c.UomName);
                     break;
                 default:
-                {
-                    string OrderingFunction(UnitOfMeasurement e) => sortColumnIndex == 0 ? e.UomName : e.UomCode;
-                    IOrderedEnumerable<UnitOfMeasurement> rr = null;
-                    rr = sortDirection == "asc" ? list.AsEnumerable().OrderBy((Func<UnitOfMeasurement, string>)OrderingFunction) : list.AsEnumerable().OrderByDescending((Func<UnitOfMeasurement, string>)OrderingFunction);
+                    {
+                        string OrderingFunction(UnitOfMeasurement e) => sortColumnIndex == 0 ? e.UomName : e.UomCode;
+                        IOrderedEnumerable<UnitOfMeasurement> rr = null;
+                        rr = sortDirection == "asc" ? list.AsEnumerable().OrderBy((Func<UnitOfMeasurement, string>)OrderingFunction) : list.AsEnumerable().OrderByDescending((Func<UnitOfMeasurement, string>)OrderingFunction);
 
-                    list = rr.AsQueryable();
-                    break;
-                }
+                        list = rr.AsQueryable();
+                        break;
+                    }
             }
 
             IQueryable<UnitOfMeasurement> displayResult;
@@ -103,7 +108,7 @@ namespace Application.BaseData
             {
                 if (_shopContext.UnitOfMeasurements.Any(x => x.UomName == command.Name.Fix()))
                     return result.Failed(ValidateMessage.Duplicate);
-                
+
                 if (_shopContext.UnitOfMeasurements.Any(x => x.UomCode == command.Code.Fix()))
                     return result.Failed(ValidateMessage.DuplicateCode);
 
@@ -134,7 +139,7 @@ namespace Application.BaseData
 
                 if (_shopContext.UnitOfMeasurements.Any(x => x.UomName == command.Name.Fix() && x.UomUid != command.Id))
                     return result.Failed(ValidateMessage.Duplicate);
-                var addUnit = _mapper.Map(command,unit);
+                var addUnit = _mapper.Map(command, unit);
                 _shopContext.UnitOfMeasurements.Update(addUnit);
                 _shopContext.SaveChanges();
                 return result.Succeeded();
@@ -179,7 +184,7 @@ namespace Application.BaseData
 
         #region Unit Of WareHouse
 
-        
+
         public JsonResult GetAllWareHouse(JqueryDatatableParam param)
         {
 
@@ -266,7 +271,7 @@ namespace Application.BaseData
                 if (_shopContext.WareHouses.Any(x => x.WarHosName == command.Name.Fix() && x.WarHosUid != command.Id))
                     return result.Failed(ValidateMessage.Duplicate);
 
-                if (_shopContext.WareHouses.Any(x => x.WarHosCode == command.Code.Fix() && x.WarHosUid !=command.Id))
+                if (_shopContext.WareHouses.Any(x => x.WarHosCode == command.Code.Fix() && x.WarHosUid != command.Id))
                     return result.Failed(ValidateMessage.DuplicateCode);
 
 
@@ -319,10 +324,18 @@ namespace Application.BaseData
 
             if (!string.IsNullOrEmpty(param.SSearch))
             {
-                list = list.Where(x => 
-                    x.AccClbTypName.ToLower().Contains(param.SSearch.ToLower())
-                   
-                    );
+                list = list.Where(x =>
+                    x.AccClbTypName.ToLower().Contains(param.SSearch.ToLower()));
+
+                if (!list.Any())
+                    list = list.Where(x => x.AccClbTypPercentDiscount.ToString().ToLower().Contains(param.SSearch.Fix()));
+
+                if (!list.Any())
+                    list = list.Where(x => x.AccClbTypDetDiscount.ToString().ToLower().Contains(param.SSearch.Fix()));
+
+                if (!list.Any())
+                    list = list.Where(x => x.AccClbTypDefaultPriceInvoice.ToString().ToLower().Contains(param.SSearch.Fix()));
+
             }
 
             var sortColumnIndex = Convert.ToInt32(_contextAccessor.HttpContext.Request.Query["iSortCol_0"]);
@@ -337,27 +350,27 @@ namespace Application.BaseData
                     list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbTypDefaultPriceInvoice) : list.OrderByDescending(c => c.AccClbTypDefaultPriceInvoice);
                     break;
 
-                    case 5:
+                case 5:
                     list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbTypDiscountType) : list.OrderByDescending(c => c.AccClbTypDiscountType);
                     break;
-                 
-                    case 6:
+
+                case 6:
                     list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbTypDetDiscount) : list.OrderByDescending(c => c.AccClbTypDetDiscount);
                     break;
 
 
                 default:
-                {
-                    string OrderingFunction(AccountClubType e) => sortColumnIndex == 0 ? e.AccClbTypName :"";
-                    IOrderedEnumerable<AccountClubType> rr = null;
+                    {
+                        string OrderingFunction(AccountClubType e) => sortColumnIndex == 0 ? e.AccClbTypName : "";
+                        IOrderedEnumerable<AccountClubType> rr = null;
 
-                  rr = sortDirection == "asc"
-                      ? list.AsEnumerable().OrderBy((Func<AccountClubType, string>)OrderingFunction)
-                      : list.AsEnumerable().OrderByDescending((Func<AccountClubType, string>)OrderingFunction);
+                        rr = sortDirection == "asc"
+                            ? list.AsEnumerable().OrderBy((Func<AccountClubType, string>)OrderingFunction)
+                            : list.AsEnumerable().OrderByDescending((Func<AccountClubType, string>)OrderingFunction);
 
-                    list = rr.AsQueryable();
-                    break;
-                }
+                        list = rr.AsQueryable();
+                        break;
+                    }
             }
 
             IQueryable<AccountClubType> displayResult;
@@ -367,6 +380,27 @@ namespace Application.BaseData
             else displayResult = list;
             var totalRecords = list.Count();
             var map = _mapper.Map<List<AccountClubTypeDto>>(displayResult.ToList());
+
+            foreach (var clubTypeDto in map)
+            {
+                clubTypeDto.DiscountTypeText = clubTypeDto.DiscountType switch
+                {
+                    "0" => "کسر از فاکتور",
+                    "1" => "شارژ باشگاه",
+                    _ => clubTypeDto.DiscountType
+                };
+
+                clubTypeDto.PriceInvoiceText = clubTypeDto.PriceInvoice switch
+                {
+                    0 => "صفر",
+                    1 => "سطح 1",
+                    2 => "سطح 2",
+                    3 => "سطح 3",
+                    4 => "سطح 4",
+                    5 => "سطح 5",
+                    _ => clubTypeDto.PriceInvoiceText
+                };
+            }
 
             var result = (new
             {
@@ -456,7 +490,128 @@ namespace Application.BaseData
         #endregion
 
 
+        #region  AccountRating
 
+
+        public JsonResult GetAllAccountRating(JqueryDatatableParam param)
+        {
+
+            var list = _shopContext.AccountRatings.AsNoTracking();
+
+            if (!string.IsNullOrEmpty(param.SSearch))
+                list = list.Where(x => x.AccRateName.ToLower().Contains(param.SSearch.ToLower()));
+
+            var sortColumnIndex = Convert.ToInt32(_contextAccessor.HttpContext.Request.Query["iSortCol_0"]);
+            var sortDirection = _contextAccessor.HttpContext.Request.Query["sSortDir_0"];
+
+            switch (sortColumnIndex)
+            {
+                case 3:
+                    list = sortDirection == "asc" ? list.OrderBy(c => c.AccRateName) : list.OrderByDescending(c => c.AccRateName);
+                    break;
+              
+                default:
+                    {
+                        string OrderingFunction(AccountRating e) => sortColumnIndex == 0 ? e.AccRateName : "";
+                        IOrderedEnumerable<AccountRating> rr = null;
+                        rr = sortDirection == "asc" ? list.AsEnumerable().OrderBy((Func<AccountRating, string>)OrderingFunction) : list.AsEnumerable().OrderByDescending((Func<AccountRating, string>)OrderingFunction);
+
+                        list = rr.AsQueryable();
+                        break;
+                    }
+            }
+
+            IQueryable<AccountRating> displayResult;
+            if (param.IDisplayLength != 0)
+                displayResult = list.Skip(param.IDisplayStart)
+                .Take(param.IDisplayLength);
+            else displayResult = list;
+            var totalRecords = list.Count();
+            var map = _mapper.Map<List<AccountRatingDto>>(displayResult.ToList());
+
+            var result = (new
+            {
+                param.SEcho,
+                iTotalRecords = totalRecords,
+                iTotalDisplayRecords = totalRecords,
+                aaData = map
+            });
+            return new JsonResult(result, new JsonSerializerOptions { PropertyNamingPolicy = null });
+        }
+
+        public ResultDto CreateAccountRating(CreateAccountRating command)
+        {
+            var result = new ResultDto();
+            try
+            {
+                if (_shopContext.AccountRatings.Any(x => x.AccRateName == command.Name.Fix()))
+                    return result.Failed(ValidateMessage.Duplicate);
+
+                
+                var unit = _mapper.Map<AccountRating>(command);
+                _shopContext.AccountRatings.Add(unit);
+                _shopContext.SaveChanges();
+                return result.Succeeded();
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"هنگام ثبت رتبه بندی مشترکین خطای زیر رخ داد {exception}");
+                return result.Failed("هنگام ثبت عملیات خطای رخ داد");
+            }
+        }
+
+        public ResultDto UpdateAccountRating(UpdateAccountRating command)
+        {
+            var result = new ResultDto();
+            try
+            {
+                var AccountRating = _shopContext.AccountRatings.Find(command.Id);
+                if (AccountRating == null)
+                {
+                    _logger.LogWarning($"Don't Find Any Record With Id {command.Id} On Table AccountRating");
+                    return result.Failed("خطای رخ داد، لطفا با پشتیبانی تماس بگرید");
+                }
+
+                if (_shopContext.AccountRatings.Any(x => x.AccRateName == command.Name.Fix() && x.AccRateUid != command.Id))
+                    return result.Failed(ValidateMessage.Duplicate);
+
+                var map = _mapper.Map(command, AccountRating);
+                _shopContext.AccountRatings.Update(map);
+                _shopContext.SaveChanges();
+                return result.Succeeded();
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"هنگام ویرایش رتبه بندی مشترکین خطای زیر رخ داد {exception}");
+                return result.Failed("هنگام ثبت عملیات خطای رخ داد");
+            }
+        }
+
+
+        public ResultDto RemoveAccountRating(Guid id)
+        {
+            var result = new ResultDto();
+            try
+            {
+                var unit = _shopContext.AccountRatings.Find(id);
+                if (unit == null)
+                {
+                    _logger.LogWarning($"Don't Find Any Record With Id {id} On Table AccountRating");
+                    return result.Failed("خطای رخ داد، لطفا با پشتیبانی تماس بگرید");
+                }
+
+                _shopContext.AccountRatings.Remove(unit);
+                _shopContext.SaveChanges();
+                return result.Succeeded();
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"هنگام حذف ربته بندی مشترکین خطای زیر رخ داد {exception}");
+                return result.Failed("هنگام ثبت عملیات خطای رخ داد");
+            }
+        }
+
+        #endregion
     }
 
 

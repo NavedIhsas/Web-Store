@@ -7,7 +7,7 @@ public class ProductDto
     public string PrdCode { get; set; }
     public string PrdLevelId { get; set; }
     public string PrdImage { get; set; }
-    public string PrdLvlUId { get; set; }
+    public Guid PrdLvlUId { get; set; }
     public bool? PrdStatus { get; set; }
     public decimal PrdPricePerUnit1 { get; set; }
     public string TaxName { get; set; }

@@ -41,6 +41,7 @@ namespace Application.BaseData
                 .ForMember(x => x.Status, opt => opt.MapFrom(x => x.WarHosStatus ));
 
 
+             //Account Clup
              this.CreateMap<AccountClubType, AccountClubTypeDto>()
                  .ForMember(x => x.Id, opt => opt.MapFrom(x => x.AccClbTypUid))
                  .ForMember(x => x.Name, opt => opt.MapFrom(x => x.AccClbTypName))
@@ -65,7 +66,20 @@ namespace Application.BaseData
                  .ForMember(x => x.AccClbTypPercentDiscount, opt => opt.MapFrom(x => x.PercentDiscount))
                  .ForMember(x => x.AccClbTypDetDiscount, opt => opt.MapFrom(x => x.DetDiscount));
 
-
+             //Account Rating
+             this.CreateMap<AccountRating, AccountRatingDto>()
+                 .ForMember(x => x.Id, opt => opt.MapFrom(x => x.AccRateUid))
+                 .ForMember(x => x.Name, opt => opt.MapFrom(x => x.AccRateName));
+              
+             this.CreateMap<CreateAccountRating, AccountRating>()
+                 .ForMember(x => x.AccRateUid, opt => opt.MapFrom(x => x.Id))
+                 .ForMember(x => x.AccRateName, opt => opt.MapFrom(x => x.Name));
+             
+              this.CreateMap<UpdateAccountRating, AccountRating>()
+                 .ForMember(x => x.AccRateUid, opt => opt.MapFrom(x => x.Id))
+                 .ForMember(x => x.AccRateName, opt => opt.MapFrom(x => x.Name));
+             
+             
         }
     }
 }

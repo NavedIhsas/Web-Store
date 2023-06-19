@@ -1,14 +1,15 @@
 ﻿@page
-@model SaleInWeb.Pages.BaseData.WareHouseModel
+@model SaleInWeb.Pages.BaseData.AccountRatingModel
 @{
-    ViewData["Title"] = "انبار";
+    ViewData["Title"] = "رتبه بندی مشترکین";
 }
+
 <div id="content" class="main-content">
     <div class="layout-px-spacing">
 
         <div class="page-header">
             <div class="page-title">
-                <h3>انبار</h3>
+                <h3>رتبه بندی مشترکین</h3>
             </div>
         </div>
 
@@ -17,14 +18,13 @@
             <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
                 <div class="widget-content widget-content-area br-6">
                     <div class="text-center">
-                        <button onclick="Add()" class="btn btn-success ">افزودن انبار جدید</button>
+                        <button onclick="Add()" class="btn btn-success btn-rounded btn-sm ">افزودن رکورد جدید</button>
                     </div>
                     <div class="table-responsive mb-4 mt-4">
                         <table id="dataTable_1" class="table table-hover table-bordered cell-border row-border" style="width:100%">
                             <thead>
                                 <tr>
                                     <th>نام</th>
-                                    <th>کد</th>
                                     <th>عملیات</th>
 
                                 </tr>
@@ -45,9 +45,9 @@
 
 <div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
-         <div class="modal-content">
+        <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title text-center" id="exampleModalLabel1"> ویرایش انبار </h5>
+                <h5 class="modal-title text-center" id="exampleModalLabel1"> افزودن رتبه بندی مشترکین </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -60,7 +60,7 @@
 
                     <div class="widget-content">
                         <div class="form-row">
-                            <div class="col-md-6 mb-4">
+                            <div class="col-md-12 mb-4">
                                 <label for="">
                                     نام
                                     <span class="text-danger">*</span>
@@ -69,15 +69,6 @@
                                 <span asp-validation-for="Command1.Name" class="error"></span>
                             </div>
 
-                            <div class="col-md-6 mb-4">
-
-                                <label asp-for="Command1.Code">
-                                    کد
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <input asp-for="Command1.Code" type="text" class="form-control basic" placeholder="کد ">
-                                <span asp-validation-for="Command1.Code" class="error"></span>
-                            </div>
                         </div>
                         <input type="hidden" class="hidden" asp-for="Command1.Id" />
                     </div>
@@ -97,9 +88,9 @@
 
 <div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
-         <div class="modal-content">
+        <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title text-center" id="exampleModalLabel1"> ویرایش انبار </h5>
+                <h5 class="modal-title text-center" id="exampleModalLabel1"> ویرایش رتبه بندی مشترکین </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -112,23 +103,13 @@
 
                     <div class="widget-content">
                         <div class="form-row">
-                            <div class="col-md-6 mb-4">
+                            <div class="col-md-12 mb-4">
                                 <label for="">
                                     نام
                                     <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" class="form-control basic" asp-for="Command.Name" placeholder="نام ">
                                 <span asp-validation-for="Command.Name" class="error"></span>
-                            </div>
-
-                            <div class="col-md-6 mb-4">
-
-                                <label asp-for="Command.Code">
-                                    کد
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <input asp-for="Command.Code" type="text" class="form-control basic" placeholder="کد ">
-                                <span asp-validation-for="Command.Code" class="error"></span>
                             </div>
                         </div>
                         <input type="hidden" class="hidden" asp-for="Command.Id" />
@@ -153,7 +134,7 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
-    <script src="~/source/js/basedata/wareHouse.js"></script>
+    <script src="~/source/js/basedata/AccountRating.js"></script>
 
 
 }

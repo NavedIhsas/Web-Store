@@ -1,4 +1,8 @@
-﻿namespace Application.BaseData.Dto
+﻿using System.ComponentModel.DataAnnotations;
+using Application.Common;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+
+namespace Application.BaseData.Dto
 {
     public class CreateUnit
     {
@@ -43,10 +47,12 @@
         public Guid Id { get; set; }=Guid.NewGuid();
         public string Name { get; set; }
         public string DiscountType { get; set; }
-        public string Status { get; set; }
+        public bool Status { get; set; } = true;
         /// <summary>
         /// قیمت کالا
         /// </summary>
+        
+        [Range(1,Int32.MaxValue,ErrorMessage ="این مقدار نمیتواند خالی باشد")]
         public int? PriceInvoice { get; set; }
         /// <summary>
         /// درصد تخفیف
@@ -71,11 +77,13 @@
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string DiscountType { get; set; }
+        public string DiscountTypeText { get; set; }
         public bool Status { get; set; }
         /// <summary>
         /// قیمت کالا
         /// </summary>
-        public int? PriceInvoice { get; set; }
+        public int PriceInvoice { get; set; }
+        public string PriceInvoiceText { get; set; }
         /// <summary>
         /// درصد تخفیف
         /// </summary>
@@ -86,4 +94,24 @@
         public double? DetDiscount { get; set; }
     }
    
+
+
+    public class CreateAccountRating
+    {
+        public Guid Id { get; set; }=Guid.NewGuid();
+        public string Name { get; set; }
+    }
+    public class UpdateAccountRating:CreateAccountRating
+    {
+        public UpdateAccountRating()
+        {
+            Id = new Guid();
+        }
+       
+    }
+    public class AccountRatingDto
+    {
+        public Guid Id { get; set; }=Guid.NewGuid();
+        public string Name { get; set; }
+    }
 }

@@ -12,6 +12,11 @@ public static class Text
         return text == null ? "" : text.Trim().ToLower();
     }
 
+     public static string FixToString(this object text)
+    {
+        return text is not string stringText ? "" : stringText.Trim().ToLower();
+    }
+
 
     public static string GetLast(this string source, int tailLength)
     {

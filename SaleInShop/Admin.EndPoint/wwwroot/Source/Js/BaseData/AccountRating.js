@@ -8,7 +8,7 @@ $(document).ready(function () {
 
 $("#editSubmit").on('click', function (evn) {
     evn.preventDefault();
-    
+    debugger
 
     var form = $("#submitEditForm");
     form.validate();
@@ -28,10 +28,10 @@ $("#editSubmit").on('click', function (evn) {
         },
 
         success: function (result) {
-            
+            debugger
             if (result.isSucceeded) {
                 notify("top center", "عملیات با موفقیت انجام شد", "success")
-                window.location.href = "/BaseData/AccountClupType";
+                window.location.href = "/BaseData/AccountRating";
             } else {
                 notify("top center", result.message, "error")
                 return false;
@@ -45,7 +45,7 @@ $("#editSubmit").on('click', function (evn) {
 
 $("#addSubmit").on('click', function (evn) {
     evn.preventDefault();
-    
+    debugger
 
     var form = $("#submitAddForm");
     form.validate();
@@ -64,10 +64,10 @@ $("#addSubmit").on('click', function (evn) {
                 $('input:hidden[name="__RequestVerificationToken"]').val()
         },
         success: function (result) {
-            
+            debugger
             if (result.isSucceeded) {
                 notify("top center", "عملیات با موفقیت انجام شد", "success")
-                window.location.href = "/BaseData/AccountClupType";
+                window.location.href = "/BaseData/AccountRating";
             } else {
                 notify("top center", result.message, "error")
                 return false;
@@ -77,9 +77,15 @@ $("#addSubmit").on('click', function (evn) {
     })
 
 })
+function Edit(id, name, code) {
+    debugger
+    $("#edit").modal("show");
+    $("#Command_Name").val(name); 
+    $("#Command_Id").val(id);
+}
 
 function Add() {
-    
+    debugger
     $("#add").modal("show");
 
 }
@@ -90,7 +96,7 @@ function Add() {
 
 
 function Remove(id) {
-    
+    debugger
 
     swal({
         title: 'آیا مطمئنید؟',
@@ -102,19 +108,18 @@ function Remove(id) {
     }).then(function (result) {
 
         if (result.value) {
-
             $.ajax({
                 url: "?handler=Remove&id=" + id,
                 type: "get",
                 success: function (result) {
-                    
+                    debugger
                     if (result.isSucceeded) {
                         swal(
                             'موفق!',
                             result.message,
                             'success'
                         ).then(function () {
-                            window.location = "/BaseData/AccountClupType";
+                            window.location = "/BaseData/AccountRating";
                         });
                     } else {
                         swal(
@@ -131,22 +136,11 @@ function Remove(id) {
     })
 };
 
-function Edit(id, name, discountType, priceInvoice, percentDiscount, detDiscount) {
-    debugger
-    $("#edit").modal("show");
-    $("#Command_Name").val(name);
-    $("#Command_DiscountType").val(discountType);
-    $("#Command_PriceInvoice").val(priceInvoice);
-    $("#Command_PercentDiscount").val(percentDiscount);
-    $("#Command_DetDiscount").val(detDiscount);
-    $("#Command_Command_Id").val(id);
-}
-
 function bindDatatable() {
-    
+
     datatable = $('#dataTable_1')
         .DataTable({
-
+           
             "sAjaxSource": "?handler=Data",
             "bServerSide": true,
             "bProcessing": true,
@@ -165,27 +159,7 @@ function bindDatatable() {
                     "autoWidth": true,
                     "searchable": true
                 },
-                {
-                    "data": "DiscountTypeText",
-                    "autoWidth": true,
-                    "searchable": true
-                },
-                {
-                    "data": "PriceInvoiceText",
-                    "autoWidth": true,
-                    "searchable": true
-                },
-
-                {
-                    "data": "PercentDiscount",
-                    "autoWidth": true,
-                    "searchable": true
-                },
-                {
-                    "data": "DetDiscount",
-                    "autoWidth": true,
-                    "searchable": true
-                },
+            
                 {
                     data: null,
                     render: function (data, row, full) {
@@ -197,8 +171,8 @@ function bindDatatable() {
         });
 
     function generateButton(data) {
-        
-        return `<center><button onclick="Edit('${data.Id}','${data.Name}','${data.DiscountType}','${data.PriceInvoice}','${data.PercentDiscount}','${data.DetDiscount}')" class="btn btn-warning btn-rounded btn-sm">ویرایش</button>&nbsp; <button onclick="Remove('${data.Id}')" class="btn btn-danger btn-rounded btn-sm"> حذف </button></center>`
+        debugger
+        return `<center><button onclick="Edit('${data.Id}','${data.Name}')" class="btn btn-warning btn-rounded btn-sm">ویرایش</button>&nbsp; <button onclick="Remove('${data.Id}')" class="btn btn-danger btn-rounded btn-sm"> حذف </button></center>`
     };
 
 

@@ -24,8 +24,17 @@ public class RegisterServices
         services.AddScoped<IValidator<CreateProduct>, CreateProductValidate>();
         services.AddScoped<IValidator<CreateProperty>, CreatePropertyValidate>();
         services.AddScoped<IValidator<CreateUnit>, BaseDataValidator>();
+       
+        
         services.AddScoped<IValidator<CreateWareHouse>, WareHouseValidator>();
+        services.AddScoped<IValidator<UpdateWareHouse>, WareHouseValidator>();
+       
         services.AddScoped<IValidator<CreateAccountClubType>, AccountClupTypeValidator>();
+        services.AddScoped<IValidator<UpdateAccountClubType>, AccountClupTypeValidator>();
+     
+        
+        services.AddScoped<IValidator<CreateAccountRating>, AccountRatingValidator>();
+        services.AddScoped<IValidator<UpdateAccountRating>, AccountRatingValidator>();
 
         services.AddAutoMapper(typeof(CategoryPrdMap));
         services.AddAutoMapper(typeof(ProductMapping));

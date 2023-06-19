@@ -3,7 +3,7 @@
     "Admin.EndPoint": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "BaseData/WareHouse/",
+      "launchUrl": "BaseData/AccountClupType/",
 
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -15,7 +15,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "BaseData/WareHouse/",
+      "launchUrl": "BaseData/AccountClupType/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -23,7 +23,7 @@
     "Profile 1": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "BaseData/WareHouse",
+      "launchUrl": "BaseData/AccountClupType",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

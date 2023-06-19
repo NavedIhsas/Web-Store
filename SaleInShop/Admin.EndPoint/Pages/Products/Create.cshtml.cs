@@ -43,11 +43,8 @@ public class CreateModel : PageModel
 
     public IActionResult OnPost(CreateProduct command)
     {
-        if (!ModelState.IsValid)
-        {
-            ViewData["ErrorMessage"] = true;
-            return Page();
-        }
+       
+       
 
         if (_authHelper.AutoCodeProduct())
             command.PrdCode = _authHelper.AutoGenerateCode(command.PrdLvlUid3);

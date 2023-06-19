@@ -1,7 +1,12 @@
-﻿namespace Domain.ShopModels;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace Domain.ShopModels;
 
 public class Product
 {
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public Guid PrdUid { get; set; }
 
     public Guid? BusUnitUid { get; set; }

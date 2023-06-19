@@ -26,8 +26,9 @@ public class EditModel : PageModel
         _category = category;
     }
 
-    public IActionResult OnGet(Guid productId, bool load = false)
+    public IActionResult OnGet(Guid productId)
     {
+        if (productId == Guid.Empty) return this.Page();
         Command = _product.GetDetailsForEdit(productId);
 
         ProductPictures = HttpContext.Session.GetJson<List<ProductPicturesDto>>("edit-picture") ??

@@ -259,6 +259,8 @@ public class AuthHelper : IAuthHelper
         var numbers = new List<int>();
         foreach (var p in product)
         {
+            if (p.PrdCode.Length<=generateLength)
+                continue;
             var length = p.PrdCode.Substring(p.PrdCode.Length - generateLength);
             var convertToInt = int.Parse(length);
             numbers.Add(convertToInt);
