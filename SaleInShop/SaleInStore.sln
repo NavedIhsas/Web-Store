@@ -9,7 +9,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{14E611F7
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Doc", "Doc", "{6A6C7835-1AF5-4C65-8A4B-5A0E17678D76}"
 	ProjectSection(SolutionItems) = preProject
+		Dynamics.txt = Dynamics.txt
 		Notes.txt = Notes.txt
+		\\192.168.20.11\SoftwareProductUnit\Hasanabadi\SaleIn.txt = \\192.168.20.11\SoftwareProductUnit\Hasanabadi\SaleIn.txt
+		Shygun.txt = Shygun.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{A9BF5E76-0840-444E-B3F8-AF4EE8C31AFB}"

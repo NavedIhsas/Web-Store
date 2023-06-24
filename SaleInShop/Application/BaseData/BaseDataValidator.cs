@@ -39,6 +39,16 @@ namespace Application.BaseData
         }
     }
 
+     internal class AccountClupValidator : AbstractValidator<CreateAccountClup>
+    {
+        public AccountClupValidator()
+        {
+            this.RuleFor(x => x.AccClbName).NotEmpty().WithMessage(ValidateMessage.Required);
+            this.RuleFor(x => x.AccClbCode).NotEmpty().WithMessage(ValidateMessage.Required);
+            this.RuleFor(x => x.AccClbBrithday).NotEmpty().WithMessage(ValidateMessage.Required);
+        }
+    }
+
 
 
 }

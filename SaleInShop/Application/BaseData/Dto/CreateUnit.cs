@@ -1,6 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Application.Common;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Application.BaseData.Dto
 {

@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System.Collections;
+using System.Data;
 using Application.BaseData.Dto;
 using Application.Common;
 using Application.Interfaces.Context;
@@ -37,6 +38,9 @@ namespace Application.BaseData
         ResultDto UpdateAccountRating(UpdateAccountRating command);
 
 
+        List<AccountSelectOption> GetSelectOptionAccounts();
+        List<AccountClubType> GetSelectOptionClubTypes();
+        List<AccountRating> GetSelectOptionRatings();
     }
     internal class BaseDataService : IBaseDataService
     {
@@ -509,7 +513,7 @@ namespace Application.BaseData
                 case 3:
                     list = sortDirection == "asc" ? list.OrderBy(c => c.AccRateName) : list.OrderByDescending(c => c.AccRateName);
                     break;
-              
+
                 default:
                     {
                         string OrderingFunction(AccountRating e) => sortColumnIndex == 0 ? e.AccRateName : "";
@@ -547,7 +551,7 @@ namespace Application.BaseData
                 if (_shopContext.AccountRatings.Any(x => x.AccRateName == command.Name.Fix()))
                     return result.Failed(ValidateMessage.Duplicate);
 
-                
+
                 var unit = _mapper.Map<AccountRating>(command);
                 _shopContext.AccountRatings.Add(unit);
                 _shopContext.SaveChanges();
@@ -612,9 +616,46 @@ namespace Application.BaseData
         }
 
         #endregion
+
+
+        public List<AccountSelectOption> GetSelectOptionAccounts()
+        {
+            var account = _shopContext.AccountClubs.Select(x => new { x.AccClbName, x.AccClbUid }).AsNoTracking().Select(x => new AccountSelectOption()
+            {
+                Id = x.AccClbUid,
+                Name = x.AccClbName
+            }).ToList();
+            return account;
+        }
+
+
+        public List<AccountClubType> GetSelectOptionClubTypes()
+        {
+            var account = _shopContext.AccountClubTypes.Select(x => new { x.AccClbTypName, x.AccClbTypUid }).AsNoTracking().Select(x => new AccountClubType()
+            {
+                AccClbTypUid = x.AccClbTypUid,
+                AccClbTypName = x.AccClbTypName
+            }).ToList();
+            return account;
+        }
+
+        public List<AccountRating> GetSelectOptionRatings()
+        {
+            var account = _shopContext.AccountRatings.Select(x => new { x.AccRateName, x.AccRateUid }).AsNoTracking().Select(x => new AccountRating()
+            {
+                AccRateUid = x.AccRateUid,
+                AccRateName = x.AccRateName
+            }).ToList();
+            return account;
+        }
     }
 
+    public class AccountSelectOption
+    {
+        public string Name { get; set; }
+        public Guid Id { get; set; }
 
+    }
 
 
 }

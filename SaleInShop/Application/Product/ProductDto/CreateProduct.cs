@@ -29,8 +29,6 @@ namespace Application.Product.ProductDto
 
         public long? PrdMaxQuantityOnHand { get; set; }
 
-        public Guid? PrdWareHouse { get; set; }
-
         public decimal? PrdPricePerUnit3 { get; set; }
 
         public decimal? PrdPricePerUnit4 { get; set; }
@@ -48,11 +46,10 @@ namespace Application.Product.ProductDto
 
         public string ShortDescription { get; set; }
         public string WebDescription { get; set; }
-        public int? PrdLvlType { get; set; }
         public string Volume { get; set; }
         public string Weight { get; set; }
         public bool? PrdIsUnit1Bigger { get; set; }
-        public int Type { get; set; }
+        [BindRequired] public int Type { get; set; }
 
         public List<IFormFile> Files { get; set; } = new();
         public IFormFile Images { get; set; }
