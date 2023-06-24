@@ -11,7 +11,8 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
-using ILogger = Microsoft.Build.Framework.ILogger;
+using Microsoft.AspNetCore.Http.HttpResults;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Application.BaseData
 {
@@ -41,6 +42,13 @@ namespace Application.BaseData
         List<AccountSelectOption> GetSelectOptionAccounts();
         List<AccountClubType> GetSelectOptionClubTypes();
         List<AccountRating> GetSelectOptionRatings();
+
+
+        ResultDto CreateAccountClub(CreateAccountClub command);
+        ResultDto UpdateAccountClub(EditAccountClub command);
+        EditAccountClub GetDetailsAccountClub(Guid id);
+        JsonResult GetAllAccountClub(JqueryDatatableParam param);
+        ResultDto RemoveAccountClub(Guid id);
     }
     internal class BaseDataService : IBaseDataService
     {
@@ -111,7 +119,7 @@ namespace Application.BaseData
             try
             {
                 if (_shopContext.UnitOfMeasurements.Any(x => x.UomName == command.Name.Fix()))
-                    return result.Failed(ValidateMessage.Duplicate);
+                    return result.Failed(ValidateMessage.DuplicateName);
 
                 if (_shopContext.UnitOfMeasurements.Any(x => x.UomCode == command.Code.Fix()))
                     return result.Failed(ValidateMessage.DuplicateCode);
@@ -142,7 +150,7 @@ namespace Application.BaseData
                 }
 
                 if (_shopContext.UnitOfMeasurements.Any(x => x.UomName == command.Name.Fix() && x.UomUid != command.Id))
-                    return result.Failed(ValidateMessage.Duplicate);
+                    return result.Failed(ValidateMessage.DuplicateName);
                 var addUnit = _mapper.Map(command, unit);
                 _shopContext.UnitOfMeasurements.Update(addUnit);
                 _shopContext.SaveChanges();
@@ -243,7 +251,7 @@ namespace Application.BaseData
             try
             {
                 if (_shopContext.WareHouses.Any(x => x.WarHosName == command.Name.Fix()))
-                    return result.Failed(ValidateMessage.Duplicate);
+                    return result.Failed(ValidateMessage.DuplicateName);
 
                 if (_shopContext.WareHouses.Any(x => x.WarHosName == command.Code.Fix()))
                     return result.Failed(ValidateMessage.DuplicateCode);
@@ -273,7 +281,7 @@ namespace Application.BaseData
                 }
 
                 if (_shopContext.WareHouses.Any(x => x.WarHosName == command.Name.Fix() && x.WarHosUid != command.Id))
-                    return result.Failed(ValidateMessage.Duplicate);
+                    return result.Failed(ValidateMessage.DuplicateName);
 
                 if (_shopContext.WareHouses.Any(x => x.WarHosCode == command.Code.Fix() && x.WarHosUid != command.Id))
                     return result.Failed(ValidateMessage.DuplicateCode);
@@ -426,7 +434,7 @@ namespace Application.BaseData
             try
             {
                 if (_shopContext.AccountClubTypes.Any(x => x.AccClbTypName == command.Name.Fix()))
-                    return result.Failed(ValidateMessage.Duplicate);
+                    return result.Failed(ValidateMessage.DuplicateName);
 
 
                 var account = _mapper.Map<AccountClubType>(command);
@@ -454,7 +462,7 @@ namespace Application.BaseData
                 }
 
                 if (_shopContext.AccountClubTypes.Any(x => x.AccClbTypName == command.Name.Fix() && x.AccClbTypUid != command.Id))
-                    return result.Failed(ValidateMessage.Duplicate);
+                    return result.Failed(ValidateMessage.DuplicateName);
                 var map = _mapper.Map(command, account);
                 _shopContext.AccountClubTypes.Update(map);
                 _shopContext.SaveChanges();
@@ -492,7 +500,6 @@ namespace Application.BaseData
         }
 
         #endregion
-
 
         #region  AccountRating
 
@@ -549,7 +556,7 @@ namespace Application.BaseData
             try
             {
                 if (_shopContext.AccountRatings.Any(x => x.AccRateName == command.Name.Fix()))
-                    return result.Failed(ValidateMessage.Duplicate);
+                    return result.Failed(ValidateMessage.DuplicateName);
 
 
                 var unit = _mapper.Map<AccountRating>(command);
@@ -577,7 +584,7 @@ namespace Application.BaseData
                 }
 
                 if (_shopContext.AccountRatings.Any(x => x.AccRateName == command.Name.Fix() && x.AccRateUid != command.Id))
-                    return result.Failed(ValidateMessage.Duplicate);
+                    return result.Failed(ValidateMessage.DuplicateName);
 
                 var map = _mapper.Map(command, AccountRating);
                 _shopContext.AccountRatings.Update(map);
@@ -617,6 +624,200 @@ namespace Application.BaseData
 
         #endregion
 
+
+        #region Account Club
+
+
+
+        public JsonResult GetAllAccountClub(JqueryDatatableParam param)
+        {
+
+            var list = _shopContext.AccountClubs.AsNoTracking();
+
+            if (!string.IsNullOrEmpty(param.SSearch))
+            {
+                list = list.Where(x =>
+                    x.AccClbName.ToLower().Contains(param.SSearch.ToLower()));
+
+                if (!list.Any())
+                    list = list.Where(x => x.AccClbCode.ToString().ToLower().Contains(param.SSearch.Fix()));
+
+
+            }
+
+            var sortColumnIndex = Convert.ToInt32(_contextAccessor.HttpContext.Request.Query["iSortCol_0"]);
+            var sortDirection = _contextAccessor.HttpContext.Request.Query["sSortDir_0"];
+
+            switch (sortColumnIndex)
+            {
+                case 3:
+                    list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbName) : list.OrderByDescending(c => c.AccClbName);
+                    break;
+                case 4:
+                    list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbCode) : list.OrderByDescending(c => c.AccClbCode);
+                    break;
+
+
+                default:
+                    {
+                        string OrderingFunction(Domain.ShopModels.AccountClub e) => sortColumnIndex == 0 ? e.AccClbName : "";
+                        IOrderedEnumerable<Domain.ShopModels.AccountClub> rr = null;
+
+                        rr = sortDirection == "asc"
+                            ? list.AsEnumerable().OrderBy((Func<Domain.ShopModels.AccountClub, string>)OrderingFunction)
+                            : list.AsEnumerable().OrderByDescending((Func<Domain.ShopModels.AccountClub, string>)OrderingFunction);
+
+                        list = rr.AsQueryable();
+                        break;
+                    }
+            }
+
+            IQueryable<AccountClub> displayResult;
+            if (param.IDisplayLength != 0)
+                displayResult = list.Skip(param.IDisplayStart)
+                .Take(param.IDisplayLength);
+            else displayResult = list;
+            var totalRecords = list.Count();
+            var map = _mapper.Map<List<AccountClubDto>>(displayResult.ToList());
+
+
+
+            foreach (var clubTypeDto in map)
+            {
+                clubTypeDto.AccClbSexText = clubTypeDto.AccClbSex switch
+                {
+                    0 => "زن",
+                    1 => "مرد",
+                    _ => clubTypeDto.AccClbSexText
+                };
+
+                if (clubTypeDto.AccClbTypUid != null)
+                    clubTypeDto.AccClubType = _shopContext.AccountClubTypes.Find(clubTypeDto.AccClbTypUid)?.AccClbTypName;
+
+                if (clubTypeDto.AccRateUid != null)
+                    clubTypeDto.AccRatioText = _shopContext.AccountRatings.Find(clubTypeDto.AccRateUid)?.AccRateName;
+
+            }
+
+            var result = (new
+            {
+                param.SEcho,
+                iTotalRecords = totalRecords,
+                iTotalDisplayRecords = totalRecords,
+                aaData = map
+            });
+            return new JsonResult(result, new JsonSerializerOptions { PropertyNamingPolicy = null });
+        }
+
+        public ResultDto CreateAccountClub(CreateAccountClub command)
+        {
+            var result = new ResultDto();
+            try
+            {
+                if (_shopContext.AccountClubs.Any(x => x.AccClbName == command.AccClbName.Fix()))
+                    return result.Failed(ValidateMessage.DuplicateName);
+
+                if (_shopContext.AccountClubs.Any(x => x.AccClbCode == command.AccClbCode.Fix()))
+                    return result.Failed(ValidateMessage.DuplicateCode);
+
+                if (command.AccClbMobile != "1" && _shopContext.AccountClubs.Any(x => x.AccClbMobile == command.AccClbMobile.Fix() && x.AccClbMobile != "1"))
+                    return result.Failed(ValidateMessage.DuplicateMobile);
+
+               
+                var map = _mapper.Map<AccountClub>(command);
+                _shopContext.AccountClubs.Add(map);
+                _shopContext.SaveChanges();
+                return result.Succeeded();
+
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"حین ثبت کردن مشترک خطای زیر رخ داد {e}");
+                return result.Failed("عملیات با خطا مواجه شد، لطفا با پشتیبانی تماس بگیرید.");
+            }
+        }
+
+
+        public ResultDto UpdateAccountClub(EditAccountClub command)
+        {
+            var result = new ResultDto();
+            try
+            {
+                var accClub = _shopContext.AccountClubs.Find(command.AccUid);
+                if (accClub == null)
+                {
+                    _logger.LogError($"هیچ رکوردی با این شناسه {command.AccUid} یافت نشد");
+                    return result.Failed("عملیات با خطا مواجه شد لطفا با پشتیبانی تماس بگیرید.");
+                }
+
+                if (_shopContext.AccountClubs.Any(x => x.AccClbName == command.AccClbName.Fix() && x.AccUid != command.AccUid))
+                    return result.Failed(ValidateMessage.DuplicateName);
+
+                if (_shopContext.AccountClubs.Any(x => x.AccClbCode == command.AccClbCode.Fix() && x.AccUid != command.AccUid))
+                    return result.Failed(ValidateMessage.DuplicateCode);
+
+                if (_shopContext.AccountClubs.Any(x => x.AccClbMobile == command.AccClbMobile.Fix() && x.AccUid != command.AccUid))
+                    return result.Failed(ValidateMessage.DuplicateMobile);
+
+                if (_shopContext.AccountClubs.Any(x => x.AccClbMobile2 == command.AccClbMobile2.Fix() && x.AccUid != command.AccUid))
+                    return result.Failed(ValidateMessage.DuplicateMobile);
+
+                var map = _mapper.Map(command, accClub);
+                _shopContext.AccountClubs.Update(map);
+                _shopContext.SaveChanges();
+                return result.Succeeded();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"حین ثبت کردن مشترک خطای زیر رخ داد {e}");
+                return result.Failed("عملیات با خطا مواجه شد، لطفا با پشتیبانی تماس بگیرید.");
+            }
+        }
+
+
+
+        public ResultDto RemoveAccountClub(Guid id)
+        {
+            var result = new ResultDto();
+            try
+            {
+                var accountClub = _shopContext.AccountClubs.Find(id);
+                if (accountClub == null)
+                {
+                    _logger.LogWarning($"Don't Find Any Record With Id {id} On Table AccountClub");
+                    return result.Failed("خطای رخ داد، لطفا با پشتیبانی تماس بگرید");
+                }
+
+                _shopContext.AccountClubs.Remove(accountClub);
+                _shopContext.SaveChanges();
+                return result.Succeeded();
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"هنگام حذف واحد شمارش خطای زیر رخ داد {exception}");
+                return result.Failed("هنگام ثبت عملیات خطای رخ داد");
+            }
+        }
+
+
+        public EditAccountClub GetDetailsAccountClub(Guid id)
+        {
+            var accClub = _shopContext.AccountClubs.Find(id);
+            if (accClub != null)
+            {
+                var map= _mapper.Map<EditAccountClub>(accClub);
+                map.Account = this.GetSelectOptionAccounts();
+                map.ClupType = this.GetSelectOptionClubTypes();
+                map.Rating = this.GetSelectOptionRatings();
+                return map;
+            }
+            _logger.LogError($"هیچ رکوردی با این شناسه {id} یافت نشد");
+            throw new NullReferenceException("عملیات با خطا مواجه شد لطفا با پشتیبانی تماس بگیرید.");
+
+        }
+
+
+        #endregion
 
         public List<AccountSelectOption> GetSelectOptionAccounts()
         {

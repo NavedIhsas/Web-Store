@@ -378,7 +378,7 @@ namespace Application.Product
                 command.PrdUid = Guid.NewGuid();
                 if (_shopContext.Products.Any(x =>
                         x.PrdName == command.PrdName.Fix() && x.PrdLvlUid3 == command.PrdLvlUid3))
-                    return result.Failed(ValidateMessage.Duplicate);
+                    return result.Failed(ValidateMessage.DuplicateName);
                 if (command.Images != null)
                     command.PrdImage = ToBase64.Image(command.Images);
                 var product = _mapper.Map<Domain.ShopModels.Product>(command);
@@ -448,7 +448,7 @@ namespace Application.Product
                 if (_shopContext.Products.Any(x =>
                         x.PrdName == product.PrdName && x.PrdLvlUid3 == product.PrdLvlUid3 &&
                         x.PrdUid != product.PrdUid))
-                    return result.Failed(ValidateMessage.Duplicate);
+                    return result.Failed(ValidateMessage.DuplicateName);
                 if (command.Images != null)
                     command.PrdImage = ToBase64.Image(command.Images);
 

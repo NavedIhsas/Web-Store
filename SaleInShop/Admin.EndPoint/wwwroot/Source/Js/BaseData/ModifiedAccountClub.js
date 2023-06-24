@@ -1,7 +1,8 @@
 ﻿
 
 $(document).ready(function () {
-    $(".datePicker").pDatepicker({
+    $(".datePicker").persianDatepicker({
+       
         initialValueType: 'persian',
         observer: true,
         format: 'YYYY/MM/DD  dddd',
@@ -57,6 +58,7 @@ $("#addSubmit").on('click', function (evn) {
     if (form.valid() === false) {
         return false;
     }
+
 
     $.ajax({
         url: "",

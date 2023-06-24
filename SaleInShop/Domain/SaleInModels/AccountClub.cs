@@ -2,7 +2,7 @@
 
 public class AccountClub
 {
-    public Guid AccClbUid { get; set; }
+    public Guid AccClbUid { get; set; } 
 
     public Guid? BusUnitUid { get; set; }
 

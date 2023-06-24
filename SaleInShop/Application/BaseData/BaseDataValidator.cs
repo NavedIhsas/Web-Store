@@ -39,7 +39,7 @@ namespace Application.BaseData
         }
     }
 
-     internal class AccountClupValidator : AbstractValidator<CreateAccountClup>
+     internal class AccountClupValidator : AbstractValidator<CreateAccountClub>
     {
         public AccountClupValidator()
         {

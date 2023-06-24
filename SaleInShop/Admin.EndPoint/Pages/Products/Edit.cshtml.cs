@@ -81,7 +81,7 @@ public class EditModel : PageModel
         var getProperty = HttpContext.Session.GetJson<List<PropertySelectOptionDto>>("edit-Property") ??
                           new List<PropertySelectOptionDto>();
         if (getProperty.Any(x => x.PropertyId == property.PropertyId))
-            return new JsonResult("Duplicate");
+            return new JsonResult("DuplicateName");
         getProperty.Add(new PropertySelectOptionDto
         {
             PropertyId = property.PropertyId,

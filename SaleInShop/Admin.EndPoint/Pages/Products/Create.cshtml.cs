@@ -56,7 +56,7 @@ public class CreateModel : PageModel
         var getProperty = HttpContext.Session.GetJson<List<PropertySelectOptionDto>>("Product-Property") ??
                           new List<PropertySelectOptionDto>();
         if (getProperty.Any(x => x.Id == property.Id))
-            return new JsonResult("Duplicate");
+            return new JsonResult("DuplicateName");
         getProperty.Add(new PropertySelectOptionDto
         {
             Name = property.Name,

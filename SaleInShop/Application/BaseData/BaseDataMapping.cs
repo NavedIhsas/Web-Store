@@ -1,4 +1,5 @@
 ﻿using Application.BaseData.Dto;
+using Application.Common;
 using AutoMapper;
 using Domain.ShopModels;
 
@@ -78,8 +79,11 @@ namespace Application.BaseData
               this.CreateMap<UpdateAccountRating, AccountRating>()
                  .ForMember(x => x.AccRateUid, opt => opt.MapFrom(x => x.Id))
                  .ForMember(x => x.AccRateName, opt => opt.MapFrom(x => x.Name));
-             
-             
+
+
+              this.CreateMap<CreateAccountClub, AccountClub>().ForMember(x=>x.AccClbBrithday,opt=>opt.MapFrom(x=>x.ShamsiBirthDay.ToGeorgianDateTime()));
+              this.CreateMap<EditAccountClub, AccountClub>().ForMember(x => x.AccClbBrithday, opt => opt.MapFrom(x => x.ShamsiBirthDay.ToGeorgianDateTime())).ReverseMap(); 
+              this.CreateMap<AccountClub, AccountClubDto>().ForMember(x=>x.ShamsiBirthDay,opt=>opt.MapFrom(x=>x.AccClbBrithday.ToFarsi()));
         }
     }
 }
