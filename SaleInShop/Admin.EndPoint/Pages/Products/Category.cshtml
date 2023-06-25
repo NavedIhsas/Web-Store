@@ -117,7 +117,7 @@
                         <div class="form-row">
                             <div class="col-md-6 mb-4">
                                 <label for="Group">گروه اصلی </label>
-                                <select type="text" onchange="changeGroup()" id="editParentId" asp-for="Command.ParentId" class="form-control pb-5" asp-items="@(new SelectList(Model.SelectList, "Id", "Name"))">
+                                <select type="text" onchange="changeGroup()" id="editParentId" asp-for="Command.ParentId" class="select2 pb-5" asp-items="@(new SelectList(Model.SelectList, "Id", "Name"))">
                                     <option value="0">-- گروه اصلی --</option>
                                 </select>
                                 <span asp-validation-for="Command.ParentId" class="error"></span>

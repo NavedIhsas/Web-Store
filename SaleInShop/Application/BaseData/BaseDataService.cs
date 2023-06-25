@@ -42,7 +42,8 @@ namespace Application.BaseData
         List<AccountSelectOption> GetSelectOptionAccounts();
         List<AccountClubType> GetSelectOptionClubTypes();
         List<AccountRating> GetSelectOptionRatings();
-
+        List<SelectListOption> SelectOptionCities(Guid stateId);
+        List<SelectListOption> SelectOptionState();
 
         ResultDto CreateAccountClub(CreateAccountClub command);
         ResultDto UpdateAccountClub(EditAccountClub command);
@@ -637,12 +638,9 @@ namespace Application.BaseData
             if (!string.IsNullOrEmpty(param.SSearch))
             {
                 list = list.Where(x =>
-                    x.AccClbName.ToLower().Contains(param.SSearch.ToLower()));
-
-                if (!list.Any())
-                    list = list.Where(x => x.AccClbCode.ToString().ToLower().Contains(param.SSearch.Fix()));
-
-
+                    x.AccClbName.ToLower().Contains(param.SSearch.ToLower())
+                    || x.AccClbCode.ToLower().Contains(param.SSearch.ToLower())
+                    || x.AccClbMobile.ToLower().Contains(param.SSearch.ToLower()));
             }
 
             var sortColumnIndex = Convert.ToInt32(_contextAccessor.HttpContext.Request.Query["iSortCol_0"]);
@@ -650,11 +648,17 @@ namespace Application.BaseData
 
             switch (sortColumnIndex)
             {
-                case 3:
+                case 0:
                     list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbName) : list.OrderByDescending(c => c.AccClbName);
                     break;
-                case 4:
+                case 1:
                     list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbCode) : list.OrderByDescending(c => c.AccClbCode);
+                    break;
+                case 2:
+                    list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbBrithday) : list.OrderByDescending(c => c.AccClbBrithday);
+                    break;
+                case 5:
+                    list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbMobile) : list.OrderByDescending(c => c.AccClbMobile);
                     break;
 
 
@@ -686,8 +690,8 @@ namespace Application.BaseData
             {
                 clubTypeDto.AccClbSexText = clubTypeDto.AccClbSex switch
                 {
-                    0 => "زن",
-                    1 => "مرد",
+                    1 => "زن",
+                    0 => "مرد",
                     _ => clubTypeDto.AccClbSexText
                 };
 
@@ -723,7 +727,7 @@ namespace Application.BaseData
                 if (command.AccClbMobile != "1" && _shopContext.AccountClubs.Any(x => x.AccClbMobile == command.AccClbMobile.Fix() && x.AccClbMobile != "1"))
                     return result.Failed(ValidateMessage.DuplicateMobile);
 
-               
+
                 var map = _mapper.Map<AccountClub>(command);
                 _shopContext.AccountClubs.Add(map);
                 _shopContext.SaveChanges();
@@ -743,23 +747,20 @@ namespace Application.BaseData
             var result = new ResultDto();
             try
             {
-                var accClub = _shopContext.AccountClubs.Find(command.AccUid);
+                var accClub = _shopContext.AccountClubs.Find(command.AccClbUid);
                 if (accClub == null)
                 {
-                    _logger.LogError($"هیچ رکوردی با این شناسه {command.AccUid} یافت نشد");
+                    _logger.LogError($"هیچ رکوردی با این شناسه {command.AccClbUid} یافت نشد");
                     return result.Failed("عملیات با خطا مواجه شد لطفا با پشتیبانی تماس بگیرید.");
                 }
 
-                if (_shopContext.AccountClubs.Any(x => x.AccClbName == command.AccClbName.Fix() && x.AccUid != command.AccUid))
+                if (_shopContext.AccountClubs.Any(x => x.AccClbName == command.AccClbName.Fix() && x.AccClbUid != command.AccClbUid))
                     return result.Failed(ValidateMessage.DuplicateName);
 
-                if (_shopContext.AccountClubs.Any(x => x.AccClbCode == command.AccClbCode.Fix() && x.AccUid != command.AccUid))
+                if (_shopContext.AccountClubs.Any(x => x.AccClbCode == command.AccClbCode.Fix() && x.AccClbUid != command.AccClbUid))
                     return result.Failed(ValidateMessage.DuplicateCode);
 
-                if (_shopContext.AccountClubs.Any(x => x.AccClbMobile == command.AccClbMobile.Fix() && x.AccUid != command.AccUid))
-                    return result.Failed(ValidateMessage.DuplicateMobile);
-
-                if (_shopContext.AccountClubs.Any(x => x.AccClbMobile2 == command.AccClbMobile2.Fix() && x.AccUid != command.AccUid))
+                if (_shopContext.AccountClubs.Any(x => x.AccClbMobile == command.AccClbMobile.Fix() && x.AccClbUid != command.AccClbUid))
                     return result.Failed(ValidateMessage.DuplicateMobile);
 
                 var map = _mapper.Map(command, accClub);
@@ -805,10 +806,15 @@ namespace Application.BaseData
             var accClub = _shopContext.AccountClubs.Find(id);
             if (accClub != null)
             {
-                var map= _mapper.Map<EditAccountClub>(accClub);
+                var map = _mapper.Map<EditAccountClub>(accClub);
                 map.Account = this.GetSelectOptionAccounts();
                 map.ClupType = this.GetSelectOptionClubTypes();
                 map.Rating = this.GetSelectOptionRatings();
+                map.States = this.SelectOptionState();
+                map.SateUid = _shopContext.Cities.Include(x => x.SttU)
+                    .SingleOrDefault(x => x.CityUid == accClub.CityUid)?.SttUid;
+
+                map.Cities = SelectOptionCities(map.SateUid ?? Guid.Empty);
                 return map;
             }
             _logger.LogError($"هیچ رکوردی با این شناسه {id} یافت نشد");
@@ -849,6 +855,17 @@ namespace Application.BaseData
             }).ToList();
             return account;
         }
+
+
+        public List<SelectListOption> SelectOptionState()
+        {
+            return _shopContext.States.Select(x => new { x.SttName, x.SttUid }).Select(x => new SelectListOption() { Id = x.SttUid, Name = x.SttName }).AsNoTracking().ToList();
+        }
+
+        public List<SelectListOption> SelectOptionCities(Guid stateId)
+        {
+            return _shopContext.Cities.Where(x => x.SttUid == stateId).Select(x => new { x.CityName, x.CityUid }).Select(x => new SelectListOption() { Id = x.CityUid, Name = x.CityName }).AsNoTracking().ToList();
+        }
     }
 
     public class AccountSelectOption
@@ -856,6 +873,12 @@ namespace Application.BaseData
         public string Name { get; set; }
         public Guid Id { get; set; }
 
+    }
+
+    public class SelectListOption
+    {
+        public string Name { get; set; }
+        public Guid Id { get; set; }
     }
 
 

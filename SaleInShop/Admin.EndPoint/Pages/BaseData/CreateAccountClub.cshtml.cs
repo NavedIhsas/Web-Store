@@ -14,7 +14,7 @@ namespace SaleInWeb.Pages.BaseData
         public List<AccountSelectOption> Account;
         public List<AccountRating> Rating;
         public List<AccountClubType> ClupType;
-
+        public List<SelectListOption> States;
         public CreateAccountClubModel(IBaseDataService service)
         {
             _service = service;
@@ -25,20 +25,20 @@ namespace SaleInWeb.Pages.BaseData
             Account = _service.GetSelectOptionAccounts();
             Rating = _service.GetSelectOptionRatings();
             ClupType = _service.GetSelectOptionClubTypes();
+            States = _service.SelectOptionState();
         }
 
+        public IActionResult OnGetCities(Guid stateId)
+        {
+            return new JsonResult(_service.SelectOptionCities(stateId));
+        }
         public IActionResult OnGetAccountClub(JqueryDatatableParam param)
         {
             return this.Partial("AccountClub", new List<AccountClubDto>());
         }
         
-        public IActionResult OnGetData(JqueryDatatableParam param)
-        {
-            var result = _service.GetAllAccountClub(param);
-            return result;
-        }
-
-
+        public IActionResult OnGetData(JqueryDatatableParam param)=> _service.GetAllAccountClub(param);
+       
         public IActionResult OnPost(CreateAccountClub command)
         {
             try
@@ -46,7 +46,7 @@ namespace SaleInWeb.Pages.BaseData
                 if (!string.IsNullOrWhiteSpace(command.ShamsiBirthDay))
                 {
                     command.ShamsiBirthDay = command.ShamsiBirthDay[..10];
-                   var rr= command.ShamsiBirthDay.ToGeorgianDateTime();
+                    command.ShamsiBirthDay.ToGeorgianDateTime();
                 }
             }
             catch (Exception)
@@ -72,7 +72,7 @@ namespace SaleInWeb.Pages.BaseData
                 if (!string.IsNullOrWhiteSpace(command.ShamsiBirthDay))
                 {
                     command.ShamsiBirthDay = command.ShamsiBirthDay[..10];
-                    var rr = command.ShamsiBirthDay.ToGeorgianDateTime();
+                     command.ShamsiBirthDay.ToGeorgianDateTime();
                 }
             }
             catch (Exception)

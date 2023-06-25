@@ -17,7 +17,7 @@
             <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
                 <div class="widget-content widget-content-area br-6">
                     <div class="text-center">
-                        <button asp-page="CreateAccountClub" class="btn btn-success ">افزودن مشترک جدید</button>
+                        <a asp-page="/BaseData/CreateAccountClub"  class="btn btn-success btn-rounded btn-sm">افزودن مشترک جدید</a>
                     </div>
                     <div class="table-responsive mb-4 mt-4">
                         <table id="dataTable_1" class="table table-hover table-bordered cell-border row-border" style="width:100%">
@@ -123,10 +123,8 @@
         }
 
 
-
         function Remove(id) {
-            debugger
-
+    
             swal({
                 title: 'آیا مطمئنید؟',
                 text: "این عمل قابل بازگشت نیست!",
@@ -149,7 +147,7 @@
                                     result.message,
                                     'success'
                                 ).then(function () {
-                                    window.location = "/BaseData/CreateAccountClub?handler=AccountClup";
+                                    window.location = "/BaseData/CreateAccountClub?handler=AccountClub";
                                 });
                             } else {
                                 swal(

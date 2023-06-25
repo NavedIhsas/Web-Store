@@ -1,0 +1,313 @@
+﻿@page
+@model SaleInWeb.Pages.Invoice.PreInvoiceModel
+@{
+}
+
+<style>
+    /* Style the tab */
+    .tab {
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+    }
+
+        /* Style the buttons that are used to open the tab content */
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+        }
+
+            /* Change background color of buttons on hover */
+            .tab button:hover {
+                background-color: #ddd;
+            }
+
+    .product-group:hover {
+        background-color: #ddd;
+    }
+
+    .product-group.active {
+        background-color: #ccc;
+    }
+
+    .product-group {
+        display: none;
+        padding: 6px 12px;
+    }
+    /* Create an active/current tablink class */
+    .tab button.active {
+        background-color: #ccc;
+    }
+
+    /* Style the tab content */
+    .tabcontent {
+        display: none;
+        padding: 6px 12px;
+    }
+
+    .card {
+        margin-left: 25px !important;
+        border: none !important;
+    }
+</style>
+
+
+
+
+
+<div id="content" class="main-content">
+
+    <div class="layout-px-spacing">
+
+        <div class="row">
+            <div id="tabsAlignments" class="col-lg-12 col-12 layout-spacing">
+                <div class="widget-content widget-content-area justify-tab">
+
+                    <ul class="nav nav-tabs  mb-3 mt-3 nav-fill" id="justifyTab" role="tablist">
+                        <div class="tab">
+                            <button class="tablinks" onclick="openCity(event, 'London')">منوی سفارشی</button>
+                            <button class="tablinks" onclick="openCity(event, 'Paris')">منوی نمایشی</button>
+                            <button class="tablinks" onclick="openCity(event, 'Tokyo')">میز</button>
+                            <button class="tablinks" onclick="openCity(event, 'Tokyo')">پکیج</button>
+                            <button class="tablinks" onclick="openCity(event, 'Tokyo')">فاکتور موقت</button>
+                        </div>
+                    </ul>
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" id="createForm" name="createForm">
+                        <div class="tab-content" id="justifyTabContent">
+                            <div class="tab-pane fade show active" id="justify-home" role="tabpanel" aria-labelledby="justify-home-tab">
+                                <div class="row layout-top-spacing" id="cancel-row">
+                                    <div class="col-xl-5 col-lg-5 col-sm-12  layout-spacing">
+                                        <br>
+                                        <!-- Tab content -->
+                                        <div id="London" class="tabcontent">
+                                            <div class="row">
+
+                                                <div class="card-deck">
+                                                    <div class="card">
+                                                        <div class="card-block">
+                                                            <span onclick="openDetails(event,'product1')" class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="card-deck">
+                                                    <div class="card">
+                                                        <div class="card-block">
+                                                            <span onclick="openDetails(event,'product2')" class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="card-deck">
+                                                    <div class="card">
+                                                        <div class="card-block">
+                                                            <span class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="card-deck">
+                                                    <div class="card">
+                                                        <div class="card-block">
+                                                            <span class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="card-deck">
+                                                    <div class="card">
+                                                        <div class="card-block">
+                                                            <span class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="card-deck">
+                                                    <div class="card">
+                                                        <div class="card-block">
+                                                            <span class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="card-deck">
+                                                    <div class="card">
+                                                        <div class="card-block">
+                                                            <span class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="card-deck">
+                                                    <div class="card">
+                                                        <div class="card-block">
+                                                            <span class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="card-deck">
+                                                    <div class="card">
+                                                        <div class="card-block">
+                                                            <span class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="card-deck">
+                                                    <div class="card">
+                                                        <div class="card-block">
+                                                            <span class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="card-deck">
+                                                    <div class="card">
+                                                        <div class="card-block">
+                                                            <span class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="card-deck">
+                                                    <div class="card">
+                                                        <div class="card-block">
+                                                            <span class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="card-deck">
+                                                    <div class="card">
+                                                        <div class="card-block">
+                                                            <span class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+
+                                        </div>
+
+                                        <div id="Paris" class="tabcontent">
+                                            <h3>Paris</h3>
+                                            <p>Paris is the capital of France.</p>
+                                        </div>
+
+                                        <div id="Tokyo" class="tabcontent">
+                                            <h3>Tokyo</h3>
+                                            <p>Tokyo is the capital of Japan.</p>
+                                        </div>
+                                        <hr />
+
+
+                                        <div id="product1" class="product-group">
+                                            <div class="row">
+                                                <div class="card-deck">
+                                                    <div class="card">
+                                                        <div class="card-block">
+                                                            <button class="btn btn-outline-secondary mb-2 " style="maring-top:10px">کالا</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="product2" class="product-group">
+                                            <div class="row">
+                                                <div class="card-deck">
+                                                    <div class="card">
+                                                        <div class="card-block">
+                                                            <button class="btn btn-outline-secondary mb-2" style="maring-top:10px">کالای 2</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <button id="first-form" style="margin-right:90%" type="submit" class="btn btn-info btn-sm btn-rounded pull-left">تایید فرم</button>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+</div>
+
+
+
+@section Scripts
+    {
+    <script>
+        function openCity(evt, cityName) {
+            // Declare all variables
+            var i, tabcontent, tablinks;
+
+            // Get all elements with class="tabcontent" and hide them
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            // Get all elements with class="tablinks" and remove the class "active"
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            // Show the current tab, and add an "active" class to the button that opened the tab
+            document.getElementById(cityName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        function openDetails(evt, name) {
+            debugger
+            // Declare all variables
+            var i, tabcontent, tablinks;
+
+            // Get all elements with class="tabcontent" and hide them
+            tabcontent = document.getElementsByClassName("product-group");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            debugger
+            // Get all elements with class="tablinks" and remove the class "active"
+            tablinks = document.getElementsByClassName("group");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            // Show the current tab, and add an "active" class to the button that opened the tab
+            document.getElementById(name).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+    </script>
+    }

@@ -14,12 +14,12 @@
         <div class="row">
             <div id="tabsAlignments" class="col-lg-12 col-12 layout-spacing">
                 <div class="widget-content widget-content-area justify-tab">
-                    <form method="post" enctype="multipart/form-data" class="needs-validation" id="submitAddForm" asp-for="submitAddForm">
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" id="submitForm" asp-for="submitForm">
                         <div class="tab-content" id="justifyTabContent">
                             <div class="tab-pane fade show active" id="justify-home" role="tabpanel" aria-labelledby="justify-home-tab">
                                 <div class="row layout-top-spacing" id="cancel-row">
                                     <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
-                                        <div class=" br-6">
+                                        <div class=" br-6"> b 
                                             @if (ViewData["ErrorMessage"] != null)
                                             {
                                                 <span class="alert alert-danger text-center">فرم هارا به درستی پر نکرده اید.</span>
@@ -41,8 +41,8 @@
 
                                                         <div class="form-group col-md-3">
                                                             <label for=""> تاریخ تولد <span class="error">*</span></label>
-                                                            <input asp-for="AccClbBrithday" type="text" value="2019-09-04" class="datePicker form-control flatpickr flatpickr-input active" placeholder="تاریخ تولد">
-                                                            <span asp-validation-for="AccClbBrithday" class="error"></span>
+                                                            <input asp-for="ShamsiBirthDay" type="text" class="datePicker form-control flatpickr flatpickr-input active" placeholder="تاریخ تولد">
+                                                            <span asp-validation-for="ShamsiBirthDay" class="error"></span>
                                                         </div>
                                                         <div class="form-group col-md-3">
                                                             <label for=""> موبایل </label>
@@ -54,8 +54,8 @@
                                                     <div class="form-row mb-8">
                                                         <div class="form-group col-md-3">
                                                             <label for=""> نام معرف </label>
-                                                            <select asp-for="AccClbParentUid" type="text" asp-items="@(new SelectList(Model.Account,"Id","Name"))" class="form-control">
-                                                                <option>--انتخاب کنید--</option>
+                                                            <select asp-for="AccClbParentUid" type="text" asp-items="@(new SelectList(Model.Account,"Id","Name"))" class="select2">
+                                                                <option value="@null">--انتخاب کنید--</option>
                                                             </select>
                                                             <span asp-validation-for="AccClbParentUid" class="error"></span>
                                                         </div>
@@ -81,16 +81,16 @@
                                                     <div class="form-row mb-8">
                                                         <div class="form-group col-md-3">
                                                             <label for=""> رتبه مشتری </label>
-                                                            <select asp-for="AccRateUid" asp-items="@(new SelectList(Model.Rating,"AccRateUid","AccRateName"))" type="text" class="form-control">
-                                                                <option>--انتخاب کنید--</option>
+                                                            <select asp-for="AccRateUid" asp-items="@(new SelectList(Model.Rating,"AccRateUid","AccRateName"))" type="text" class="select2">
+                                                                <option value="@null">--انتخاب کنید--</option>
                                                             </select>
                                                             <span asp-validation-for="AccRateUid" class="error"></span>
                                                         </div>
 
                                                         <div class="form-group col-md-3">
                                                             <label for=""> نوع اشتراک </label>
-                                                            <select asp-for="AccClbTypUid" asp-items="@(new SelectList(Model.ClupType,"AccClbTypUid","AccClbTypName"))" type="text" class="form-control">
-                                                                <option>--انتخاب کنید--</option>
+                                                            <select asp-for="AccClbTypUid" asp-items="@(new SelectList(Model.ClupType,"AccClbTypUid","AccClbTypName"))" type="text" class="select2">
+                                                                <option value="@null">--انتخاب کنید--</option>
                                                             </select>
                                                             <span asp-validation-for="AccClbTypUid" class="error"></span>
                                                         </div>
@@ -104,7 +104,7 @@
                                                         <div class="form-group col-md-3">
                                                             <label for=""> جنسیت </label>
                                                             <select asp-for="AccClbSex" type="text" class="form-control">
-                                                                <option>--انتخاب کنید--</option>
+                                                                <option value="@null">--انتخاب کنید--</option>
                                                                 <option value="0">زن</option>
                                                                 <option value="1">مرد</option>
                                                             </select>
@@ -117,9 +117,17 @@
                                                     <p><strong class="text-info">سایر اطلاعات </strong></p>
                                                     <div class="form-row mb-8">
                                                         <div class="form-group col-md-3">
-                                                            <label for=""> استان/شهر </label>
-                                                            <select asp-for="CityUid" type="text" class="form-control">
-                                                                <option>--انتخاب کنید--</option>
+                                                            <label for=""> استان </label>
+                                                            <select asp-for="SateUid" asp-items="@(new SelectList(Model.States,"Id","Name"))" id="state" type="text" class="select2">
+                                                                <option value="@null">--انتخاب کنید--</option>
+                                                            </select>
+                                                            <span asp-validation-for="CityUid" class="error"></span>
+                                                        </div>
+
+                                                        <div class="form-group col-md-3">
+                                                            <label for=""> شهر </label>
+                                                            <select asp-for="CityUid" id="cities" asp-items="@(new SelectList(Model.Cities,"Id","Name"))" type="text" class="select2">
+                                                                <option value="@null">--انتخاب کنید--</option>
                                                             </select>
                                                             <span asp-validation-for="CityUid" class="error"></span>
                                                         </div>
@@ -136,14 +144,15 @@
                                                             <span asp-validation-for="AccClbAddress2" class="error"></span>
                                                         </div>
 
+                                                       
+                                                    </div>
+
+                                                    <div class="form-row mb-8">
                                                         <div class="form-group col-md-3">
                                                             <label for="">رمز عبور</label>
                                                             <input asp-for="AccClbPassword" type="password" class="form-control" placeholder="رمز عبور">
                                                             <span asp-validation-for="AccClbPassword" class="error"></span>
                                                         </div>
-                                                    </div>
-
-                                                    <div class="form-row mb-8">
 
                                                         <div class="form-group col-md-3">
                                                             <label for=""> تکرار رمز عبور</label>
@@ -180,10 +189,10 @@
                                                 </div>
 
                                             </div>
-
+                                            <input type="hidden" asp-for="AccClbUid"/>
                                         </div>
                                     </div>
-                                    <button id="addSubmit" style="margin-right:90%" type="submit" class="btn btn-info btn-sm btn-rounded pull-left">تایید فرم</button>
+                                    <button id="editSubmit" style="margin-right:90%" type="submit" class="btn btn-info btn-sm btn-rounded pull-left">تایید </button>
 
                                 </div>
                             </div>
@@ -203,7 +212,7 @@
 
     <script src="~/assets/js/datepicker/persian-date.min.js"></script>
     <script src="~/assets/js/datepicker/persian-datepicker.min.js"></script>
-    <script src="~/source/js/basedata/modifiedaccountclup.js"></script>
+    <script src="~/source/js/basedata/ModifiedAccountClub.js"></script>
     <script>
 
     </script>

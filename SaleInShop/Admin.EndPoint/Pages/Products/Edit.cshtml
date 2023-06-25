@@ -48,7 +48,7 @@
                         <div class="form-row mb-8">
                             <div class="form-group col-md-4">
                                 <label for="group">گروه <span class="error">*</span></label>
-                                <select asp-for="Command.PrdLvlUid3" id="group" class="form-control" asp-Items="@(new SelectList(Model.Category, "PrdLvlUId", "PrdLvlName"))">
+                                                            <select asp-for="Command.PrdLvlUid3" id="group" class="select2" asp-Items="@(new SelectList(Model.Category, "PrdLvlUId", "PrdLvlName"))">
                                     <option value="" selected>انتخاب کنید...</option>
                                 </select>
                                 <span asp-validation-for="Command.PrdLvlUid3" class="error"></span>
@@ -87,7 +87,7 @@
 
                             <div class="form-group col-md-4">
                                 <label for=""> واحد شمارش <span class="error">*</span></label>
-                                <select asp-for="Command.FkProductUnit" asp-items="@(new SelectList(Model.Unit, "Id", "Name"))" type="text" class="form-control" id="">
+                                                            <select asp-for="Command.FkProductUnit" asp-items="@(new SelectList(Model.Unit, "Id", "Name"))" type="text" class="select2" id="">
                                     <option value="">انتخاب...</option>
                                 </select>
                                 <span asp-validation-for="Command.FkProductUnit" class="error"></span>
@@ -193,7 +193,7 @@
 
                             <div class="form-group col-md-3">
                                 <label for="">نوع مالیات </label>
-                                <select asp-for="Command.TaxUid" asp-items="@(new SelectList(Model.Tax, "Id", "Name"))" class="form-control">
+                                                            <select asp-for="Command.TaxUid" asp-items="@(new SelectList(Model.Tax, "Id", "Name"))" class="select2">
                                     <option value="" selected>انتخاب کنید...</option>
                                 </select>
                                 <span asp-validation-for="Command.TaxUid" class="error"></span>
@@ -286,7 +286,7 @@
                             <div class="form-row mb-4">
                                 <div class="form-group col-md-4">
                                     <label for=""> نام ویژگی</label>
-                                    <select asp-for="Property.PropertyId" id="propertyName" asp-items="@(new SelectList(Model.Properties, "Id", "Name"))" class="form-control" id="">
+                                                                <select asp-for="Property.PropertyId" id="propertyName" asp-items="@(new SelectList(Model.Properties, "Id", "Name"))" class="select2" id="">
                                         <option value="0">انتخاب...</option>
                                     </select>
                                     <span asp-validation-for="Property.PropertyId" class="error"></span>

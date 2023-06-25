@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections;
+using System.ComponentModel.DataAnnotations;
 using Domain.ShopModels;
+using Guid = System.Guid;
 
 namespace Application.BaseData.Dto
 {
@@ -7,10 +9,9 @@ namespace Application.BaseData.Dto
     {
         public Guid AccClbUid { get; set; } = Guid.NewGuid();
         public string AccClbName { get; set; }
-
         public string AccClbCode { get; set; }
 
-        public Guid? AccUid { get; set; }
+        //public Guid? AccUid { get; set; }
 
         public Guid? AccRateUid { get; set; }
 
@@ -30,6 +31,7 @@ namespace Application.BaseData.Dto
 
         public Guid? AccClbParentUid { get; set; }
         public Guid? CityUid { get; set; }
+        public Guid? SateUid { get; set; }
 
         public Guid? AccClbTypUid { get; set; }
 
@@ -80,13 +82,10 @@ namespace Application.BaseData.Dto
 
     public class EditAccountClub : CreateAccountClub
     {
-        public EditAccountClub()
-        {
-            AccUid = Guid.Empty;
-        }
-
         public List<AccountSelectOption> Account { get; set; }
         public List<AccountRating> Rating { get; set; }
         public List<AccountClubType> ClupType { get; set; }
+        public List<SelectListOption> States { get; set; }
+        public List<SelectListOption> Cities { get; set; }
     }
 }
