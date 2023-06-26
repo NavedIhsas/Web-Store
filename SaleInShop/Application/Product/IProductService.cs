@@ -16,6 +16,7 @@ namespace Application.Product
 {
     public interface IProductService
     {
+        Domain.ShopModels.Product GetProduct(Guid id);
         JsonResult GetAllProduct(JqueryDatatableParam param);
         ResultDto CreateProduct(CreateProduct command);
         List<ProductDto.ProductDto> GetAll();
@@ -54,6 +55,8 @@ namespace Application.Product
             _authHelper = authHelper;
         }
 
+        public Domain.ShopModels.Product GetProduct(Guid id) => _shopContext.Products.Find(id);
+            
         public List<ProductPropertiesDto> GetProductProperty(Guid id)
         {
             return _mapper.Map<List<ProductPropertiesDto>>(_shopContext.ProductProperties.Include(x => x.Property)

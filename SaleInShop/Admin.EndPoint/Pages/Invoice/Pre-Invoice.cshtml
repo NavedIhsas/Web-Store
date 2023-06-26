@@ -28,17 +28,25 @@
             }
 
     .product-group:hover {
-        background-color: #ddd;
+        /* background-color: #ddd;*/
+    }
+
+
+    .card {
+        border: none;
     }
 
     .product-group.active {
-        background-color: #ccc;
+        /*background-color: #ccc;*/
     }
 
     .product-group {
-        display: none;
+        padding-right: 30px !important;
         padding: 6px 12px;
+        display: none;
     }
+
+
     /* Create an active/current tablink class */
     .tab button.active {
         background-color: #ccc;
@@ -51,8 +59,9 @@
     }
 
     .card {
-        margin-left: 25px !important;
-        border: none !important;
+    }
+
+    .product-content {
     }
 </style>
 
@@ -77,7 +86,7 @@
                             <button class="tablinks" onclick="openCity(event, 'Tokyo')">فاکتور موقت</button>
                         </div>
                     </ul>
-                    <form method="post" enctype="multipart/form-data" class="needs-validation" id="createForm" name="createForm">
+                    <form method="get" enctype="multipart/form-data" class="needs-validation" id="createForm" name="createForm">
                         <div class="tab-content" id="justifyTabContent">
                             <div class="tab-pane fade show active" id="justify-home" role="tabpanel" aria-labelledby="justify-home-tab">
                                 <div class="row layout-top-spacing" id="cancel-row">
@@ -85,127 +94,20 @@
                                         <br>
                                         <!-- Tab content -->
                                         <div id="London" class="tabcontent">
+                                            <h2 class="text-center">گروه کالا ها</h2>
+                                            <p class="text-help text-cneter">برای دیدن کالای های هر گروه ، بروی گروه مورد نظر کلیک کنید</p>
                                             <div class="row">
-
-                                                <div class="card-deck">
-                                                    <div class="card">
-                                                        <div class="card-block">
-                                                            <span onclick="openDetails(event,'product1')" class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
+                                                @foreach (var level in Model.Categories)
+                                                {
+                                                    <div class="card-deck">
+                                                        <div class="card">
+                                                            <div class="card-block">
+                                                                <span onclick="openDetails(event,'@level.Id')" class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">@level.Name</span>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-
-
-                                                <div class="card-deck">
-                                                    <div class="card">
-                                                        <div class="card-block">
-                                                            <span onclick="openDetails(event,'product2')" class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-
-                                                <div class="card-deck">
-                                                    <div class="card">
-                                                        <div class="card-block">
-                                                            <span class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-
-                                                <div class="card-deck">
-                                                    <div class="card">
-                                                        <div class="card-block">
-                                                            <span class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-
-                                                <div class="card-deck">
-                                                    <div class="card">
-                                                        <div class="card-block">
-                                                            <span class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-
-                                                <div class="card-deck">
-                                                    <div class="card">
-                                                        <div class="card-block">
-                                                            <span class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-
-                                                <div class="card-deck">
-                                                    <div class="card">
-                                                        <div class="card-block">
-                                                            <span class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-
-                                                <div class="card-deck">
-                                                    <div class="card">
-                                                        <div class="card-block">
-                                                            <span class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-
-                                                <div class="card-deck">
-                                                    <div class="card">
-                                                        <div class="card-block">
-                                                            <span class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-
-                                                <div class="card-deck">
-                                                    <div class="card">
-                                                        <div class="card-block">
-                                                            <span class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-
-                                                <div class="card-deck">
-                                                    <div class="card">
-                                                        <div class="card-block">
-                                                            <span class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-
-                                                <div class="card-deck">
-                                                    <div class="card">
-                                                        <div class="card-block">
-                                                            <span class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-
-                                                <div class="card-deck">
-                                                    <div class="card">
-                                                        <div class="card-block">
-                                                            <span class="btn btn-outline-secondary mb-2 group" style="maring-top:10px">محصول</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-
+                                                }
                                             </div>
-
                                         </div>
 
                                         <div id="Paris" class="tabcontent">
@@ -219,31 +121,36 @@
                                         </div>
                                         <hr />
 
-
-                                        <div id="product1" class="product-group">
-                                            <div class="row">
-                                                <div class="card-deck">
-                                                    <div class="card">
-                                                        <div class="card-block">
-                                                            <button class="btn btn-outline-secondary mb-2 " style="maring-top:10px">کالا</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <div class="row" id="productName">
                                         </div>
-                                        <div id="product2" class="product-group">
-                                            <div class="row">
-                                                <div class="card-deck">
-                                                    <div class="card">
-                                                        <div class="card-block">
-                                                            <button class="btn btn-outline-secondary mb-2" style="maring-top:10px">کالای 2</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                    </div>
+
+
+                                    <div class="col-xl-7 col-lg-7 col-sm-12  layout-spacing">
+                                        <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
+                                            <table id="property-dataTable" class="Current-color table table-striped table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>نام</th>
+                                                        <th>مقدار</th>
+                                                        <th>فی</th>
+                                                        <th>%</th>
+                                                        <th>تسهیم</th>
+                                                        <th>عملیات</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+
                                         </div>
 
                                     </div>
+
+
+
+
                                     <button id="first-form" style="margin-right:90%" type="submit" class="btn btn-info btn-sm btn-rounded pull-left">تایید فرم</button>
 
                                 </div>
@@ -262,52 +169,211 @@
 
 </div>
 
-
+<script src="~/assets/js/jquery.cookie.js"></script>
 
 @section Scripts
     {
     <script>
-        function openCity(evt, cityName) {
-            // Declare all variables
-            var i, tabcontent, tablinks;
 
-            // Get all elements with class="tabcontent" and hide them
+        const table = $('#property-dataTable').DataTable({
+            paging: false,
+            ordering: true,
+            info: false,
+            searching: false,
+        });
+
+
+
+        function openCity(evt, cityName) {
+            var i, tabcontent, tablinks;
             tabcontent = document.getElementsByClassName("tabcontent");
             for (i = 0; i < tabcontent.length; i++) {
                 tabcontent[i].style.display = "none";
             }
-
-            // Get all elements with class="tablinks" and remove the class "active"
             tablinks = document.getElementsByClassName("tablinks");
             for (i = 0; i < tablinks.length; i++) {
                 tablinks[i].className = tablinks[i].className.replace(" active", "");
             }
-
-            // Show the current tab, and add an "active" class to the button that opened the tab
             document.getElementById(cityName).style.display = "block";
             evt.currentTarget.className += " active";
         }
 
         function openDetails(evt, name) {
-            debugger
-            // Declare all variables
-            var i, tabcontent, tablinks;
 
-            // Get all elements with class="tabcontent" and hide them
+            var i, tabcontent, tablinks;
+            $("#productName").append("");
+            $.ajax({
+
+                url: "?handler=ProductLevel&productLvl=" + name,
+                type: "get",
+                success: function (result) {
+
+                    result.forEach(x => {
+                        const list = `
+
+                                                                 <div id="${x.prdUid}" class="product-group product1">
+                                                                     <div class="row">
+                                                                         <div class="card-deck product-content">
+                                                                             <div class="card ">
+                                                                                <span >
+                                                                                    <div class="btn-group" role="group" aria-label="Basic example">
+                                                                                        <button type="button" class="btn btn-info">${x.prdName}</button>
+                                                                                                         <button onClick="addProductToList('${x.prdUid}','${x.prdName}','${x.PrdPricePerUnit1}')" type="button" class="btn btn-success" style="background: burlywood;">
+                                                                                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                                                                        </button>
+                                                                                     </div>
+                                                                                 </span>
+                                                                             </div>
+                                                                         </div>
+                                                                     </div>
+                                                                 </div>
+                          `
+
+
+                        $("#productName").append(list);
+                        document.getElementById(x.prdUid).style.display = "block";
+                    });
+                }
+            });
+
             tabcontent = document.getElementsByClassName("product-group");
             for (i = 0; i < tabcontent.length; i++) {
                 tabcontent[i].style.display = "none";
             }
-            debugger
-            // Get all elements with class="tablinks" and remove the class "active"
             tablinks = document.getElementsByClassName("group");
             for (i = 0; i < tablinks.length; i++) {
                 tablinks[i].className = tablinks[i].className.replace(" active", "");
             }
-
-            // Show the current tab, and add an "active" class to the button that opened the tab
-            document.getElementById(name).style.display = "block";
             evt.currentTarget.className += " active";
+
         }
+
+        function addProductToList(id, name, price) {
+            debugger
+
+            var obj = [
+
+                {
+                    id: id,
+                    name: name,
+                    price: price,
+                    value:1,
+                },
+            ]
+
+
+            var products = getCookie("productList1");
+            if (products == "")
+                setCookie("productList1", JSON.stringify(obj), 12);
+            else {
+                products = getCookie("productList1");
+                products = JSON.parse(products);
+                var list = products.push(obj);
+                setCookie("productList1", JSON.stringify(products), 12);
+            }
+
+            table.clear().draw();
+            products.forEach(x => {
+                const result =
+                    `
+                                                      <tr>
+                                                          <td></td>
+                                                          <td>${x.name ?? ""}</td>
+                                                          <td>${x.value ?? ""}</td>
+                                                                          <td>${x.price}</td>
+                                                           <td></td>
+                                                           <td></td>
+                                                          <td>
+                                                                      <button type="button" class="btn btn-sm btn-danger btn-rounded" onclick="(removeProductList('${x.id}'))">حذف</button>
+                                                                       <button type="button" class="btn btn-sm btn-info btn-rounded" onclick="(ProuctListDes())">توضیح</button>
+                                                           </td>
+                                                      </tr>
+                                                    `
+                table.row.add($(result)).draw();
+            });
+
+            //$.ajax({
+            //    url: "?handler=ProductToList&id=" + id,
+            //    type: "get",
+            //    success: function (list) {
+            //        debugger
+
+            //        if (!list.isSucceeded) {
+            //            notify("left center", list.message, "error");
+            //            return false;
+            //        }
+
+
+            //    }
+            //})
+        }
+
+
+        function removeProductList(id) {
+
+            $.ajax({
+                url: "?handler=RemoveFromProductList&id=" + id,
+                type: "get",
+                success: function (list) {
+                    debugger
+                    table.clear().draw();
+                    list.data.forEach(x => {
+                        const result =
+                            `
+                                              <tr>
+                                                   <td></td>
+                                                   <td>${x.name ?? ""}</td>
+                                                   <td>${x.value ?? ""}</td>
+                                                            <td>${x.price.toLocaleString()}</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                   <td>
+                                                       <button type="button" class="btn btn-sm btn-danger btn-rounded" onclick="(removeProductList('${x.id}'))">حذف</button>
+                                                       <button type="button" class="btn btn-sm btn-info btn-rounded" onclick="(ProuctListDes('${x.id}'))">توضیح</button>
+                                                   </td>
+                                               </tr>
+                                                                    `
+                        table.row.add($(result)).draw();
+                    });
+
+                }
+            })
+        }
+
+
+        function getCookie(cname) {
+            var name = cname + '=';
+            var decodedCookie = decodeURIComponent(document.cookie);
+            var ca = decodedCookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return '';
+        }
+
+        function setCookie(cname, cvalue, exdays) {
+            var d = new Date();
+            d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+            var expires = 'expires=' + d.toUTCString();
+            document.cookie = cname + '=' + cvalue + ';' + expires + ';path=/';
+        }
+
+
+        function ProuctListDes() {
+            debugger
+            //  setCookie("test","navid",12);
+
+            var coocK = getCookie("productList");
+            var test = JSON.parse(coocK);
+
+        }
+
+
     </script>
-    }
+}

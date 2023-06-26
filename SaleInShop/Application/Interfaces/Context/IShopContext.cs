@@ -86,7 +86,7 @@ public interface IShopContext
 
     public DbSet<FiscalPeriod> FiscalPeriods { get; set; }
 
-    public DbSet<Invoice> Invoices { get; set; }
+    public DbSet<Domain.ShopModels.Invoice> Invoices { get; set; }
 
     public DbSet<InvoiceDetail> InvoiceDetails { get; set; }
 

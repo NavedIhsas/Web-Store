@@ -1,6 +1,7 @@
 ﻿using Application.BaseData;
 using Application.BaseData.Dto;
 using Application.Interfaces;
+using Application.Invoice;
 using Application.Product.Category;
 using Application.Product.ProductDto;
 using FluentValidation;
@@ -18,6 +19,7 @@ public class RegisterServices
         services.AddTransient<IProductService, ProductService>();
         services.AddScoped<IProductCategory, ProductCategory>();
         services.AddScoped<IBaseDataService, BaseDataService>();
+        services.AddScoped<IInvoiceService, InvoiceService>();
 
 
         services.AddScoped<IValidator<ProductCategory.CreateProductLevel>, CategoryPrdValidator>();
@@ -39,5 +41,6 @@ public class RegisterServices
 
         services.AddAutoMapper(typeof(CategoryPrdMap));
         services.AddAutoMapper(typeof(ProductMapping));
+        services.AddAutoMapper(typeof(InvoiceMapping));
     }
 }

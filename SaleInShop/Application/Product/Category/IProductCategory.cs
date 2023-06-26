@@ -28,6 +28,7 @@ public interface IProductCategory
     ResultDto<List<ProductLevelDto>> EditPrdCategory(CreateProductLevel command);
     List<SelectOption> SelectOptions();
     List<TaxSelectOptionDto> TaxSelectOption();
+    List<ProductDto.ProductDto> GetProductLvl(Guid productLvl);
 }
 
 public class ProductCategory : IProductCategory
@@ -153,6 +154,17 @@ public class ProductCategory : IProductCategory
         return _context.ProductLevels.Any(x => x.PrdLvlUid != new Guid(id) && x.PrdLvlCodeValue == code);
     }
 
+    public List<ProductDto.ProductDto> GetProductLvl(Guid productLvl)
+    {
+       return _context.ProductLevels.Include(x => x.Products).SingleOrDefault(x => x.PrdLvlUid == productLvl)
+            ?.Products
+            .Select(x => new { x.PrdName, x.PrdUid,x.PrdPricePerUnit1 }).Select(x => new ProductDto.ProductDto()
+            {
+                PrdPricePerUnit1 = x.PrdPricePerUnit1??0,
+                PrdName = x.PrdName,
+                PrdUid = x.PrdUid,
+            }).ToList();
+    }
     public CreateProductLevel GetDetails(string id)
     {
         var result = _context.ProductLevels.SingleOrDefault(x => x.PrdLvlParentUid == new Guid(id));

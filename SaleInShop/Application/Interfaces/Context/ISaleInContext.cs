@@ -48,7 +48,7 @@ public interface ISaleInContext
     DbSet<FiscalPeriod> FiscalPeriods { get; set; }
     DbSet<InvoiceDetail> InvoiceDetails { get; set; }
     DbSet<InvoiceDetails2> InvoiceDetails2s { get; set; }
-    DbSet<Invoice> Invoices { get; set; }
+    DbSet<Domain.SaleInModels.Invoice> Invoices { get; set; }
     DbSet<Language> Languages { get; set; }
     DbSet<Menu> Menus { get; set; }
     DbSet<MenuUser> MenuUsers { get; set; }

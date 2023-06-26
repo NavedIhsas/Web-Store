@@ -35,4 +35,13 @@ public static class ConstantParameter
     public static string AutoProductCode = new("AutoProductCode");
 
     public static Guid AutoProductCodeId = new("f9058772-e87e-485f-ba57-ff1ae3596d9b");
+    
 }
+
+
+public static class SessionName
+{
+    public const string ProductList = "ProductList";
+    public const string ProductListDes = "ProductList-Des";
+}
+
