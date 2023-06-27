@@ -1,4 +1,5 @@
-﻿using Application.BaseData.Dto;
+﻿using System.Globalization;
+using Application.BaseData.Dto;
 using Application.Common;
 using Application.Interfaces;
 using Application.Interfaces.Context;
@@ -18,6 +19,7 @@ namespace Application.Product
     {
         Domain.ShopModels.Product GetProduct(Guid id);
         JsonResult GetAllProduct(JqueryDatatableParam param);
+        JsonResult GetAllProductForInvoice(JqueryDatatableParam param);
         ResultDto CreateProduct(CreateProduct command);
         List<ProductDto.ProductDto> GetAll();
         ProductDetails GetDetails(Guid id);
@@ -190,7 +192,7 @@ namespace Application.Product
             if (!string.IsNullOrEmpty(param.SSearch))
             {
                 list = list.Where(x => x.PrdName.ToLower().Contains(param.SSearch.ToLower())
-                ||x.PrdLvlName.Contains(param.SSearch.ToLower())
+                ||x.PrdName.Contains(param.SSearch.ToLower())
                 ||x.PrdLvlName.Contains(param.SSearch.ToLower())
                 ||x.TaxName.Contains(param.SSearch.ToLower())
                 ||x.PrdCode.Contains(param.SSearch.ToLower())
@@ -226,6 +228,77 @@ namespace Application.Product
                     break;
 
 
+                default:
+                    {
+                        string OrderingFunction(ProductDto.ProductDto e) => sortColumnIndex == 0 ? e.PrdName : "";
+                        IOrderedEnumerable<ProductDto.ProductDto> rr = null;
+                        rr = sortDirection == "asc" ? list.AsEnumerable().OrderBy((Func<ProductDto.ProductDto, string>)OrderingFunction) : list.AsEnumerable().OrderByDescending((Func<ProductDto.ProductDto, string>)OrderingFunction);
+
+                        list = rr.AsQueryable();
+                        break;
+                    }
+            }
+
+            IQueryable<ProductDto.ProductDto> displayResult;
+            if (param.IDisplayLength != 0)
+                displayResult = list.Skip(param.IDisplayStart)
+                .Take(param.IDisplayLength);
+            else displayResult = list;
+            var totalRecords = list.Count();
+
+            var result1 = (new
+            {
+                param.SEcho,
+                iTotalRecords = totalRecords,
+                iTotalDisplayRecords = totalRecords,
+                aaData = displayResult
+            });
+            return new JsonResult(result1, new JsonSerializerOptions { PropertyNamingPolicy = null });
+
+        }
+
+         public JsonResult GetAllProductForInvoice(JqueryDatatableParam param)
+        {
+            var list = _shopContext.Products.Include(x=>x.PrdLvlUid3Navigation).Include(x=>x.TaxU).AsNoTracking().Select(x => new
+            {
+                x.PrdUid,
+                x.PrdName,
+                x.PrdPricePerUnit1,
+                x.PrdLvlUid3Navigation.PrdLvlName
+            }).Select(x => new ProductDto.ProductDto
+            {
+                PrdUid = x.PrdUid,
+                PrdName = x.PrdName,
+                PrdLevelId = x.PrdLvlName,
+                PrdPricePerUnit1 = x.PrdPricePerUnit1 ?? 0,
+                PrdLvlName = x.PrdLvlName,
+               
+            });
+
+            if (!string.IsNullOrEmpty(param.SSearch))
+            {
+                list = list.Where(x => x.PrdName.ToLower().Contains(param.SSearch.ToLower())
+                ||x.PrdName.Contains(param.SSearch.ToLower())
+                ||x.PrdLvlName.Contains(param.SSearch.ToLower())
+                ||x.PrdPricePerUnit1.ToString().Contains(param.SSearch));
+            }
+
+            var sortColumnIndex = Convert.ToInt32(_contextAccessor.HttpContext.Request.Query["iSortCol_0"]);
+            var sortDirection = _contextAccessor.HttpContext.Request.Query["sSortDir_0"];
+
+            switch (sortColumnIndex)
+            {
+                case 0:
+                    list = sortDirection == "asc" ? list.OrderBy(c => c) : list.OrderByDescending(c => c.PrdImage);
+                    break;
+
+                case 1:
+                    list = sortDirection == "asc" ? list.OrderBy(c => c.PrdName) : list.OrderByDescending(c => c.PrdName);
+                    break;
+                case 2:
+                    list = sortDirection == "asc" ? list.OrderBy(c => c.PrdLvlName) : list.OrderByDescending(c => c.PrdLvlName);
+                    break;
+                    
                 default:
                     {
                         string OrderingFunction(ProductDto.ProductDto e) => sortColumnIndex == 0 ? e.PrdName : "";
