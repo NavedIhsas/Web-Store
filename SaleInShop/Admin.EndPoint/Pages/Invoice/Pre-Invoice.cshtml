@@ -3,6 +3,9 @@
 @{
 }
 
+https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css
+https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js
+
 <style>
     /* Style the tab */
     .tab {
@@ -128,22 +131,30 @@
                                         <div class="row" id="productName">
                                         </div>
                                     </div>
+                                    
 
 
-                                    <div class="col-xl-7 col-lg-7 col-sm-12  layout-spacing d-none"  id="productList">
-                                        <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
+                                    <div class="col-xl-7 col-lg-7 col-sm-12  layout-spacing">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <button type="button" id="addAccountClub" class="btn btn-success btn-sm btn-rounded">افزودن مشترک</button>
+                                            </div>
+                                        </div>
+                                        
+
+                                        <div class="col-md-12 col-sm-12 col-xs-12 table-responsive d-none" id="productList">
                                             <table id="property-dataTable" class="Current-color table table-striped table-bordered">
                                                 <thead>
-                                                    <tr>
-                                                        <th>#</th>
-                                                        <th>نام</th>
-                                                        <th>مقدار</th>
-                                                        <th>فی</th>
-                                                        <th>%</th>
-                                                        <th>تسهیم</th>
-                                                        <th>توضیح</th>
-                                                        <th>عملیات</th>
-                                                    </tr>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>نام</th>
+                                                    <th>مقدار</th>
+                                                    <th>فی</th>
+                                                    <th>%</th>
+                                                    <th>تسهیم</th>
+                                                    <th>توضیح</th>
+                                                    <th>عملیات</th>
+                                                </tr>
                                                 </thead>
                                                 <tbody>
                                                 </tbody>
@@ -163,44 +174,8 @@
     </div>
 </div>
 
+<partial name="Modals"/>
 
-
-
-<div class="modal fade" id="productListDes" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title text-center">افزودن توضیح </h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </button>
-            </div>
-            <form method="post" class="needs-validation" name="submitForm" id="">
-                <div class="modal-body">
-                    <div class="widget-content">
-                        <div class="form-row">
-                            <div class="col-md-12 mb-5">
-                                <textarea id="descript" type="text" class="form-control basic border-none" placeholder="توضیح خود را بنوسید" rows="4" ></textarea>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <input type="hidden" id="prodcutDes" value=""/>
-                <div class="modal-footer">
-                    <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> بستن</button>
-                    <button onclick="addDesToPrdList()" type="button" class="btn btn-info" data-dismiss="modal"><i class="flaticon-cancel-12"></i> تایید</button>
-                </div>
-            </form>
-
-        </div>
-    </div>
-</div>
-
-
-<script src="~/assets/js/jquery.cookie.js"></script>
 
 @section Scripts
 {
@@ -218,6 +193,13 @@
 
         $(document).ready(function(){
             deleteCookie(cookieName);
+            
+            $.fn.dataTable.ext.buttons.reload = {
+    text: 'Reload',
+    action: function ( e, dt, node, config ) {
+        dt.ajax.reload();
+    }
+    };
         })
 
         function openCity(evt, cityName) {
@@ -244,6 +226,13 @@
                     "bProcessing": true,
                     "bSearchable": true,
                     "order": [[1, 'asc']],
+                      dom: 'Bfrtip',
+    buttons: [{
+      text: 'Reload',
+      action: function(e, dt, node, config) {
+        dt.ajax.reload();
+      }
+    }],
                     "language": {
                         "oPaginate": { "sPrevious": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>', "sNext": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>' },
                         "sInfo": "صفحه _PAGE_ از _PAGES_",
@@ -436,7 +425,100 @@
          $("#prodcutDes").val("");
          $("#prodcutDes").val(id);
         }
+        
+        
+        $("#addAccountClub").on('click',function(evn){
+            debugger
+            $("#AccClbList").modal('show');
+        })
+        
+    
+    </script>
+    
+    
+    
+    
+    <script>
+
+        $(document).ready(function () {
+            debugger
+            bindDatatable();
+        });
+        
 
 
+        function bindDatatable() {
+            datatable = $('#dataTable_2')
+                .DataTable({
+                    "sAjaxSource": "/BaseData/CreateAccountClub?handler=Data",
+                    "bServerSide": true,
+                    "bProcessing": true,
+                    "bSearchable": true,
+                    "order": [[1, 'asc']],
+                
+                    "language": {
+                        "oPaginate": { "sPrevious": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>', "sNext": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>' },
+                        "sInfo": "صفحه _PAGE_ از _PAGES_",
+                        "sSearch": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
+                        "sSearchPlaceholder": "جستجو کنید...",
+                        "sLengthMenu": "نتایج :  _MENU_",
+                    },
+                   buttons: [
+        'copy', 'excel', 'pdf'
+    ],
+                    "columns": [
+                        {
+                            "data": "AccClbName",
+                            "autoWidth": true,
+                            "searchable": true
+                        },
+                        {
+                            "data": "AccClbCode",
+                            "autoWidth": true,
+                            "searchable": true
+                        },
+                        {
+                            "data": "ShamsiBirthDay",
+                            "autoWidth": true,
+                            "searchable": true
+                        },
+
+                        {
+                            "data": "AccClubType",
+                            "autoWidth": true,
+                            "searchable": true
+                        },
+                        {
+                            "data": "AccRatioText",
+                            "autoWidth": true,
+                            "searchable": true
+                        },
+                        {
+                            "data": "AccClbMobile",
+                            "autoWidth": true,
+                            "searchable": true
+                        },
+                        {
+                            "data": "AccClbSexText",
+                            "autoWidth": true,
+                            "searchable": true
+                        },
+
+                        {
+                            data: null,
+                            render: function (data, row, full) {
+                                return generateButton(data);
+                            },
+                        }
+
+                    ]
+                });
+
+            function generateButton(data) {
+                return `<center><a href="/BaseData/CreateAccountClub?handler=Details&id=${data.AccClbUid}" class="btn btn-warning btn-rounded btn-sm">افزودن مشتری</a>&nbsp; `
+            };
+
+        }
+    
     </script>
 }
