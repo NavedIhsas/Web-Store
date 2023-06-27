@@ -362,3 +362,4 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /SaleIn-Store/Admin.EndPoint/appsettings.Development.json
+/SaleInShop/Admin.EndPoint/appsettings.Development.json
