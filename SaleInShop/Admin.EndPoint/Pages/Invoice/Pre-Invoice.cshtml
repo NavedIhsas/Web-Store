@@ -3,11 +3,17 @@
 @{
 }
 
-https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css
-https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js
-
 <style>
     /* Style the tab */
+    
+    
+    .verticalLine {
+        float:right;
+  border-left: 1px solid darkgrey;
+  padding-left:10px;
+  padding-right:10px
+}
+
     .tab {
         overflow: hidden;
         border: 1px solid #ccc;
@@ -69,6 +75,8 @@ https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js
 </style>
 
 
+<link href="~/assets/css/persian-datepicker.css" rel="stylesheet" />
+<link href="~/plugins/flatpickr/custom-flatpickr.css" rel="stylesheet" type="text/css">
 
 
 
@@ -143,6 +151,18 @@ https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js
                                         
 
                                         <div class="col-md-12 col-sm-12 col-xs-12 table-responsive d-none" id="productList">
+                                            <div class="card-header">
+                                                <div class="card-title">
+                                                    <div class="row">
+                                                        <div class="verticalLine">
+                                                            <span id="accClubName" ></span>
+                                                        </div>
+                                                        <div class="verticalLine">
+                                                             <input id="" class="flatpickr datePicker flatpickr-input active form-control"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <table id="property-dataTable" class="Current-color table table-striped table-bordered">
                                                 <thead>
                                                 <tr>
@@ -179,9 +199,12 @@ https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js
 
 @section Scripts
 {
+    <script src="~/assets/js/datepicker/persian-datepicker.min.js"></script>
+    <script src="~/assets/js/datepicker/persian-date.min.js"></script>
     <script>
 
-        ﻿const cookieName = "productList";
+        ﻿const ProductListCookie = "productList";
+        const AccountClubCookie="AccountClub";
 
         const table = $('#property-dataTable').DataTable({
             paging: false,
@@ -190,17 +213,18 @@ https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js
             order: [[2, 'desc']],
             searching: false,
         });
-
-        $(document).ready(function(){
-            deleteCookie(cookieName);
-            
-            $.fn.dataTable.ext.buttons.reload = {
-    text: 'Reload',
-    action: function ( e, dt, node, config ) {
-        dt.ajax.reload();
-    }
-    };
-        })
+        
+        
+$(document).ready(function () {
+    $(".datePicker").persianDatepicker({
+       
+        initialValueType: 'persian',
+        observer: true,
+        format: 'YYYY/MM/DD  dddd',
+        autoClose: true,
+    });
+     deleteCookie(ProductListCookie);
+});
 
         function openCity(evt, cityName) {
             var i, tabcontent, tablinks;
@@ -270,7 +294,7 @@ https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js
 
 
             function generateButton(data) {
-                debugger
+                
                 return ` <a onClick="addProductToList('${data.PrdUid}','${data.PrdName}','${data.PrdPricePerUnit1}')" type="button" >
                             <svg style="color:green" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                            </a>
@@ -361,7 +385,7 @@ https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js
         }
 
         function addProductToList(id, name, price) {
-            var ProductList = cookieName;
+            var ProductList = ProductListCookie;
             var obj =
                 [
                     {
@@ -373,24 +397,24 @@ https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js
                     }
                 ];
 
-            var cookie=getCookie(cookieName);
+            var cookie=getCookie(ProductListCookie);
             if (cookie === "") 
-                setCookie(cookieName, obj);
+                setCookie(ProductListCookie, obj);
             
             else {
                 var parse = JSON.parse(cookie);
                 const found = parse.find(element => element.id === id);
                 if (found !== undefined) {
-                    debugger
+                    
                     found.value = found.value + 1;
                     obj = parse.filter(element => element.id !== id);
                     obj.push(found);
-                    setCookie(cookieName, obj);
+                    setCookie(ProductListCookie, obj);
                 }
                 else {
                     
                     obj.push.apply(obj, parse);
-                    setCookie(cookieName, obj);
+                    setCookie(ProductListCookie, obj);
                 }
             }
            updateTable(obj);
@@ -399,11 +423,11 @@ https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js
 
 
         function removeProductList(id) {
-            var parse = JSON.parse(getCookie(cookieName));
+            var parse = JSON.parse(getCookie(ProductListCookie));
             const found = parse.find(element => element.id === id);
             if (found !== undefined) {
                 parse = parse.filter(element => element.id !== id);
-                setCookie(cookieName, parse);
+                setCookie(ProductListCookie, parse);
                 updateTable(parse);
             }
         }
@@ -411,13 +435,13 @@ https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js
         function addDesToPrdList(){
             var id=$("#prodcutDes").val();
             var value=$("#descript").val();
-           var cookie=getCookie(cookieName);
+           var cookie=getCookie(ProductListCookie);
                      var parse = JSON.parse(cookie);
              const found = parse.find(element => element.id === id);
                 var obj = parse.filter(element => element.id !== id);
                     found.des=value;
                     obj.push(found);
-                    setCookie(cookieName, obj);
+                    setCookie(ProductListCookie, obj);
         }
     
         function ProuctListDes(id) { 
@@ -428,24 +452,23 @@ https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js
         
         
         $("#addAccountClub").on('click',function(evn){
-            debugger
+            
             $("#AccClbList").modal('show');
         })
         
     
     </script>
-    
-    
-    
-    
+
+
+
+
     <script>
 
         $(document).ready(function () {
-            debugger
+            
             bindDatatable();
         });
         
-
 
         function bindDatatable() {
             datatable = $('#dataTable_2')
@@ -463,9 +486,7 @@ https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js
                         "sSearchPlaceholder": "جستجو کنید...",
                         "sLengthMenu": "نتایج :  _MENU_",
                     },
-                   buttons: [
-        'copy', 'excel', 'pdf'
-    ],
+                 
                     "columns": [
                         {
                             "data": "AccClbName",
@@ -515,10 +536,33 @@ https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js
                 });
 
             function generateButton(data) {
-                return `<center><a href="/BaseData/CreateAccountClub?handler=Details&id=${data.AccClbUid}" class="btn btn-warning btn-rounded btn-sm">افزودن مشتری</a>&nbsp; `
+                return `<center><a onClick="addAccountClub('${data.AccClbUid}','${data.AccClbName}')" class="btn btn-warning btn-rounded btn-sm">انتخاب مشتری</a>&nbsp; `
             };
 
         }
     
+        
+        function addAccountClub(id,name){
+            deleteCookie(AccountClubCookie);
+
+            var accound={
+                accClbUid:id,
+                accClbName:name,
+            };
+
+        setCookie(AccountClubCookie,accound);
+        notify('top center','مشترک مورد نظر انتخاب شد','success');
+        getAccountClub();
+        $("#AccClbList").modal('hide');
+    
+        }
+        
+        function getAccountClub(){
+            
+            var account=getParseCookie(AccountClubCookie);
+            $("#accClubName").text('مشتری: '+account.accClbName)
+        }
+        
+
     </script>
 }

@@ -169,6 +169,11 @@ function getCookie(cname) {
     return '';
 }
 
+function getParseCookie(cname) {
+    var stringify = getCookie(cname);
+    return JSON.parse(stringify);
+}
+
 function setCookie(cname, cvalue, exdays = 1) {
     var d = new Date();
     d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));

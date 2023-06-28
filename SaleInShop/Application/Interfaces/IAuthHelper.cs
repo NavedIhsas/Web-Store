@@ -243,16 +243,15 @@ public class AuthHelper : IAuthHelper
         #region for First Product
 
         //TODo Test Tis
-        //if (!product.Any())
-        //{
-        //    var z = "";
-        //    for (var i = 0; i < generateLength; i++)
-        //    {
-        //        z += "0";
-        //    }
-
-        //    return z + "1";
-        //}
+        if (!product.Any())
+        {
+            var z = "";
+            for (var i = 0; i < generateLength; i++)
+            {
+                z += "0";
+            }
+               return z + "1";
+        }
 
         #endregion
 
