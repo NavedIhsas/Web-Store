@@ -696,7 +696,16 @@ namespace Application.BaseData
                 };
 
                 if (clubTypeDto.AccClbTypUid != null)
-                    clubTypeDto.AccClubType = _shopContext.AccountClubTypes.Find(clubTypeDto.AccClbTypUid)?.AccClbTypName;
+                {
+                    var accType= _shopContext.AccountClubTypes.Find(clubTypeDto.AccClbTypUid);
+                    if(accType!=null)
+                    {
+                        clubTypeDto.AccClubType = accType.AccClbTypName;
+                        clubTypeDto.AccClubDiscount = accType.AccClbTypPercentDiscount ?? 0;
+                    }
+
+
+                }
 
                 if (clubTypeDto.AccRateUid != null)
                     clubTypeDto.AccRatioText = _shopContext.AccountRatings.Find(clubTypeDto.AccRateUid)?.AccRateName;

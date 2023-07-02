@@ -20,4 +20,5 @@ public class ProductDto
     public string Volume { get; set; }
     public string IranCode { get; set; }
     public string BarCode { get; set; }
+    public double AccClubDiscount { get; set; }
 }

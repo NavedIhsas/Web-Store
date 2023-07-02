@@ -67,13 +67,11 @@ namespace Application.BaseData.Dto
         public Guid? AccRateUid { get; set; }
         public Guid? AccClbTypUid { get; set; }
         public string AccClbNationalCode { get; set; }
-
         public string AccClbPostalCode { get; set; }
-
         public string AccClbPhone1 { get; set; }
-
         public string AccClbPhone2 { get; set; }
         public string AccClubType { get; set; }
+        public double AccClubDiscount { get; set; }
         public string AccRatioText { get; set; }
         public string AccClbMobile { get; set; }
         public int? AccClbSex { get; set; }

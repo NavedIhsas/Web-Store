@@ -38,8 +38,11 @@ try
     RegisterServices.Configure(builder.Services);
 
     #endregion
-
-
+    builder.Services.ConfigureApplicationCookie(options =>
+    {
+        options.Cookie.Path = "/";
+    });
+  
     builder.Services.AddSession(options =>
     {
         options.IdleTimeout = TimeSpan.FromSeconds(30);
@@ -109,7 +112,7 @@ try
     app.UseSession();
     app.UseHttpsRedirection();
     app.UseStaticFiles();
-
+    app.UseCookiePolicy();
     app.UseRouting();
 
     app.UseAuthorization();

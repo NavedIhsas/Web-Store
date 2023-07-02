@@ -117,7 +117,7 @@
                                 <label for="">
                                     تخفیف کالا
                                 </label>
-                                <input type="number" class="form-control basic" asp-for="Command1.DetDiscount" placeholder=" تخفیف شعبه ">
+                                <input type="number" class="form-control basic" asp-for="Command1.DetDiscount" placeholder=" تخفیف کالا ">
                                 <span asp-validation-for="Command1.DetDiscount" class="error"></span>
                                 <p class="help-block" style="color:currentcolor; font-size:x-small">در صورت فعال بودن این گزینه تخفیف کالا در اطلاعات پایه نظر گرفته نمیشود</p>
                             </div>
@@ -233,7 +233,7 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
-    <script src="~/source/js/basedata/AccountClup.js"></script>
+    <script src="~/source/js/basedata/AccountClub.js"></script>
 
 
 }

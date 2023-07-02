@@ -61,7 +61,7 @@ public class AuthHelper : IAuthHelper
                 var checkGuid = _context.Settings.SingleOrDefault(x => x.SetUid == getSubGroupDigitCountGuid);
                 if (checkGuid != null) getSubGroupDigitCountGuid = new Guid();
                 _context.Settings.Add(new Setting
-                    { SetKey = getSubGroupDigitCountGuid.ToString(), SetValue = getSubGroupDigitCount });
+                { SetKey = getSubGroupDigitCountGuid.ToString(), SetValue = getSubGroupDigitCount });
                 _context.SaveChanges();
             }
 
@@ -250,7 +250,7 @@ public class AuthHelper : IAuthHelper
             {
                 z += "0";
             }
-               return z + "1";
+            return z + "1";
         }
 
         #endregion
@@ -258,14 +258,16 @@ public class AuthHelper : IAuthHelper
         var numbers = new List<int>();
         foreach (var p in product)
         {
-            if (p.PrdCode.Length<=generateLength)
+            if (p.PrdCode.Length <= generateLength)
                 continue;
             var length = p.PrdCode.Substring(p.PrdCode.Length - generateLength);
             var convertToInt = int.Parse(length);
             numbers.Add(convertToInt);
         }
 
-        var max = numbers.Max();
+        var max = 0;
+        if (numbers.Any())
+            max = numbers.Max();
         var generate = (max + 1).ToString();
         var r = generate.Length;
         var generateZero = Math.Abs(r - generateLength);

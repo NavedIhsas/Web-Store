@@ -174,13 +174,13 @@ function getParseCookie(cname) {
     return JSON.parse(stringify);
 }
 
-function setCookie(cname, cvalue, exdays = 1) {
+function setCookie(cname, cvalue, path = "/", exdays = 1) {
     var d = new Date();
     d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
     var expires = 'expires=' + d.toUTCString();
-    document.cookie = cname + '=' + JSON.stringify(cvalue) + ';' + expires + ';path=/';
+    document.cookie = cname + '=' + JSON.stringify(cvalue) + ';' + expires + ';path=' + path ;
 }
-function deleteCookie(name) {
-    document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+function deleteCookie(name, path="/") {
+    document.cookie = name + '=; Path=' + path + '; Expires = Thu, 01 Jan 1970 00: 00: 01 GMT; ';
 }
 

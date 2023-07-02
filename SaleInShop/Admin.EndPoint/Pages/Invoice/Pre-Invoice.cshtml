@@ -3,6 +3,11 @@
 @{
 }
 
+<link 
+    rel="stylesheet"
+    href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
+
+
 <style>
     /* Style the tab */
     
@@ -54,7 +59,11 @@
         padding: 6px 12px;
         display: none;
     }
-
+    
+    .form-group.col-md-5 {
+    display: flex;
+    align-items: center;
+}
 
     /* Create an active/current tablink class */
     .tab button.active {
@@ -81,16 +90,14 @@
 
 
 <div id="content" class="main-content">
-
     <div class="layout-px-spacing">
-
         <div class="row">
             <div id="tabsAlignments" class="col-lg-12 col-12 layout-spacing">
                 <div class="widget-content widget-content-area justify-tab">
 
                     <ul class="nav nav-tabs  mb-3 mt-3 nav-fill" id="justifyTab" role="tablist">
                         <div class="tab">
-                            <button class="tablinks" onclick="openCity(event, 'London')">منوی سفارشی</button>
+                            <button id="custom-menu" class="tablinks" onclick="openCity(event, 'CustomMenu')">منوی سفارشی</button>
                             <button class="tablinks" onclick="openCity(event, 'Paris')">منوی نمایشی</button>
                             <button class="tablinks" onclick="openCity(event, 'Tokyo')">میز</button>
                             <button class="tablinks" onclick="openCity(event, 'Tokyo')">پکیج</button>
@@ -104,10 +111,9 @@
                                     <div class="col-xl-5 col-lg-5 col-sm-12  layout-spacing" style="margin-top: -40px;">
                                         <br>
                                         <!-- Tab content -->
-                                        <div id="London" class="tabcontent">
+                                        <div id="CustomMenu" class="tabcontent">
                                             <div class="row">
-                                               
-                                                    <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
+                                                <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
                                                         <table id="dataTable_1" class="text-center Current-color table table-striped table-bordered">
                                                             <thead>
                                                             <tr>
@@ -131,8 +137,24 @@
                                         </div>
 
                                         <div id="Tokyo" class="tabcontent">
-                                            <h3>Tokyo</h3>
-                                            <p>Tokyo is the capital of Japan.</p>
+                                            <div class="row">
+                                               
+                                                <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
+                                                    <table id="dataTable_3" class="text-center Current-color table table-striped table-bordered">
+                                                        <thead>
+                                                        <tr>
+                                                            <th>نام کالا</th>
+                                                            <th>گروه کالا</th>
+                                                            <th>قیمت کالا</th>
+                                                            <th>افزودن</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                           
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
                                         </div>
                                         <hr />
 
@@ -143,25 +165,32 @@
 
 
                                     <div class="col-xl-7 col-lg-7 col-sm-12  layout-spacing">
-                                        <div class="card">
+                                        <div class="card" id="cardPrint">
                                             <div class="card-header">
-                                                <button type="button" id="addAccountClub" class="btn btn-success btn-sm btn-rounded">افزودن مشترک</button>
-                                            </div>
+                                                <div class="row">
+                                                    <div>
+                                                        <input type="button" id="addAccountClub" class="btn btn-success btn-sm btn-rounded" value="انتخاب مشتری"/>
+                                                    </div>
+                                                   
+                                                    <div class=" col-md-3">
+                                                        <input id="" style="height:30px !Important" class="flatpickr datePicker flatpickr-input active form-control form-control-sm"/>
+                                                    </div>
+                                                    <div class="form-group col-md-3 ">
+                                                        <input type="text" class="form-control form-control-sm" style="height:30px !Important" id="version" placeholder="شماره فاکتور" required="" pattern="^.+$" value="">
+                                                    </div>
+                                                    <div class="">
+                                                        <strong>
+                                                            <span id="accClubName" style="color:black;" ></span>
+                                                        </strong>
+                                                    </div>
+                                                </div>
+                                                </div>
                                         </div>
                                         
 
-                                        <div class="col-md-12 col-sm-12 col-xs-12 table-responsive d-none" id="productList">
-                                            <div class="card-header">
-                                                <div class="card-title">
-                                                    <div class="row">
-                                                        <div class="verticalLine">
-                                                            <span id="accClubName" ></span>
-                                                        </div>
-                                                        <div class="verticalLine">
-                                                             <input id="" class="flatpickr datePicker flatpickr-input active form-control"/>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                        <div class="col-md-12 col-sm-12 col-xs-12 table-responsive" id="productList">
+                                            <div class="card-title ">
+                                            @*    <span> وضعیت فرم: <strong class="text-danger mt-5">تایید نشده</strong></span>*@
                                             </div>
                                             <table id="property-dataTable" class="Current-color table table-striped table-bordered">
                                                 <thead>
@@ -181,8 +210,11 @@
                                             </table>
                                         </div>
                                     </div>
-                                    <button id="first-form" style="margin-right:90%" type="submit" class="btn btn-info btn-sm btn-rounded pull-left">تایید فرم</button>
-
+                                    <div class="row col col-md-12" style="right:70%">
+                                        <button type="submit" class="btn btn-info btn-sm btn-rounded pull-left">فاکتور موقت</button>
+                                        <button onclick="submitPrint()" type="button" class="btn btn-secondary btn-sm btn-rounded pull-left">تایید و چاپ</button>
+                                        <button type="submit" class="btn btn-primary btn-sm btn-rounded pull-left">تسویه فاکتور</button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -196,373 +228,19 @@
 
 <partial name="Modals"/>
 
-
 @section Scripts
 {
+
+
+
     <script src="~/assets/js/datepicker/persian-datepicker.min.js"></script>
     <script src="~/assets/js/datepicker/persian-date.min.js"></script>
-    <script>
 
-        ﻿const ProductListCookie = "productList";
-        const AccountClubCookie="AccountClub";
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 
-        const table = $('#property-dataTable').DataTable({
-            paging: false,
-            ordering: true,
-            info: false,
-            order: [[2, 'desc']],
-            searching: false,
-        });
-        
-        
-$(document).ready(function () {
-    $(".datePicker").persianDatepicker({
-       
-        initialValueType: 'persian',
-        observer: true,
-        format: 'YYYY/MM/DD  dddd',
-        autoClose: true,
-    });
-     deleteCookie(ProductListCookie);
-});
+    <script src="~/source/js/invoice/pre-invoice.js"></script>
 
-        function openCity(evt, cityName) {
-            var i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tabcontent");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-            }
-            tablinks = document.getElementsByClassName("tablinks");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
-            document.getElementById(cityName).style.display = "block";
-            evt.currentTarget.className += " active";
-            
-            
-            
-
-            datatable = $('#dataTable_1')
-                .DataTable({
-
-                    "sAjaxSource": "?handler=Data",
-                    "bServerSide": true,
-                    "bProcessing": true,
-                    "bSearchable": true,
-                    "order": [[1, 'asc']],
-                      dom: 'Bfrtip',
-    buttons: [{
-      text: 'Reload',
-      action: function(e, dt, node, config) {
-        dt.ajax.reload();
-      }
-    }],
-                    "language": {
-                        "oPaginate": { "sPrevious": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>', "sNext": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>' },
-                        "sInfo": "صفحه _PAGE_ از _PAGES_",
-                        "sSearch": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
-                        "sSearchPlaceholder": "جستجو کنید...",
-                        "sLengthMenu": "نتایج :  _MENU_",
-                    },
-                    "columns": [
-                        {
-                            "data": "PrdName",
-                            "autoWidth": true,
-                            "searchable": true
-                        },
-                        {
-                            "data": "PrdLvlName",
-                            "autoWidth": true,
-                            "searchable": true
-                        },
-                      
-                        {
-                            "data": "PrdPricePerUnit1",
-                            "autoWidth": true,
-                            "searchable": true
-                        },
-
-                        {
-                            data: null,
-                            render: function (data, row, full) {
-                                return generateButton(data);
-                            },
-                        }
-
-                    ]
-                });
-
-
-            function generateButton(data) {
-                
-                return ` <a onClick="addProductToList('${data.PrdUid}','${data.PrdName}','${data.PrdPricePerUnit1}')" type="button" >
-                            <svg style="color:green" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                           </a>
-                       `
-            };
-
-        }
-
-        function openDetails(evt, name) {
-
-            var i, tabcontent, tablinks;
-            $("#productName").append("");
-            $.ajax({
-
-                url: "?handler=ProductLevel&productLvl=" + name,
-                type: "get",
-                success: function (result) {
-
-                    result.forEach(x => {
-                        const list = `
-
-                         <div id="${x.prdUid}" class="product-group product1">
-                             <div class="row">
-                                 <div class="card-deck product-content">
-                                     <div class="card ">
-                                        <span >
-                                            <div class="btn-group" role="group" aria-label="Basic example">
-                                                <button type="button" class="btn btn-info">${x.prdName}</button>
-                                                  <button onClick="addProductToList('${x.prdUid}','${x.prdName}','${x.prdPricePerUnit1}')" type="button" class="btn btn-success" style="background: burlywood;">
-                                                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                                                </button>
-                                             </div>
-                                         </span>
-                                     </div>
-                                 </div>
-                             </div>
-                         </div>
-                         `
-
-                        $("#productName").append(list);
-                        document.getElementById(x.prdUid).style.display = "block";
-                    });
-                }
-            });
-
-            tabcontent = document.getElementsByClassName("product-group");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-            }
-            tablinks = document.getElementsByClassName("group");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
-            evt.currentTarget.className += " active";
-
-        }
-
-        function updateTable(obj){
-            table.clear().draw();
-            obj.forEach(x => {
-                const result =
-                    `
-                       <tr>
-                           <td></td>
-                           <td>${x.name ?? ""}</td>
-                           <td>${x.value ?? ""}</td>
-                           <td>${x.price}</td>
-                            <td></td>
-                            <td></td>
-                            <td> <a type="button" class="" onclick="(ProuctListDes('${x.id}'))">...</a></td>
-                           <td>
-                           
-                             <a class="" onClick="removeProductList('${x.id}')" title="حذف">
-                               <svg style="color:#e7515a" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2">
-                                   <polyline points="3 6 5 6 21 6"></polyline>
-                                   <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                   <line x1="10" y1="11" x2="10" y2="17"></line>
-                                   <line x1="14" y1="11" x2="14" y2="17"></line>
-                               </svg>
-                          </a>
-
-                              
-                            </td>
-                                 </tr>
-                                                                           `
-                table.row.add($(result)).draw();
-            });
-        }
-
-        function addProductToList(id, name, price) {
-            var ProductList = ProductListCookie;
-            var obj =
-                [
-                    {
-                        id: id,
-                        name: name,
-                        price: price,
-                        value: 1,
-                        des:"",
-                    }
-                ];
-
-            var cookie=getCookie(ProductListCookie);
-            if (cookie === "") 
-                setCookie(ProductListCookie, obj);
-            
-            else {
-                var parse = JSON.parse(cookie);
-                const found = parse.find(element => element.id === id);
-                if (found !== undefined) {
-                    
-                    found.value = found.value + 1;
-                    obj = parse.filter(element => element.id !== id);
-                    obj.push(found);
-                    setCookie(ProductListCookie, obj);
-                }
-                else {
-                    
-                    obj.push.apply(obj, parse);
-                    setCookie(ProductListCookie, obj);
-                }
-            }
-           updateTable(obj);
-           $("#productList").removeClass("d-none")
-        }
-
-
-        function removeProductList(id) {
-            var parse = JSON.parse(getCookie(ProductListCookie));
-            const found = parse.find(element => element.id === id);
-            if (found !== undefined) {
-                parse = parse.filter(element => element.id !== id);
-                setCookie(ProductListCookie, parse);
-                updateTable(parse);
-            }
-        }
-        
-        function addDesToPrdList(){
-            var id=$("#prodcutDes").val();
-            var value=$("#descript").val();
-           var cookie=getCookie(ProductListCookie);
-                     var parse = JSON.parse(cookie);
-             const found = parse.find(element => element.id === id);
-                var obj = parse.filter(element => element.id !== id);
-                    found.des=value;
-                    obj.push(found);
-                    setCookie(ProductListCookie, obj);
-        }
-    
-        function ProuctListDes(id) { 
-         $("#productListDes").modal('show');
-         $("#prodcutDes").val("");
-         $("#prodcutDes").val(id);
-        }
-        
-        
-        $("#addAccountClub").on('click',function(evn){
-            
-            $("#AccClbList").modal('show');
-        })
-        
-    
-    </script>
-
-
-
-
-    <script>
-
-        $(document).ready(function () {
-            
-            bindDatatable();
-        });
-        
-
-        function bindDatatable() {
-            datatable = $('#dataTable_2')
-                .DataTable({
-                    "sAjaxSource": "/BaseData/CreateAccountClub?handler=Data",
-                    "bServerSide": true,
-                    "bProcessing": true,
-                    "bSearchable": true,
-                    "order": [[1, 'asc']],
-                
-                    "language": {
-                        "oPaginate": { "sPrevious": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>', "sNext": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>' },
-                        "sInfo": "صفحه _PAGE_ از _PAGES_",
-                        "sSearch": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
-                        "sSearchPlaceholder": "جستجو کنید...",
-                        "sLengthMenu": "نتایج :  _MENU_",
-                    },
-                 
-                    "columns": [
-                        {
-                            "data": "AccClbName",
-                            "autoWidth": true,
-                            "searchable": true
-                        },
-                        {
-                            "data": "AccClbCode",
-                            "autoWidth": true,
-                            "searchable": true
-                        },
-                        {
-                            "data": "ShamsiBirthDay",
-                            "autoWidth": true,
-                            "searchable": true
-                        },
-
-                        {
-                            "data": "AccClubType",
-                            "autoWidth": true,
-                            "searchable": true
-                        },
-                        {
-                            "data": "AccRatioText",
-                            "autoWidth": true,
-                            "searchable": true
-                        },
-                        {
-                            "data": "AccClbMobile",
-                            "autoWidth": true,
-                            "searchable": true
-                        },
-                        {
-                            "data": "AccClbSexText",
-                            "autoWidth": true,
-                            "searchable": true
-                        },
-
-                        {
-                            data: null,
-                            render: function (data, row, full) {
-                                return generateButton(data);
-                            },
-                        }
-
-                    ]
-                });
-
-            function generateButton(data) {
-                return `<center><a onClick="addAccountClub('${data.AccClbUid}','${data.AccClbName}')" class="btn btn-warning btn-rounded btn-sm">انتخاب مشتری</a>&nbsp; `
-            };
-
-        }
-    
-        
-        function addAccountClub(id,name){
-            deleteCookie(AccountClubCookie);
-
-            var accound={
-                accClbUid:id,
-                accClbName:name,
-            };
-
-        setCookie(AccountClubCookie,accound);
-        notify('top center','مشترک مورد نظر انتخاب شد','success');
-        getAccountClub();
-        $("#AccClbList").modal('hide');
-    
-        }
-        
-        function getAccountClub(){
-            
-            var account=getParseCookie(AccountClubCookie);
-            $("#accClubName").text('مشتری: '+account.accClbName)
-        }
-        
-
-    </script>
 }

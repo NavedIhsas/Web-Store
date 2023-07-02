@@ -27,7 +27,13 @@ namespace SaleInWeb.Pages.Invoice
             Categories = _category.GetLevelList();
         }
 
-        public IActionResult OnGetData(JqueryDatatableParam param)=> _product.GetAllProductForInvoice(param);
+        public IActionResult OnGetData(JqueryDatatableParam param)
+        {
+            
+            var rr =Request.Cookies["AccountClubList"];
+            return _product.GetAllProductForInvoice(param);
+        }
+
         public IActionResult OnGetProductLevel(Guid productLvl)=>new JsonResult(_category.GetProductLvl(productLvl));
         public IActionResult OnGetProductToList(Guid id) => new JsonResult(_invoiceService.ProductToList(id));
         public IActionResult OnGetRemoveFromProductList(Guid id) => new JsonResult(_invoiceService.RemoveFromProductList(id));

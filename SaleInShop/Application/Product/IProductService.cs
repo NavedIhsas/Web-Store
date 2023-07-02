@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using Newtonsoft.Json;
 
 namespace Application.Product
 {
@@ -259,12 +260,17 @@ namespace Application.Product
 
          public JsonResult GetAllProductForInvoice(JqueryDatatableParam param)
         {
+          
+            var value = _contextAccessor?.HttpContext?.Request.Cookies["AccountClubList"];
+            if (value == null) return new JsonResult("false");
+            var account = JsonConvert.DeserializeObject<AccountClubDto>(value);
+            if (account == null) return new JsonResult("false");
             var list = _shopContext.Products.Include(x=>x.PrdLvlUid3Navigation).Include(x=>x.TaxU).AsNoTracking().Select(x => new
             {
                 x.PrdUid,
                 x.PrdName,
                 x.PrdPricePerUnit1,
-                x.PrdLvlUid3Navigation.PrdLvlName
+                x.PrdLvlUid3Navigation.PrdLvlName,
             }).Select(x => new ProductDto.ProductDto
             {
                 PrdUid = x.PrdUid,
@@ -272,7 +278,8 @@ namespace Application.Product
                 PrdLevelId = x.PrdLvlName,
                 PrdPricePerUnit1 = x.PrdPricePerUnit1 ?? 0,
                 PrdLvlName = x.PrdLvlName,
-               
+                AccClubDiscount=account.AccClubDiscount
+
             });
 
             if (!string.IsNullOrEmpty(param.SSearch))
