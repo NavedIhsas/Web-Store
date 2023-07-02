@@ -3,6 +3,7 @@ using Application.Interfaces.Context;
 using Application.Product;
 using FluentValidation.AspNetCore;
 using infrastructure.Context;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Connections;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -38,18 +39,31 @@ try
     RegisterServices.Configure(builder.Services);
 
     #endregion
-    builder.Services.ConfigureApplicationCookie(options =>
-    {
-        options.Cookie.Path = "/";
-    });
-  
-    builder.Services.AddSession(options =>
-    {
-        options.IdleTimeout = TimeSpan.FromSeconds(30);
-        options.Cookie.HttpOnly = true;
-        options.Cookie.IsEssential = true;
-    });
 
+    builder.Services.ConfigureApplicationCookie(options => { options.Cookie.Path = "/"; });
+    builder.Services.Configure<CookiePolicyOptions>(options =>
+    {
+        // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+        options.CheckConsentNeeded = context => true;
+        options.MinimumSameSitePolicy = SameSiteMode.None;
+    });
+    builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, o =>
+        {
+            o.LoginPath = new PathString("/");
+            o.LogoutPath = new PathString("/");
+            o.AccessDeniedPath = new PathString("/Error");
+            o.ExpireTimeSpan = TimeSpan.FromDays(15);
+        });
+
+
+    builder.Services.AddSession(options =>
+        {
+            options.IdleTimeout = TimeSpan.FromSeconds(30);
+            options.Cookie.HttpOnly = true;
+            options.Cookie.IsEssential = true;
+        });
+  
     #region connection string
 
     var saleInConnection = configuration.GetConnectionString("SaleInConnection");
@@ -114,9 +128,9 @@ try
     app.UseStaticFiles();
     app.UseCookiePolicy();
     app.UseRouting();
-
+    app.UseAuthentication();
     app.UseAuthorization();
-
+    app.MapDefaultControllerRoute();
     app.MapRazorPages();
 
     app.Run();

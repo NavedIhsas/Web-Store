@@ -5,6 +5,7 @@ using Application.Product.Category;
 using Application.Product.ProductDto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Net.Http.Headers;
 
 namespace SaleInWeb.Pages.Invoice
 {
@@ -29,7 +30,10 @@ namespace SaleInWeb.Pages.Invoice
 
         public IActionResult OnGetData(JqueryDatatableParam param)
         {
-            
+            Response.Cookies.Append("Test","SlamDost");
+           var r3r= HttpContext.Request.Headers[HeaderNames.Cookie];
+            var get= Request.Cookies["productList"];
+            var rrr = Request.Cookies.ContainsKey("AccountClubList");
             var rr =Request.Cookies["AccountClubList"];
             return _product.GetAllProductForInvoice(param);
         }
