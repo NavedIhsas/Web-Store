@@ -12,10 +12,9 @@ $(document).ready(function () {
     });
     bindDatatable();
     deleteCookie(ProductListCookie);
-    //deleteCookie(AccountClubCookie);
+    deleteCookie(AccountClubCookie);
     //document.getElementById("custom-menu").click();
 });
-
 
 
 const table = $('#property-dataTable').DataTable({
@@ -80,7 +79,14 @@ function submitPrint() {
     table.button('.buttons-print').trigger();
 }
 
-function openCity(evt, cityName) {
+function getProduct(evt, cityName) {
+
+    var account = getCookie(AccountClubCookie);
+    if (account == "") {
+        notify("top center", "لطفا ابتدا مشتری را انتخاب کنید", "error");
+        return false;
+    }
+
     var i, tabcontent, tablinks;
     tabcontent = document.getElementsByClassName("tabcontent");
     for (i = 0; i < tabcontent.length; i++) {
@@ -143,8 +149,8 @@ function openCity(evt, cityName) {
 
 
     function generateButton(data) {
-
-        return ` <a onClick="addProductToList('${data.PrdUid}','${data.PrdName}','${data.PrdPricePerUnit1},'${data.AccClubDiscount}')" type="button" >
+        debugger
+        return ` <a onClick="addProductToList('${data.PrdUid}','${data.PrdName}','${data.PrdPricePerUnit1}','${data.AccClubDiscount}')" type="button" >
         <svg style="color:green" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
     </a>
     `
@@ -152,13 +158,13 @@ function openCity(evt, cityName) {
 
 }
 
-function openDetails(evt, name) {
+function openDetails(evt, name,accclubType) {
 
     var i, tabcontent, tablinks;
     $("#productName").append("");
     $.ajax({
 
-        url: "?handler=ProductLevel&productLvl=" + name,
+        url: "?handler=ProductLevel&productLvl=" + name + "&accClbType=" + accclubType,
         type: "get",
         success: function (result) {
 
@@ -172,7 +178,7 @@ function openDetails(evt, name) {
                                         <span >
                                             <div class="btn-group" role="group" aria-label="Basic example">
                                                 <button type="button" class="btn btn-info">${x.prdName}</button>
-                                                  <button onClick="addProductToList('${x.prdUid}','${x.prdName}','${x.prdPricePerUnit1}')" type="button" class="btn btn-success" style="background: burlywood;">
+                                                  <button onClick="addProductToList('${x.prdUid}','${x.prdName}','${x.prdPricePerUnit1}','${x.accClubDiscount}')" type="button" class="btn btn-success" style="background: burlywood;">
                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                                                 </button>
                                              </div>
@@ -213,7 +219,7 @@ function updateTable(obj) {
         <td>${x.name ?? ""}</td>
         <td>${x.value ?? ""}</td>
         <td>${x.price}</td>
-        <td></td>
+        <td>${x.discount}</td>
         <td></td>
         <td> <a type="button" class="" onclick="(ProuctListDes('${x.id}'))">...</a></td>
         <td>
@@ -247,7 +253,7 @@ function updateTable(obj) {
 }
 
 function addProductToList(id, name, price,discount) {
-
+    debugger
     var account = getCookie(AccountClubCookie);
     if (account == "") {
         notify("top center", "لطفا ابتدا مشتری را انتخاب کنید", "error");
@@ -396,19 +402,19 @@ function bindDatatable() {
         });
 
     function generateButton(data) {
-        return `<center><a onClick="addAccountClub('${data.AccClbUid}','${data.AccClbName}')" class="btn btn-warning btn-rounded btn-sm">انتخاب مشتری</a>&nbsp; `
+        return `<center><a onClick="addAccountClub('${data.AccClbUid}','${data.AccClbName}','${data.AccClubDiscount}')" class="btn btn-warning btn-rounded btn-sm">انتخاب مشتری</a>&nbsp; `
     };
 
 }
 
 
-function addAccountClub(id, name) {
+function addAccountClub(id, name,discount) {
     deleteCookie(AccountClubCookie);
-
+    debugger
     var accound = {
         accClbUid: id,
         accClbName: name,
-      
+        accClubDiscount:discount
     };
 
     setCookie(AccountClubCookie, accound);

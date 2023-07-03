@@ -12,7 +12,9 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Application.Product
 {
@@ -261,9 +263,13 @@ namespace Application.Product
          public JsonResult GetAllProductForInvoice(JqueryDatatableParam param)
         {
           
-            var value = _contextAccessor?.HttpContext?.Request.Cookies["AccountClubList"];
-            if (value == null) return new JsonResult("false");
-            var account = JsonConvert.DeserializeObject<AccountClubDto>(value);
+            _contextAccessor.HttpContext.Request.Headers.TryGetValue("Cookie", out var values);
+            var cookies = values.ToString().Split(';').ToList();
+            var result = cookies.Select(c => new { Key = c.Split('=')[0].Trim(), Value = c.Split('=')[1].Trim() }).ToList();
+            var cookie = result.FirstOrDefault(r => r.Key == "AccountClubList")?.Value;
+
+           
+            var account = JsonConvert.DeserializeObject<AccountClubDto>(cookie);
             if (account == null) return new JsonResult("false");
             var list = _shopContext.Products.Include(x=>x.PrdLvlUid3Navigation).Include(x=>x.TaxU).AsNoTracking().Select(x => new
             {

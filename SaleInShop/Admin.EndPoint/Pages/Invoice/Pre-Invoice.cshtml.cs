@@ -35,18 +35,11 @@ namespace SaleInWeb.Pages.Invoice
            var r3r= HttpContext.Request.Headers["AccountClubList"];
 
            StringValues values;
-           HttpContext.Request.Headers.TryGetValue("Cookie", out values);
-           var cookies = values.ToString().Split(';').ToList();
-           var result = cookies.Select(c => new { Key = c.Split('=')[0].Trim(), Value = c.Split('=')[1].Trim() }).ToList();
-           var username = result.FirstOrDefault(r => r.Key == "AccountClubList")?.Value;
-
-            var get= Request.Cookies["AccountClubList"];
-            var rrr = Request.Cookies.ContainsKey("AccountClubList");
-            var rr =Request.Cookies["AccountClubList"];
+          
             return _product.GetAllProductForInvoice(param);
         }
 
-        public IActionResult OnGetProductLevel(Guid productLvl)=>new JsonResult(_category.GetProductLvl(productLvl));
+        public IActionResult OnGetProductLevel(Guid productLvl,Guid accClbType)=>new JsonResult(_category.GetProductLvl(productLvl, accClbType));
         public IActionResult OnGetProductToList(Guid id) => new JsonResult(_invoiceService.ProductToList(id));
         public IActionResult OnGetRemoveFromProductList(Guid id) => new JsonResult(_invoiceService.RemoveFromProductList(id));
     }

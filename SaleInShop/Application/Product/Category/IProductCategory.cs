@@ -28,7 +28,7 @@ public interface IProductCategory
     ResultDto<List<ProductLevelDto>> EditPrdCategory(CreateProductLevel command);
     List<SelectOption> SelectOptions();
     List<TaxSelectOptionDto> TaxSelectOption();
-    List<ProductDto.ProductDto> GetProductLvl(Guid productLvl);
+    List<ProductDto.ProductDto> GetProductLvl(Guid productLvl, Guid accUid);
 }
 
 public class ProductCategory : IProductCategory
@@ -154,16 +154,33 @@ public class ProductCategory : IProductCategory
         return _context.ProductLevels.Any(x => x.PrdLvlUid != new Guid(id) && x.PrdLvlCodeValue == code);
     }
 
-    public List<ProductDto.ProductDto> GetProductLvl(Guid productLvl)
+    public List<ProductDto.ProductDto> GetProductLvl(Guid productLvl, Guid accUid)
     {
-       return _context.ProductLevels.Include(x => x.Products).SingleOrDefault(x => x.PrdLvlUid == productLvl)
-            ?.Products
-            .Select(x => new { x.PrdName, x.PrdUid,x.PrdPricePerUnit1 }).Select(x => new ProductDto.ProductDto()
-            {
-                PrdPricePerUnit1 = x.PrdPricePerUnit1??0,
-                PrdName = x.PrdName,
-                PrdUid = x.PrdUid,
-            }).ToList();
+        double discount = 0;
+        var account = _context.AccountClubs.Select(x => new { x.AccClbTypUid, x.AccClbUid }).SingleOrDefault(x => x.AccClbUid == accUid);
+        if (account == null)
+            return _context.ProductLevels.Include(x => x.Products).SingleOrDefault(x => x.PrdLvlUid == productLvl)
+                ?.Products
+                .Select(x => new { x.PrdName, x.PrdUid, x.PrdPricePerUnit1 }).Select(x => new ProductDto.ProductDto()
+                {
+                    PrdPricePerUnit1 = x.PrdPricePerUnit1 ?? 0,
+                    PrdName = x.PrdName,
+                    PrdUid = x.PrdUid,
+                    AccClubDiscount = discount
+                }).ToList();
+        var accType = _context.AccountClubTypes.Find(account.AccClbTypUid);
+        if (accType != null)
+            discount = accType.AccClbTypDetDiscount ?? 0;
+        return _context.ProductLevels.Include(x => x.Products).SingleOrDefault(x => x.PrdLvlUid == productLvl)
+             ?.Products
+             .Select(x => new { x.PrdName, x.PrdUid, x.PrdPricePerUnit1 }).Select(x => new ProductDto.ProductDto()
+             {
+                 PrdPricePerUnit1 = x.PrdPricePerUnit1 ?? 0,
+                 PrdName = x.PrdName,
+                 PrdUid = x.PrdUid,
+                 AccClubDiscount = discount
+ 
+             }).ToList();
     }
     public CreateProductLevel GetDetails(string id)
     {

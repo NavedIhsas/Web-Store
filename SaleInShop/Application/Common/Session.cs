@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 
 namespace Application.Common;
@@ -38,4 +40,5 @@ public static class SessionExtensions
             return data is T data1 ? data1 : default;
         return data == null ? default : JsonConvert.DeserializeObject<T>(data);
     }
+    
 }

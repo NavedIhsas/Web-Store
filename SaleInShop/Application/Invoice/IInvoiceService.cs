@@ -73,7 +73,7 @@ namespace Application.Invoice
         public ResultDto<List<ProductSessionList>> RemoveFromProductList(Guid id)
         {
             var result = new ResultDto<List<ProductSessionList>>();
-            
+
 
             var list = _contextAccessor.HttpContext!.Session.GetJson<List<ProductSessionList>>(SessionName.ProductList) ??
                        new List<ProductSessionList>();
