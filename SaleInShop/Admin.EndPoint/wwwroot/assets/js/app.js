@@ -338,7 +338,7 @@ var App = function() {
             var c = ca[i];
             while (c.charAt(0) == ' ') {
               c = c.substring(1);
-              console.log(c)
+             /* console.log(c)*/
             }
             if (c.indexOf(name) == 0) {
                 console.log(c.substring(name.length, c.length));

@@ -3,10 +3,6 @@
 @{
 }
 
-<link 
-    rel="stylesheet"
-    href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
-
 
 <style>
     /* Style the tab */
@@ -97,40 +93,19 @@
 
                     <ul class="nav nav-tabs  mb-3 mt-3 nav-fill" id="justifyTab" role="tablist">
                         <div class="tab">
-                            <button id="custom-menu" class="tablinks" onclick="getProduct(event, 'CustomMenu')">منوی سفارشی</button>
+                            <button id="custom-menu" class="tablinks" onclick="getProductModal(event, 'CustomMenu')">منوی سفارشی</button>
                             <button class="tablinks" onclick="openCity(event, 'Paris')">منوی نمایشی</button>
                             <button class="tablinks" onclick="openCity(event, 'Tokyo')">میز</button>
                             <button class="tablinks" onclick="openCity(event, 'Tokyo')">پکیج</button>
                             <button class="tablinks" onclick="openCity(event, 'Tokyo')">فاکتور موقت</button>
                         </div>
                     </ul>
-                    <form method="get" enctype="multipart/form-data" class="needs-validation" id="createForm" name="createForm">
+                    <form method="post" id="createForm" name="submitForm">
                         <div class="tab-content" id="justifyTabContent">
                             <div class="tab-pane fade show active" id="justify-home" role="tabpanel" aria-labelledby="justify-home-tab">
                                 <div class="row layout-top-spacing" id="cancel-row">
-                                    <div class="col-xl-5 col-lg-5 col-sm-12  layout-spacing" style="margin-top: -40px;">
-                                        <br>
-                                        <!-- Tab content -->
-                                        <div id="CustomMenu" class="tabcontent">
-                                            <div class="row">
-                                                <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
-                                                        <table id="dataTable_1" class="text-center Current-color table table-striped table-bordered">
-                                                            <thead>
-                                                            <tr>
-                                                                <th>نام کالا</th>
-                                                                <th>گروه کالا</th>
-                                                                <th>قیمت کالا</th>
-                                                                <th>افزودن</th>
-                                                            </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                           
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                            </div>
-                                        </div>
-
+                                    <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing" style="margin-top: -40px;">
+                                      
                                         <div id="Paris" class="tabcontent">
                                             <h3>Paris</h3>
                                             <p>Paris is the capital of France.</p>
@@ -158,15 +133,14 @@
                                         </div>
                                         <hr />
 
-                                        <div class="row" id="productName">
-                                        </div>
+                                        <div class="row" id="productName"></div>
+                                        
                                     </div>
-                                    
 
-
-                                    <div class="col-xl-7 col-lg-7 col-sm-12  layout-spacing">
-                                        <div class="card" id="cardPrint">
-                                            <div class="card-header">
+                                    <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
+                                        
+                                        <div class="card" id="cardPrint_1">
+                                            <div class="card-body">
                                                 <div class="row">
                                                     <div>
                                                         <input type="button" id="addAccountClub" class="btn btn-success btn-sm btn-rounded" value="انتخاب مشتری"/>
@@ -176,30 +150,66 @@
                                                         <input id="" style="height:30px !Important" class="flatpickr datePicker flatpickr-input active form-control form-control-sm"/>
                                                     </div>
                                                     <div class="form-group col-md-3 ">
-                                                        <input type="text" class="form-control form-control-sm" style="height:30px !Important" id="version" placeholder="شماره فاکتور" required="" pattern="^.+$" value="">
+                                                        <input type="text" class="form-control form-control-sm" style="height:30px !Important" placeholder="شماره فاکتور">
                                                     </div>
-                                                    <div class="">
+                                                    
+                                                    <div>
+                                                        <input onclick="InvoiceList()" type="button" id="" class="btn btn-warning btn-sm btn-rounded" value="فاکتور های ثبت شده" />
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="card" id="cardPrint">
+                                            <div class="card-header">
+                                                <div class="row">
+                                                   
+                                                    <div class="mr-30 verticalLine">
                                                         <strong>
-                                                            <span id="accClubName" style="color:black;" ></span>
+                                                            <span id="accClubName" style="color:black;"></span>
                                                         </strong>
                                                     </div>
+
+                                                    <div class="mr-30 verticalLine">
+                                                        <strong>
+                                                            <span id="accClubType" style="color:black;"></span>
+                                                        </strong>
+                                                    </div>
+
+                                                    <div class="mr-30 verticalLine">
+                                                        <strong>
+                                                            <span id="accClubMobile" style="color:black;"></span>
+                                                        </strong>
+                                                    </div>
+                                                    <div class="mr-30 verticalLine">
+                                                        <strong>
+                                                            <span id="accClubAddress" style="color:black;"></span>
+                                                        </strong>
+                                                    </div>
+
                                                 </div>
-                                                </div>
+                                            </div>
                                         </div>
-                                        
+
 
                                         <div class="col-md-12 col-sm-12 col-xs-12 table-responsive" id="productList">
                                             <div class="card-title ">
-                                            @*    <span> وضعیت فرم: <strong class="text-danger mt-5">تایید نشده</strong></span>*@
+                                                @*    <span> وضعیت فرم: <strong class="text-danger mt-5">تایید نشده</strong></span>*@
                                             </div>
-                                            <table id="property-dataTable" class="Current-color table table-striped table-bordered">
+                                            <table id="property-dataTable" class="Current-color table table-striped table-bordered property-dataTable">
                                                 <thead>
                                                 <tr>
                                                     <th>#</th>
-                                                    <th>نام</th>
-                                                    <th>مقدار</th>
-                                                    <th>فی</th>
-                                                    <th>%</th>
+                                                    <th>نام کالا</th>
+                                                    <th>تعداد</th>
+                                                    <th>قیمت</th>
+                                                    <th>قیمت کل</th>
+                                                    <th>تخفیف (درصد)</th>
+                                                    <th>مبلغ پس از تخفیف</th>
+                                                    <th>مالیات</th>
+                                                    <th>مبلغ نهایی</th>
                                                     <th>تسهیم</th>
                                                     <th>توضیح</th>
                                                     <th>عملیات</th>
@@ -212,7 +222,7 @@
                                     </div>
                                     <div class="row col col-md-12" style="right:70%">
                                         <button type="submit" class="btn btn-info btn-sm btn-rounded pull-left">فاکتور موقت</button>
-                                        <button onclick="submitPrint()" type="button" class="btn btn-secondary btn-sm btn-rounded pull-left">تایید و چاپ</button>
+                                        <button id="submitPrint" type="button" class="btn btn-secondary btn-sm btn-rounded pull-left">تایید و چاپ</button>
                                         <button type="submit" class="btn btn-primary btn-sm btn-rounded pull-left">تسویه فاکتور</button>
                                     </div>
                                 </div>
@@ -234,10 +244,6 @@
     <script src="~/assets/js/datepicker/persian-datepicker.min.js"></script>
     <script src="~/assets/js/datepicker/persian-date.min.js"></script>
 
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 
     <script src="~/source/js/invoice/pre-invoice.js"></script>
 }

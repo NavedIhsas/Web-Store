@@ -114,10 +114,10 @@
 
                         <div class="form-row">
                             <div class="col-md-6 mb-4">
-                                <label for="">
-                                    تخفیف کالا
+                                <label for="" title="درصد تخفیف کالا در ردیف فاکتور">
+                                    تخفیف کالا (درصد)
                                 </label>
-                                <input type="number" class="form-control basic" asp-for="Command1.DetDiscount" placeholder=" تخفیف کالا ">
+                                <input max="100" type="number" class="form-control basic" asp-for="Command1.DetDiscount" placeholder=" تخفیف کالا در ردیف ">
                                 <span asp-validation-for="Command1.DetDiscount" class="error"></span>
                                 <p class="help-block" style="color:currentcolor; font-size:x-small">در صورت فعال بودن این گزینه تخفیف کالا در اطلاعات پایه نظر گرفته نمیشود</p>
                             </div>

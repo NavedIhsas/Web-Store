@@ -262,13 +262,7 @@ namespace Application.Product
 
          public JsonResult GetAllProductForInvoice(JqueryDatatableParam param)
         {
-          
-            _contextAccessor.HttpContext.Request.Headers.TryGetValue("Cookie", out var values);
-            var cookies = values.ToString().Split(';').ToList();
-            var result = cookies.Select(c => new { Key = c.Split('=')[0].Trim(), Value = c.Split('=')[1].Trim() }).ToList();
-            var cookie = result.FirstOrDefault(r => r.Key == "AccountClubList")?.Value;
-
-           
+            var cookie = _authHelper.GetCookie("AccountClubList");
             var account = JsonConvert.DeserializeObject<AccountClubDto>(cookie);
             if (account == null) return new JsonResult("false");
             var list = _shopContext.Products.Include(x=>x.PrdLvlUid3Navigation).Include(x=>x.TaxU).AsNoTracking().Select(x => new

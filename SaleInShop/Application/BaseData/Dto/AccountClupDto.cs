@@ -76,6 +76,7 @@ namespace Application.BaseData.Dto
         public string AccClbMobile { get; set; }
         public int? AccClbSex { get; set; }
         public string AccClbSexText { get; set; }
+        public string AccClbAddress { get; set; }
     }
 
     public class EditAccountClub : CreateAccountClub

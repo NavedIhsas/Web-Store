@@ -29,14 +29,18 @@ namespace SaleInWeb.Pages.Invoice
             Categories = _category.GetLevelList();
         }
 
+        public  IActionResult OnPost()
+        {
+            return new JsonResult(_invoiceService.Create());
+        }
         public IActionResult OnGetData(JqueryDatatableParam param)
         {
-            Response.Cookies.Append("Test","SlamDost");
-           var r3r= HttpContext.Request.Headers["AccountClubList"];
-
-           StringValues values;
-          
             return _product.GetAllProductForInvoice(param);
+        }
+
+        public IActionResult OnGetInvoiceList()
+        {
+            return new JsonResult(_invoiceService.GetInvoiceList());
         }
 
         public IActionResult OnGetProductLevel(Guid productLvl,Guid accClbType)=>new JsonResult(_category.GetProductLvl(productLvl, accClbType));

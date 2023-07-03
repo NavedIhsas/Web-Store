@@ -1,6 +1,7 @@
 ﻿using Application.Common;
 using Application.Interfaces.Context;
 using Domain.SaleInModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Setting = Domain.ShopModels.Setting;
@@ -33,6 +34,7 @@ public interface IAuthHelper
 
     string AutoGenerateCode(Guid prdLvlId);
     bool AutoCodeProduct();
+    string GetCookie(string name);
 }
 
 public class AuthHelper : IAuthHelper
@@ -40,12 +42,13 @@ public class AuthHelper : IAuthHelper
     private readonly IShopContext _context;
     private readonly ILogger<AuthHelper> _logger;
     private readonly ISaleInContext _saleInContext;
-
-    public AuthHelper(IShopContext context, ILogger<AuthHelper> logger, ISaleInContext saleInContext)
+    private readonly IHttpContextAccessor _contextAccessor;
+    public AuthHelper(IShopContext context, ILogger<AuthHelper> logger, ISaleInContext saleInContext, IHttpContextAccessor contextAccessor)
     {
         _context = context;
         _logger = logger;
         _saleInContext = saleInContext;
+        _contextAccessor = contextAccessor;
     }
 
     public void ConfigureSettingTable()
@@ -218,6 +221,16 @@ public class AuthHelper : IAuthHelper
             _logger.LogError(e.Message);
             throw new Exception(e.Message);
         }
+    }
+
+    public string GetCookie(string name)
+    {
+        _contextAccessor.HttpContext.Request.Headers.TryGetValue("Cookie", out var values);
+        var cookies = values.ToString().Split(';').ToList();
+        var result = cookies.Select(c => new { Key = c.Split('=')[0].Trim(), 
+            Value = c.Split('=')[1].Trim() }).ToList();
+        var cookie = result.FirstOrDefault(r => r.Key == name)?.Value;
+        return cookie;
     }
 
     /// <summary>
