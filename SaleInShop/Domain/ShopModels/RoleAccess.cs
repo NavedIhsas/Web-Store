@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class RoleAccess
+namespace Domain.ShopModels;
+
+public partial class RoleAccess
 {
     public Guid AcsUid { get; set; }
 

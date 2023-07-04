@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class Bank
+namespace Domain.ShopModels;
+
+public partial class Bank
 {
     public Guid BankUid { get; set; }
 

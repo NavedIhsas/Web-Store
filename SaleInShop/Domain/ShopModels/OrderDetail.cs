@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class OrderDetail
+namespace Domain.ShopModels;
+
+public partial class OrderDetail
 {
     public Guid OrdDetUid { get; set; }
 

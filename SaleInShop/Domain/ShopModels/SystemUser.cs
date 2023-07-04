@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class SystemUser
+namespace Domain.ShopModels;
+
+public partial class SystemUser
 {
     public Guid SysUsrUid { get; set; }
 
@@ -46,7 +49,23 @@ public class SystemUser
 
     public Guid? AccUid { get; set; }
 
+    public virtual ICollection<AccountClubCard> AccountClubCards { get; set; } = new List<AccountClubCard>();
+
+    public virtual ICollection<CardRechage> CardRechageCrFrCreatedByNavigations { get; set; } = new List<CardRechage>();
+
+    public virtual ICollection<CardRechage> CardRechageCrFrModifiedByNavigations { get; set; } = new List<CardRechage>();
+
+    public virtual ICollection<Contract> ContractCntFrCreatedbyNavigations { get; set; } = new List<Contract>();
+
+    public virtual ICollection<Contract> ContractCntFrModifiedbyNavigations { get; set; } = new List<Contract>();
+
     public virtual ICollection<MenuUser> MenuUsers { get; set; } = new List<MenuUser>();
 
     public virtual Role RolU { get; set; }
+
+    public virtual ICollection<ServiceTransaction> ServiceTransactionStrFrCreateByNavigations { get; set; } = new List<ServiceTransaction>();
+
+    public virtual ICollection<ServiceTransaction> ServiceTransactionStrFrModifiedByNavigations { get; set; } = new List<ServiceTransaction>();
+
+    public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 }

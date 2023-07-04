@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class Country
+namespace Domain.ShopModels;
+
+public partial class Country
 {
     public Guid CntUid { get; set; }
 

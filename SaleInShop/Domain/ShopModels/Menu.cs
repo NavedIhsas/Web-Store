@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class Menu
+namespace Domain.ShopModels;
+
+public partial class Menu
 {
     public Guid MnuUid { get; set; }
 

@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class Personnel
+namespace Domain.ShopModels;
+
+public partial class Personnel
 {
     public Guid PrsUid { get; set; }
 

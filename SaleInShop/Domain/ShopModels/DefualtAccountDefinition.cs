@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class DefualtAccountDefinition
+namespace Domain.ShopModels;
+
+public partial class DefualtAccountDefinition
 {
     public Guid DftAccDfinUid { get; set; }
 

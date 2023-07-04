@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class SmsHeader
+namespace Domain.ShopModels;
+
+public partial class SmsHeader
 {
     public Guid SmsHedUid { get; set; }
 

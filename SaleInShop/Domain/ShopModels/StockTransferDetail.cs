@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class StockTransferDetail
+namespace Domain.ShopModels;
+
+public partial class StockTransferDetail
 {
     public Guid StkTrnsDetUid { get; set; }
 

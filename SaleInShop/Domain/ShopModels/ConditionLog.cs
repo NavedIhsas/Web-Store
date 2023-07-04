@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class ConditionLog
+namespace Domain.ShopModels;
+
+public partial class ConditionLog
 {
     public Guid LogUid { get; set; }
 

@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class Agreement
+namespace Domain.ShopModels;
+
+public partial class Agreement
 {
     public Guid AgtUid { get; set; }
 

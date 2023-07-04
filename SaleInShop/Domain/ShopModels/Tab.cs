@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class Tab
+namespace Domain.ShopModels;
+
+public partial class Tab
 {
     public Guid TabUid { get; set; }
 

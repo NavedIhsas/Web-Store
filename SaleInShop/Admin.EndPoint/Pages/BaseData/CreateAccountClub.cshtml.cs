@@ -41,6 +41,7 @@ namespace SaleInWeb.Pages.BaseData
        
         public IActionResult OnPost(CreateAccountClub command)
         {
+           
             try
             {
                 if (!string.IsNullOrWhiteSpace(command.ShamsiBirthDay))

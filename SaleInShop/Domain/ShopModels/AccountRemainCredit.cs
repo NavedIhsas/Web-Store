@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class AccountRemainCredit
+namespace Domain.ShopModels;
+
+public partial class AccountRemainCredit
 {
     public Guid AccRemCrtUid { get; set; }
 

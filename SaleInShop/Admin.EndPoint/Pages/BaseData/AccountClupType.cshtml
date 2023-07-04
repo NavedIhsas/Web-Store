@@ -1,4 +1,5 @@
 ﻿@page
+@using Application.Common
 @model SaleInWeb.Pages.BaseData.AccountClupTypeModel
 @{
     ViewData["Title"] = "رتبه بندی مشترکین";
@@ -79,12 +80,12 @@
                                 </label>
                                 <select asp-for="Command1.PriceInvoice" type="text" class="form-control basic" placeholder="قیمت کالا ">
                                     <option>--انتخاب--</option>
-                                    <option value="0">صفر</option>
-                                    <option value="1">سطح 1</option>
-                                    <option value="2">سطح 2</option>
-                                    <option value="3">سطح 3</option>
-                                    <option value="4">سطح 4</option>
-                                    <option value="5">سطح 5</option>
+                                    <option value="@PriceInvoiceLevel.Zero)">صفر</option>
+                                    <option value="@PriceInvoiceLevel.Level1">سطح 1</option>
+                                    <option value="@PriceInvoiceLevel.Level2">سطح 2</option>
+                                    <option value="@PriceInvoiceLevel.Level3">سطح 3</option>
+                                    <option value="@PriceInvoiceLevel.Level4">سطح 4</option>
+                                    <option value="@PriceInvoiceLevel.Level5">سطح 5</option>
                                 </select>
                                 <span asp-validation-for="Command1.PriceInvoice" class="error"></span>
                             </div>

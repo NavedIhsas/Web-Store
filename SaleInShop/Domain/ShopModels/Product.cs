@@ -1,12 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Domain.ShopModels;
 
-public class Product
+public partial class Product
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public Guid PrdUid { get; set; }
 
     public Guid? BusUnitUid { get; set; }
@@ -44,7 +42,7 @@ public class Product
     public long? PrdMaxQuantityOnHand { get; set; }
 
     public string PrdTechnicalDescription { get; set; }
-    public string WebDescription { get; set; }
+
     public bool? PrdTax { get; set; }
 
     public bool? PrdStatus { get; set; }
@@ -122,10 +120,48 @@ public class Product
     public Guid? FkProductUnit { get; set; }
 
     public Guid? FkProductUnit2 { get; set; }
+
     public string Volume { get; set; }
+
     public string Weight { get; set; }
-    public int Type { get; set; }
+
+    public string WebDescription { get; set; }
+
+    public int? Type { get; set; }
+
+    public bool? PrdHasTiming { get; set; }
+
+    public short? PrdBaseTime { get; set; }
+
+    public decimal? PrdBaseCost { get; set; }
+
+    public short? PrdExtraTime { get; set; }
+
+    public decimal? PrdExtraCost { get; set; }
+
+    public short? PrdMinTime { get; set; }
+
+    public short? PrdMaxTime { get; set; }
+
+    public decimal? PrdMinCharge { get; set; }
+
+    public bool? PrdHasPersonel { get; set; }
+
+    public bool? PrdIsContonuouse { get; set; }
+
+    public short? PrdContinuouseType { get; set; }
+
+    public decimal? PrdPersonelCommission { get; set; }
+
+    public decimal? PrdPersonelPayment { get; set; }
+
     public virtual ICollection<Barcode> Barcodes { get; set; } = new List<Barcode>();
+
+    public virtual ICollection<CalenderDetail> CalenderDetails { get; set; } = new List<CalenderDetail>();
+
+    public virtual ICollection<ContinuouseServicesPlaning> ContinuouseServicesPlanings { get; set; } = new List<ContinuouseServicesPlaning>();
+
+    public virtual ICollection<ContractDetail> ContractDetails { get; set; } = new List<ContractDetail>();
 
     public virtual UnitOfMeasurement FkProductUnit2Navigation { get; set; }
 
@@ -141,24 +177,27 @@ public class Product
 
     public virtual ICollection<ProductProperty> ProductProperties { get; set; } = new List<ProductProperty>();
 
-    public virtual ICollection<ProductQuantityOnHand> ProductQuantityOnHands { get; set; } =
-        new List<ProductQuantityOnHand>();
+    public virtual ICollection<ProductQuantityOnHand> ProductQuantityOnHands { get; set; } = new List<ProductQuantityOnHand>();
 
     public virtual ICollection<PurchaseDetail> PurchaseDetails { get; set; } = new List<PurchaseDetail>();
 
     public virtual ICollection<QuoteDetail> QuoteDetails { get; set; } = new List<QuoteDetail>();
 
-    public virtual ICollection<StockTransferDetail> StockTransferDetails { get; set; } =
-        new List<StockTransferDetail>();
+    public virtual ICollection<SalonProduct> SalonProducts { get; set; } = new List<SalonProduct>();
+
+    public virtual ICollection<ServiceTransaction> ServiceTransactions { get; set; } = new List<ServiceTransaction>();
+
+    public virtual ICollection<StockTransferDetail> StockTransferDetails { get; set; } = new List<StockTransferDetail>();
 
     public virtual ICollection<SystemGame> SystemGames { get; set; } = new List<SystemGame>();
 
     public virtual Tax TaxU { get; set; }
 
+    public virtual ICollection<TicketProduct> TicketProducts { get; set; } = new List<TicketProduct>();
+
     public virtual UnitOfMeasurement UomUid1Navigation { get; set; }
 
     public virtual UnitOfMeasurement UomUid2Navigation { get; set; }
 
-    public virtual ICollection<WarehouseRecieptDetail> WarehouseRecieptDetails { get; set; } =
-        new List<WarehouseRecieptDetail>();
+    public virtual ICollection<WarehouseRecieptDetail> WarehouseRecieptDetails { get; set; } = new List<WarehouseRecieptDetail>();
 }

@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class PhoneBook
+namespace Domain.ShopModels;
+
+public partial class PhoneBook
 {
     public Guid PhbUid { get; set; }
 

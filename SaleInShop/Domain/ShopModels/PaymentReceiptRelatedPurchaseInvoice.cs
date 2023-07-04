@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class PaymentReceiptRelatedPurchaseInvoice
+namespace Domain.ShopModels;
+
+public partial class PaymentReceiptRelatedPurchaseInvoice
 {
     public Guid PayRciptRelUid { get; set; }
 

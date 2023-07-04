@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class SerialDetail
+namespace Domain.ShopModels;
+
+public partial class SerialDetail
 {
     public Guid SerDetUid { get; set; }
 

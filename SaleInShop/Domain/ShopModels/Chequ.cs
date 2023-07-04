@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class Chequ
+namespace Domain.ShopModels;
+
+public partial class Chequ
 {
     public Guid CheqUid { get; set; }
 

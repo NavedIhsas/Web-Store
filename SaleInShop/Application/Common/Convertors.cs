@@ -32,7 +32,7 @@ namespace Application.Common
             return "";
         }
 
-
+       
 
         public static string ChangeTimeToFarsi(DateTime date, string format)
         {
@@ -255,5 +255,4 @@ namespace Application.Common
 
 
     }
-
 }

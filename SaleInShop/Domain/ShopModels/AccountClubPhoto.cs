@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class AccountClubPhoto
+namespace Domain.ShopModels;
+
+public partial class AccountClubPhoto
 {
     public Guid AccPhtUid { get; set; }
 

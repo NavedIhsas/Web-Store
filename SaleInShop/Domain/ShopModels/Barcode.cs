@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class Barcode
+namespace Domain.ShopModels;
+
+public partial class Barcode
 {
     public Guid BarUid { get; set; }
 

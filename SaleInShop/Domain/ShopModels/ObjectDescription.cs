@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class ObjectDescription
+namespace Domain.ShopModels;
+
+public partial class ObjectDescription
 {
     public Guid DscUid { get; set; }
 

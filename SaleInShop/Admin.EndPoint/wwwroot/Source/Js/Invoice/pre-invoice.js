@@ -54,6 +54,11 @@ $("#submitPrint").on('click', function () {
                 {
                     debugger
                     if (result.isSucceeded) {
+                        $("#invoiceStatus").removeClass("d-none").text("وضعیت فاکتور: ثبت اولیه");
+                        $("#invoicePayStatus").removeClass("d-none").text("وضعیت تسویه: تسویه نشده");
+                       document.querySelectorAll(".invoicePay").removeClass("d-none").forEach(el => el.removeClass("d-none"));
+                       
+
                         swal(
                             'موفق!',
                             result.message,
@@ -77,8 +82,15 @@ $("#submitPrint").on('click', function () {
 
 
 function getProductModal(evt, cityName) {
-    getProduct(evt, cityName);
-    $("#CustomMenu").modal('show');
+    var account = getCookie(AccountClubCookie);
+    if (account == "") {
+        notify("top center", "لطفا ابتدا مشتری را انتخاب کنید", "error");
+        return false;
+    }
+    else {
+        getProduct(evt, cityName);
+        $("#CustomMenu").modal('show');
+    }
 }
 
 
@@ -251,10 +263,10 @@ function updateTable(obj) {
         <td>${paidAmount.toLocaleString()}</td>
 
         <td></td>
-        <td> <a type="button" class="" onclick="(ProuctListDes('${x.id}'))">...</a></td>
+        <td> <a type="button" class="" onclick="(ProuctListDes('${x.productId}'))">...</a></td>
         <td>
 
-            <a class="" onClick="removeProductList('${x.id}')" title="حذف">
+            <a class="" onClick="removeProductList('${x.productId}')" title="حذف">
                 <svg style="color:#e7515a" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2">
                     <polyline points="3 6 5 6 21 6"></polyline>
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -486,6 +498,7 @@ function addAccountClub(id, name, discount, type, mobile, address, code) {
 
 function getAccountClub() {
     var account = getParseCookie(AccountClubCookie);
+    $("#accClubDetails").removeClass("d-none");
     $("#accClubName").text('مشتری: ' + account.accClbName + '- ' + account.code)
     $("#accClubType").text('نوع اشتراک: ' + account.type)
     $("#accClubMobile").text('موبایل: ' + account.mobile)
@@ -533,12 +546,7 @@ function getInvoiceList(id, name, price, discount) {
     var getTax = parseInt(tax(price));
     var priceWithDiscount = Math.abs(parseInt(((discount) * price) / 100) - price);
     var paidAmount = Math.abs(parseInt(priceWithDiscount - getTax));
-    var account = getCookie(AccountClubCookie);
-    if (account == "") {
-        notify("top center", "لطفا ابتدا مشتری را انتخاب کنید", "error");
-        return false;
-    }
-
+  
     var obj =
         [
             {

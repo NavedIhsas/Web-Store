@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class ExchangeRate
+namespace Domain.ShopModels;
+
+public partial class ExchangeRate
 {
     public Guid ExchRateUid { get; set; }
 

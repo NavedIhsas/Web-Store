@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class Language
+namespace Domain.ShopModels;
+
+public partial class Language
 {
     public Guid LangUid { get; set; }
 

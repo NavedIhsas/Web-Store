@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class ProductQuantityOnHand
+namespace Domain.ShopModels;
+
+public partial class ProductQuantityOnHand
 {
     public Guid PrdQuanHndUid { get; set; }
 

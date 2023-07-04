@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class ProductLevelAccess
+namespace Domain.ShopModels;
+
+public partial class ProductLevelAccess
 {
     public Guid PrdLvlAcsUid { get; set; }
 

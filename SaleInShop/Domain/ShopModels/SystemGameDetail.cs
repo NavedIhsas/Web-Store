@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class SystemGameDetail
+namespace Domain.ShopModels;
+
+public partial class SystemGameDetail
 {
     public Guid SysDetUid { get; set; }
 

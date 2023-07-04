@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class Setting
+namespace Domain.ShopModels;
+
+public partial class Setting
 {
     public Guid SetUid { get; set; }
 

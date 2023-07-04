@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class Car
+namespace Domain.ShopModels;
+
+public partial class Car
 {
     public Guid CarUid { get; set; }
 

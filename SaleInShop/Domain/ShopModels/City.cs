@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class City
+namespace Domain.ShopModels;
+
+public partial class City
 {
     public Guid CityUid { get; set; }
 

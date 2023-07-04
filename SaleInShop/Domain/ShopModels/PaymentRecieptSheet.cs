@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class PaymentRecieptSheet
+namespace Domain.ShopModels;
+
+public partial class PaymentRecieptSheet
 {
     public Guid PayRciptSheetUid { get; set; }
 
@@ -17,7 +20,7 @@ public class PaymentRecieptSheet
     public string PayRciptSheetNumber { get; set; }
 
     /// <summary>
-    ///     1- برگه دریافت 2- برگه پرداخت
+    /// 1- برگه دریافت 2- برگه پرداخت
     /// </summary>
     public int? PayRciptSheetType { get; set; }
 
@@ -53,11 +56,9 @@ public class PaymentRecieptSheet
 
     public virtual Order OrdU { get; set; }
 
-    public virtual ICollection<PaymentReceiptRelatedPurchaseInvoice>
-        PaymentReceiptRelatedPurchaseInvoices { get; set; } = new List<PaymentReceiptRelatedPurchaseInvoice>();
+    public virtual ICollection<PaymentReceiptRelatedPurchaseInvoice> PaymentReceiptRelatedPurchaseInvoices { get; set; } = new List<PaymentReceiptRelatedPurchaseInvoice>();
 
-    public virtual ICollection<PaymentRecieptDetail> PaymentRecieptDetails { get; set; } =
-        new List<PaymentRecieptDetail>();
+    public virtual ICollection<PaymentRecieptDetail> PaymentRecieptDetails { get; set; } = new List<PaymentRecieptDetail>();
 
     public virtual Purchase PurchU { get; set; }
 

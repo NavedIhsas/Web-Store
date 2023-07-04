@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class ClassProperty
+namespace Domain.ShopModels;
+
+public partial class ClassProperty
 {
     public Guid ClsPrpUid { get; set; }
 

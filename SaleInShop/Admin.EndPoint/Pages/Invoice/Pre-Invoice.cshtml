@@ -6,14 +6,14 @@
 
 <style>
     /* Style the tab */
-    
-    
+
+
     .verticalLine {
-        float:right;
-  border-left: 1px solid darkgrey;
-  padding-left:10px;
-  padding-right:10px
-}
+        float: right;
+        border-left: 1px solid darkgrey;
+        padding-left: 10px;
+        padding-right: 10px
+    }
 
     .tab {
         overflow: hidden;
@@ -55,11 +55,11 @@
         padding: 6px 12px;
         display: none;
     }
-    
+
     .form-group.col-md-5 {
-    display: flex;
-    align-items: center;
-}
+        display: flex;
+        align-items: center;
+    }
 
     /* Create an active/current tablink class */
     .tab button.active {
@@ -103,59 +103,67 @@
                     <form method="post" id="createForm" name="submitForm">
                         <div class="tab-content" id="justifyTabContent">
                             <div class="tab-pane fade show active" id="justify-home" role="tabpanel" aria-labelledby="justify-home-tab">
-                                <div class="row layout-top-spacing" id="cancel-row">
-                                    <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing" style="margin-top: -40px;">
-                                      
-                                        <div id="Paris" class="tabcontent">
-                                            <h3>Paris</h3>
-                                            <p>Paris is the capital of France.</p>
-                                        </div>
+                                <div class="row" id="cancel-row">
 
-                                        <div id="Tokyo" class="tabcontent">
-                                            <div class="row">
-                                               
-                                                <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
-                                                    <table id="dataTable_3" class="text-center Current-color table table-striped table-bordered">
-                                                        <thead>
+                                    <div id="Paris" class="tabcontent">
+                                        <h3>Paris</h3>
+                                        <p>Paris is the capital of France.</p>
+                                    </div>
+
+                                    <div id="Tokyo" class="tabcontent">
+                                        <div class="row">
+
+                                            <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
+                                                <table id="dataTable_3" class="text-center Current-color table table-striped table-bordered">
+                                                    <thead>
                                                         <tr>
                                                             <th>نام کالا</th>
                                                             <th>گروه کالا</th>
                                                             <th>قیمت کالا</th>
                                                             <th>افزودن</th>
                                                         </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                           
-                                                        </tbody>
-                                                    </table>
-                                                </div>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                </table>
                                             </div>
                                         </div>
-                                        <hr />
-
-                                        <div class="row" id="productName"></div>
-                                        
                                     </div>
+                                    <hr />
 
-                                    <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
-                                        
+                                    <div class="row" id="productName"></div>
+
+
+                                    <div class="col-xl-12 col-lg-12 col-sm-12">
+
                                         <div class="card" id="cardPrint_1">
-                                            <div class="card-body">
-                                                <div class="row">
+                                            <div class="card-body pb-0">
+                                                <div class="row pb-3 pl-3">
                                                     <div>
-                                                        <input type="button" id="addAccountClub" class="btn btn-success btn-sm btn-rounded" value="انتخاب مشتری"/>
+                                                        <input type="button" id="addAccountClub" class="btn btn-success btn-sm btn-rounded" value="انتخاب مشتری" />
                                                     </div>
-                                                   
-                                                    <div class=" col-md-3">
-                                                        <input id="" style="height:30px !Important" class="flatpickr datePicker flatpickr-input active form-control form-control-sm"/>
-                                                    </div>
-                                                    <div class="form-group col-md-3 ">
-                                                        <input type="text" class="form-control form-control-sm" style="height:30px !Important" placeholder="شماره فاکتور">
-                                                    </div>
-                                                    
                                                     <div>
                                                         <input onclick="InvoiceList()" type="button" id="" class="btn btn-warning btn-sm btn-rounded" value="فاکتور های ثبت شده" />
                                                     </div>
+
+                                                </div>
+                                                <div class="row">
+
+                                                    <div class=" col-md-2">
+                                                        <input id="" style="height:30px !Important" class="flatpickr datePicker flatpickr-input active form-control form-control-sm" />
+                                                    </div>
+                                                    <div class="form-group col-md-2 ">
+                                                        <input type="text" class="form-control form-control-sm" style="height:30px !Important" placeholder="شماره فاکتور">
+                                                    </div>
+
+                                                    <div class="form-group col-md-3 ">
+                                                        <p type="text" class="form-control form-control-sm d-none" id="invoiceStatus" style="height:30px !Important; border:none;"></p>
+                                                    </div>
+
+                                                    <div class="form-group col-md-3 ">
+                                                        <p type="text" class="form-control form-control-sm d-none" id="invoicePayStatus" style="height:30px !Important; border:none;"></p>
+                                                    </div>
+
 
                                                 </div>
                                             </div>
@@ -163,9 +171,8 @@
 
 
                                         <div class="card" id="cardPrint">
-                                            <div class="card-header">
+                                            <div class="card-header d-none" id="accClubDetails">
                                                 <div class="row">
-                                                   
                                                     <div class="mr-30 verticalLine">
                                                         <strong>
                                                             <span id="accClubName" style="color:black;"></span>
@@ -195,35 +202,34 @@
 
 
                                         <div class="col-md-12 col-sm-12 col-xs-12 table-responsive" id="productList">
-                                            <div class="card-title ">
-                                                @*    <span> وضعیت فرم: <strong class="text-danger mt-5">تایید نشده</strong></span>*@
-                                            </div>
                                             <table id="property-dataTable" class="Current-color table table-striped table-bordered property-dataTable">
                                                 <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>نام کالا</th>
-                                                    <th>تعداد</th>
-                                                    <th>قیمت</th>
-                                                    <th>قیمت کل</th>
-                                                    <th>تخفیف (درصد)</th>
-                                                    <th>مبلغ پس از تخفیف</th>
-                                                    <th>مالیات</th>
-                                                    <th>مبلغ نهایی</th>
-                                                    <th>تسهیم</th>
-                                                    <th>توضیح</th>
-                                                    <th>عملیات</th>
-                                                </tr>
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>نام کالا</th>
+                                                        <th>تعداد</th>
+                                                        <th>قیمت</th>
+                                                        <th>قیمت کل</th>
+                                                        <th>تخفیف (درصد)</th>
+                                                        <th>مبلغ پس از تخفیف</th>
+                                                        <th>مالیات</th>
+                                                        <th>مبلغ نهایی</th>
+                                                        <th>تسهیم</th>
+                                                        <th>توضیح</th>
+                                                        <th>عملیات</th>
+                                                    </tr>
                                                 </thead>
                                                 <tbody>
                                                 </tbody>
                                             </table>
                                         </div>
                                     </div>
-                                    <div class="row col col-md-12" style="right:70%">
+                                    <div class="row col col-md-12" style="right:50%">
+                                        <button type="submit" class="btn btn-dark btn-sm btn-rounded pull-left invoicePay d-none">تسویه کارتخوان</button>
+                                        <button type="submit" class="btn btn-warning btn-sm btn-rounded pull-left d-none invoicePay">سایر روش های تسویه</button>
+                                        <button type="submit" class="btn btn-primary btn-sm btn-rounded pull-left d-none invoicePay">تسویه نقدی</button>
                                         <button type="submit" class="btn btn-info btn-sm btn-rounded pull-left">فاکتور موقت</button>
-                                        <button id="submitPrint" type="button" class="btn btn-secondary btn-sm btn-rounded pull-left">تایید و چاپ</button>
-                                        <button type="submit" class="btn btn-primary btn-sm btn-rounded pull-left">تسویه فاکتور</button>
+                                        <button id="submitPrint" type="button" class="btn btn-success btn-sm btn-rounded">تایید و چاپ</button>
                                     </div>
                                 </div>
                             </div>
@@ -236,10 +242,10 @@
     </div>
 </div>
 
-<partial name="Modals"/>
+<partial name="Modals" />
 
 @section Scripts
-{
+    {
 
     <script src="~/assets/js/datepicker/persian-datepicker.min.js"></script>
     <script src="~/assets/js/datepicker/persian-date.min.js"></script>

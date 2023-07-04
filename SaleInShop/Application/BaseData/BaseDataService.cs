@@ -684,7 +684,7 @@ namespace Application.BaseData
             var totalRecords = list.Count();
             var map = _mapper.Map<List<AccountClubDto>>(displayResult.ToList());
 
-
+            
 
             foreach (var clubTypeDto in map)
             {

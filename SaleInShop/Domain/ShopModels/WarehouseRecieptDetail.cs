@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class WarehouseRecieptDetail
+namespace Domain.ShopModels;
+
+public partial class WarehouseRecieptDetail
 {
     public Guid WarHosRecDetUid { get; set; }
 

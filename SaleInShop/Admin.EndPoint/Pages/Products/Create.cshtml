@@ -1,6 +1,7 @@
 ﻿@page
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using Application.Product.ProductDto
+@using Application.Common
 @model SaleInWeb.Pages.Products.CreateModel
 @Html.AntiForgeryToken()
 @{
@@ -249,11 +250,11 @@
                                                         <div class="form-group col-md-3 mt-30">
                                                             <label class="Current-color " for="">نوع تخفیف:</label>
                                                             <div class="form-check form-check-inline">
-                                                                <input asp-for="Command.PrdDiscountType" class="Current-color form-check-input" type="radio" id="Percentage" value="0">
+                                                                <input asp-for="Command.PrdDiscountType" class="Current-color form-check-input" type="radio" id="Percentage" value="@ConstantParameter.Percent">
                                                                 <label class="Current-color form-check-label mr-0" for="inlineRadio1">درصد</label>
                                                             </div>
                                                             <div class="form-check form-check-inline">
-                                                                <input asp-for="Command.PrdDiscountType" class="Current-color form-check-input" type="radio" id="price" value="1">
+                                                                <input asp-for="Command.PrdDiscountType" class="Current-color form-check-input" type="radio" id="price" value="@ConstantParameter.Amount">
                                                                 <label class="Current-color form-check-label mr-0" for="inlineRadio2">مبلغ</label>
                                                             </div>
 

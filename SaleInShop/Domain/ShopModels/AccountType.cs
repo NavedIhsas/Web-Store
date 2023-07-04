@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class AccountType
+namespace Domain.ShopModels;
+
+public partial class AccountType
 {
     public Guid AccTypUid { get; set; }
 

@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class WorkStation
+namespace Domain.ShopModels;
+
+public partial class WorkStation
 {
     public Guid WrkSttUid { get; set; }
 

@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class DocumentDetail
+namespace Domain.ShopModels;
+
+public partial class DocumentDetail
 {
     public Guid DocDetUid { get; set; }
 

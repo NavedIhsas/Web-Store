@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using Application.BaseData.Dto;
+﻿using Application.BaseData.Dto;
 using Application.Common;
 using Application.Interfaces;
 using Application.Interfaces.Context;
@@ -8,13 +7,10 @@ using AutoMapper;
 using Domain.ShopModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
-using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Application.Product
 {
@@ -61,7 +57,7 @@ namespace Application.Product
         }
 
         public Domain.ShopModels.Product GetProduct(Guid id) => _shopContext.Products.Find(id);
-            
+
         public List<ProductPropertiesDto> GetProductProperty(Guid id)
         {
             return _mapper.Map<List<ProductPropertiesDto>>(_shopContext.ProductProperties.Include(x => x.Property)
@@ -153,7 +149,7 @@ namespace Application.Product
 
         public JsonResult GetAllProduct(JqueryDatatableParam param)
         {
-            var list = _shopContext.Products.Include(x=>x.PrdLvlUid3Navigation).Include(x=>x.TaxU).AsNoTracking().Select(x => new
+            var list = _shopContext.Products.Include(x => x.PrdLvlUid3Navigation).Include(x => x.TaxU).AsNoTracking().Select(x => new
             {
                 x.PrdUid,
                 x.PrdName,
@@ -195,10 +191,10 @@ namespace Application.Product
             if (!string.IsNullOrEmpty(param.SSearch))
             {
                 list = list.Where(x => x.PrdName.ToLower().Contains(param.SSearch.ToLower())
-                ||x.PrdName.Contains(param.SSearch.ToLower())
-                ||x.PrdLvlName.Contains(param.SSearch.ToLower())
-                ||x.TaxName.Contains(param.SSearch.ToLower())
-                ||x.PrdCode.Contains(param.SSearch.ToLower())
+                || x.PrdName.Contains(param.SSearch.ToLower())
+                || x.PrdLvlName.Contains(param.SSearch.ToLower())
+                || x.TaxName.Contains(param.SSearch.ToLower())
+                || x.PrdCode.Contains(param.SSearch.ToLower())
                 );
             }
 
@@ -218,15 +214,15 @@ namespace Application.Product
                     list = sortDirection == "asc" ? list.OrderBy(c => c.PrdLvlName) : list.OrderByDescending(c => c.PrdLvlName);
                     break;
 
-                    case 3:
+                case 3:
                     list = sortDirection == "asc" ? list.OrderBy(c => c.PrdCode) : list.OrderByDescending(c => c.PrdCode);
                     break;
 
-                      case 4:
+                case 4:
                     list = sortDirection == "asc" ? list.OrderBy(c => c.TaxName) : list.OrderByDescending(c => c.TaxName);
                     break;
 
-                       case 5:
+                case 5:
                     list = sortDirection == "asc" ? list.OrderBy(c => c.PrdStatus) : list.OrderByDescending(c => c.PrdStatus);
                     break;
 
@@ -260,12 +256,89 @@ namespace Application.Product
 
         }
 
-         public JsonResult GetAllProductForInvoice(JqueryDatatableParam param)
+        private decimal ConvertPercentToAmount(decimal? price, decimal? discountPrice)
+        {
+            var result = (discountPrice * 100) / price;
+            return result??0;
+        }
+
+
+        private decimal CalculateAcClubDiscount(Guid? accountClubId, int priceLevel)
+        {
+            decimal discount = 0;
+            var clubType = _shopContext.AccountClubTypes
+                .Select(x => new { x.AccClbTypUid, x.AccClbTypDetDiscount, x.AccClbTypPercentDiscount })
+                .SingleOrDefault(x => x.AccClbTypUid == accountClubId);
+            discount = Convert.ToDecimal(clubType.AccClbTypPercentDiscount);
+            return discount;
+        }
+
+        private decimal CalculateProductDiscount(Guid? productId, int priceLevel)
+        {
+            var product = _shopContext.Products
+                .Select(x => new { x.PrdUid, x.PrdDiscountType, x.PrdDiscount, x.PrdPercentDiscount, x.PrdPricePerUnit1, x.PrdPricePerUnit2, x.PrdPricePerUnit3, x.PrdPricePerUnit4, x.PrdPricePerUnit5, })
+                .AsNoTracking().SingleOrDefault(x => x.PrdUid == productId);
+           
+            decimal discount = 0;
+            if (product == null) return discount;
+            var productDiscount = product.PrdDiscount;
+            if (product.PrdDiscountType == ConstantParameter.Percent)
+                discount = product.PrdDiscount ?? 0;
+            else if (product.PrdDiscountType == ConstantParameter.Amount)
+            {
+                discount = priceLevel switch
+                {
+                    PriceInvoiceLevel.Zero => this.ConvertPercentToAmount(0, productDiscount ?? 0),
+                    PriceInvoiceLevel.Level1 =>
+                        this.ConvertPercentToAmount(product.PrdPricePerUnit1, productDiscount),
+                    PriceInvoiceLevel.Level2 =>
+                        this.ConvertPercentToAmount(product.PrdPricePerUnit2, productDiscount),
+                    PriceInvoiceLevel.Level3 =>
+                        this.ConvertPercentToAmount(product.PrdPricePerUnit3, productDiscount),
+                    PriceInvoiceLevel.Level4 =>
+                        this.ConvertPercentToAmount(product.PrdPricePerUnit4, productDiscount),
+                    PriceInvoiceLevel.Level5 =>
+                        this.ConvertPercentToAmount(product.PrdPricePerUnit5, productDiscount),
+
+                    _ => discount
+                };
+            }
+
+            return discount;
+        }
+        public decimal CalculateDiscount(Guid? productId, Guid? accountClubId, int priceLevel)
+        {
+            var discountType = _authHelper.GetInvoiceDiscountStatus();
+            decimal discount = 0;
+            switch (discountType)
+            {
+                case InvoiceDetDiscountStatus.Product:
+                    discount = this.CalculateProductDiscount(productId, priceLevel);
+                    break;
+                case InvoiceDetDiscountStatus.AccountClubType:
+                    discount = this.CalculateAcClubDiscount(accountClubId, priceLevel);
+                    break;
+                case InvoiceDetDiscountStatus.Both:
+                {
+                    var productDiscount = this.CalculateProductDiscount(productId, priceLevel);
+                    var accClubType = this.CalculateAcClubDiscount(accountClubId, priceLevel);
+                    discount = productDiscount + accClubType;
+                    break;
+                }
+                case null:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return discount;
+        }
+        public JsonResult GetAllProductForInvoice(JqueryDatatableParam param)
         {
             var cookie = _authHelper.GetCookie("AccountClubList");
             var account = JsonConvert.DeserializeObject<AccountClubDto>(cookie);
             if (account == null) return new JsonResult("false");
-            var list = _shopContext.Products.Include(x=>x.PrdLvlUid3Navigation).Include(x=>x.TaxU).AsNoTracking().Select(x => new
+            var list = _shopContext.Products.Include(x => x.PrdLvlUid3Navigation).Include(x => x.TaxU).AsNoTracking().Select(x => new
             {
                 x.PrdUid,
                 x.PrdName,
@@ -278,16 +351,15 @@ namespace Application.Product
                 PrdLevelId = x.PrdLvlName,
                 PrdPricePerUnit1 = x.PrdPricePerUnit1 ?? 0,
                 PrdLvlName = x.PrdLvlName,
-                AccClubDiscount=account.AccClubDiscount
-
+                AccClubDiscount = account.AccClubDiscount,
             });
 
             if (!string.IsNullOrEmpty(param.SSearch))
             {
                 list = list.Where(x => x.PrdName.ToLower().Contains(param.SSearch.ToLower())
-                ||x.PrdName.Contains(param.SSearch.ToLower())
-                ||x.PrdLvlName.Contains(param.SSearch.ToLower())
-                ||x.PrdPricePerUnit1.ToString().Contains(param.SSearch));
+                || x.PrdName.Contains(param.SSearch.ToLower())
+                || x.PrdLvlName.Contains(param.SSearch.ToLower())
+                || x.PrdPricePerUnit1.ToString().Contains(param.SSearch));
             }
 
             var sortColumnIndex = Convert.ToInt32(_contextAccessor.HttpContext.Request.Query["iSortCol_0"]);
@@ -305,7 +377,7 @@ namespace Application.Product
                 case 2:
                     list = sortDirection == "asc" ? list.OrderBy(c => c.PrdLvlName) : list.OrderByDescending(c => c.PrdLvlName);
                     break;
-                    
+
                 default:
                     {
                         string OrderingFunction(ProductDto.ProductDto e) => sortColumnIndex == 0 ? e.PrdName : "";
@@ -324,6 +396,10 @@ namespace Application.Product
             else displayResult = list;
             var totalRecords = list.Count();
 
+            //foreach (var productDto in list)
+            //{
+            //    CalculateDiscount(productDto.PrdUid, productDto.AccClubDiscount)
+            //}
             var result1 = (new
             {
                 param.SEcho,
@@ -342,7 +418,7 @@ namespace Application.Product
             if (product == null)
             {
                 _logger.LogError($"Don't Found Any Record With Id {id} On Table Product");
-              throw new ArgumentNullException($"Don't Found Any Record With Id {id} On Table Product");
+                throw new ArgumentNullException($"Don't Found Any Record With Id {id} On Table Product");
             }
             var map = _mapper.Map<EditProduct>(product);
             map.Image = Convert.FromBase64String(map.PrdImage);

@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class CostDetail
+namespace Domain.ShopModels;
+
+public partial class CostDetail
 {
     public Guid CstDetUid { get; set; }
 

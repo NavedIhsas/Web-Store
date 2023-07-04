@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class AccountLevel
+namespace Domain.ShopModels;
+
+public partial class AccountLevel
 {
     public Guid AccLvlUid { get; set; }
 

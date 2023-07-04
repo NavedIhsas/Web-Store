@@ -1,16 +1,19 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class Operator
+namespace Domain.ShopModels;
+
+public partial class Operator
 {
     public Guid OprUid { get; set; }
 
     /// <summary>
-    ///     عملگر
+    /// عملگر
     /// </summary>
     public string OprName { get; set; }
 
     /// <summary>
-    ///     نام نمایشی فیلد در برنامه
+    /// نام نمایشی فیلد در برنامه
     /// </summary>
     public string OprText { get; set; }
 

@@ -1,21 +1,24 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class Field
+namespace Domain.ShopModels;
+
+public partial class Field
 {
     public Guid FldUid { get; set; }
 
     /// <summary>
-    ///     نام فیلد در دیتابیس
+    /// نام فیلد در دیتابیس
     /// </summary>
     public string FldName { get; set; }
 
     /// <summary>
-    ///     نام نمایشی فیلد دربرنامه
+    /// نام نمایشی فیلد دربرنامه
     /// </summary>
     public string FldText { get; set; }
 
     /// <summary>
-    ///     نوع فیلد برای اعمال روی کل فاکتور یا ردیف های فاکتور
+    /// نوع فیلد برای اعمال روی کل فاکتور یا ردیف های فاکتور
     /// </summary>
     public int? FldType { get; set; }
 

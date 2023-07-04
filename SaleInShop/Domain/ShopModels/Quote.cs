@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class Quote
+namespace Domain.ShopModels;
+
+public partial class Quote
 {
     public Guid QutUid { get; set; }
 

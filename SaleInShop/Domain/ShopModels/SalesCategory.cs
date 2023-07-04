@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class SalesCategory
+namespace Domain.ShopModels;
+
+public partial class SalesCategory
 {
     public Guid SalCatUid { get; set; }
 
@@ -18,15 +21,13 @@ public class SalesCategory
 
     public Guid? SysUsrModifiedby { get; set; }
 
-    public virtual ICollection<DefualtAccountDefinition> DefualtAccountDefinitions { get; set; } =
-        new List<DefualtAccountDefinition>();
+    public virtual ICollection<DefualtAccountDefinition> DefualtAccountDefinitions { get; set; } = new List<DefualtAccountDefinition>();
 
     public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
-    public virtual ICollection<PaymentRecieptDetail> PaymentRecieptDetails { get; set; } =
-        new List<PaymentRecieptDetail>();
+    public virtual ICollection<PaymentRecieptDetail> PaymentRecieptDetails { get; set; } = new List<PaymentRecieptDetail>();
 
     public virtual ICollection<Purchase> Purchases { get; set; } = new List<Purchase>();
 

@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class AccountRating
+namespace Domain.ShopModels;
+
+public partial class AccountRating
 {
     public Guid AccRateUid { get; set; }
 

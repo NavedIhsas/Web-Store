@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class PhotoDetail
+namespace Domain.ShopModels;
+
+public partial class PhotoDetail
 {
     public Guid PhtDetUid { get; set; }
 

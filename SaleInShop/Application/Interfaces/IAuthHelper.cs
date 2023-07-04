@@ -35,6 +35,7 @@ public interface IAuthHelper
     string AutoGenerateCode(Guid prdLvlId);
     bool AutoCodeProduct();
     string GetCookie(string name);
+    InvoiceDetDiscountStatus? GetInvoiceDiscountStatus();
 }
 
 public class AuthHelper : IAuthHelper
@@ -231,6 +232,21 @@ public class AuthHelper : IAuthHelper
             Value = c.Split('=')[1].Trim() }).ToList();
         var cookie = result.FirstOrDefault(r => r.Key == name)?.Value;
         return cookie;
+    }
+
+    public InvoiceDetDiscountStatus? GetInvoiceDiscountStatus()
+    {
+        var value = _context.Settings
+            .FirstOrDefault(x => x.SetKey == ConstantParameter.InvoiceDetDiscountStatus)?.SetValue;
+        if (value == null) return null;
+        var status = int.Parse(value);
+        return status switch
+        {
+            0 => InvoiceDetDiscountStatus.Product,
+            1 => InvoiceDetDiscountStatus.AccountClubType,
+            2 => InvoiceDetDiscountStatus.Both,
+            _ => null
+        };
     }
 
     /// <summary>

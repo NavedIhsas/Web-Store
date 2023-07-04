@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class AccountClubType
+namespace Domain.ShopModels;
+
+public partial class AccountClubType
 {
     public Guid AccClbTypUid { get; set; }
 
@@ -23,4 +26,6 @@ public class AccountClubType
     public int? AccClbTypDiscountType { get; set; }
 
     public double? AccClbTypDetDiscount { get; set; }
+
+    public virtual ICollection<AccountClub> AccountClubs { get; set; } = new List<AccountClub>();
 }

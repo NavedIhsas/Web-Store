@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class Invoice
+namespace Domain.ShopModels;
+
+public partial class Invoice
 {
     public Guid InvUid { get; set; }
 
@@ -126,11 +129,9 @@ public class Invoice
 
     public virtual Order OrdU { get; set; }
 
-    public virtual ICollection<PaymentReceiptRelatedPurchaseInvoice>
-        PaymentReceiptRelatedPurchaseInvoices { get; set; } = new List<PaymentReceiptRelatedPurchaseInvoice>();
+    public virtual ICollection<PaymentReceiptRelatedPurchaseInvoice> PaymentReceiptRelatedPurchaseInvoices { get; set; } = new List<PaymentReceiptRelatedPurchaseInvoice>();
 
-    public virtual ICollection<PaymentRecieptSheet> PaymentRecieptSheets { get; set; } =
-        new List<PaymentRecieptSheet>();
+    public virtual ICollection<PaymentRecieptSheet> PaymentRecieptSheets { get; set; } = new List<PaymentRecieptSheet>();
 
     public virtual Quote QutU { get; set; }
 

@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class Tax
+namespace Domain.ShopModels;
+
+public partial class Tax
 {
     public Guid TaxUid { get; set; }
 

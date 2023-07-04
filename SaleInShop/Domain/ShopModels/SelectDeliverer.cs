@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class SelectDeliverer
+namespace Domain.ShopModels;
+
+public partial class SelectDeliverer
 {
     public Guid SlcPrsUid { get; set; }
 

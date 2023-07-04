@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class RegardingObject
+namespace Domain.ShopModels;
+
+public partial class RegardingObject
 {
     public Guid RgdObjUid { get; set; }
 

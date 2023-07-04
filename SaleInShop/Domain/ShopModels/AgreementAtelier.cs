@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class AgreementAtelier
+namespace Domain.ShopModels;
+
+public partial class AgreementAtelier
 {
     public Guid AgtAtlUid { get; set; }
 

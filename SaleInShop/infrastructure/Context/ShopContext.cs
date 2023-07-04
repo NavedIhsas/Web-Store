@@ -20,11 +20,11 @@ public partial class ShopContext : DbContext, IShopContext
         _httpContext = httpContext;
     }
 
-    public virtual DbSet<InvoiceDetails2> InvoiceDetails2s { get; set; }
-
     public virtual DbSet<Account> Accounts { get; set; }
 
     public virtual DbSet<AccountClub> AccountClubs { get; set; }
+
+    public virtual DbSet<AccountClubCard> AccountClubCards { get; set; }
 
     public virtual DbSet<AccountClubPhoto> AccountClubPhotos { get; set; }
 
@@ -54,7 +54,13 @@ public partial class ShopContext : DbContext, IShopContext
 
     public virtual DbSet<BusinessUnitType> BusinessUnitTypes { get; set; }
 
+    public virtual DbSet<Calender> Calenders { get; set; }
+
+    public virtual DbSet<CalenderDetail> CalenderDetails { get; set; }
+
     public virtual DbSet<Car> Cars { get; set; }
+
+    public virtual DbSet<CardRechage> CardRechages { get; set; }
 
     public virtual DbSet<Chequ> Chequs { get; set; }
 
@@ -76,6 +82,12 @@ public partial class ShopContext : DbContext, IShopContext
 
     public virtual DbSet<ConditionLog> ConditionLogs { get; set; }
 
+    public virtual DbSet<ContinuouseServicesPlaning> ContinuouseServicesPlanings { get; set; }
+
+    public virtual DbSet<Contract> Contracts { get; set; }
+
+    public virtual DbSet<ContractDetail> ContractDetails { get; set; }
+
     public virtual DbSet<Cost> Costs { get; set; }
 
     public virtual DbSet<CostCenter> CostCenters { get; set; }
@@ -83,6 +95,8 @@ public partial class ShopContext : DbContext, IShopContext
     public virtual DbSet<CostDetail> CostDetails { get; set; }
 
     public virtual DbSet<Country> Countries { get; set; }
+
+    public virtual DbSet<CurrentCalender> CurrentCalenders { get; set; }
 
     public virtual DbSet<DefualtAccountDefinition> DefualtAccountDefinitions { get; set; }
 
@@ -100,9 +114,15 @@ public partial class ShopContext : DbContext, IShopContext
 
     public virtual DbSet<FiscalPeriod> FiscalPeriods { get; set; }
 
+    public virtual DbSet<InOut> InOuts { get; set; }
+
     public virtual DbSet<Invoice> Invoices { get; set; }
 
     public virtual DbSet<InvoiceDetail> InvoiceDetails { get; set; }
+
+    public virtual DbSet<InvoiceDetails2> InvoiceDetails2s { get; set; }
+
+    public virtual DbSet<Job> Jobs { get; set; }
 
     public virtual DbSet<Language> Languages { get; set; }
 
@@ -125,6 +145,8 @@ public partial class ShopContext : DbContext, IShopContext
     public virtual DbSet<PaymentRecieptDetail> PaymentRecieptDetails { get; set; }
 
     public virtual DbSet<PaymentRecieptSheet> PaymentRecieptSheets { get; set; }
+
+    public virtual DbSet<PersonelCalender> PersonelCalenders { get; set; }
 
     public virtual DbSet<Personnel> Personnel { get; set; }
 
@@ -168,11 +190,21 @@ public partial class ShopContext : DbContext, IShopContext
 
     public virtual DbSet<SalesCategory> SalesCategories { get; set; }
 
+    public virtual DbSet<Salon> Salons { get; set; }
+
+    public virtual DbSet<SalonDetail> SalonDetails { get; set; }
+
+    public virtual DbSet<SalonProduct> SalonProducts { get; set; }
+
     public virtual DbSet<SelectDeliverer> SelectDeliverers { get; set; }
 
     public virtual DbSet<SerialDetail> SerialDetails { get; set; }
 
+    public virtual DbSet<ServiceTransaction> ServiceTransactions { get; set; }
+
     public virtual DbSet<Setting> Settings { get; set; }
+
+    public virtual DbSet<Shift> Shifts { get; set; }
 
     public virtual DbSet<SmsDetail> SmsDetails { get; set; }
 
@@ -196,6 +228,12 @@ public partial class ShopContext : DbContext, IShopContext
 
     public virtual DbSet<Tax> Taxes { get; set; }
 
+    public virtual DbSet<Ticket> Tickets { get; set; }
+
+    public virtual DbSet<TicketDetail> TicketDetails { get; set; }
+
+    public virtual DbSet<TicketProduct> TicketProducts { get; set; }
+
     public virtual DbSet<UnitOfMeasurement> UnitOfMeasurements { get; set; }
 
     public virtual DbSet<WareHouse> WareHouses { get; set; }
@@ -206,11 +244,12 @@ public partial class ShopContext : DbContext, IShopContext
 
     public virtual DbSet<WorkStation> WorkStations { get; set; }
 
+    public virtual DbSet<WorkYear> WorkYears { get; set; }
+
 
     public override int SaveChanges()
     {
-        var modifiedEntries = ChangeTracker.Entries().Where(x =>
-            x.State == EntityState.Modified || x.State == EntityState.Deleted || x.State == EntityState.Added);
+        var modifiedEntries = ChangeTracker.Entries().Where(x => x.State == EntityState.Modified || x.State == EntityState.Deleted || x.State == EntityState.Added);
         foreach (var entry in modifiedEntries)
         {
             var baseConfig = _httpContext.HttpContext.Session.GetJson<BaseConfigDto>("BaseConfig");
@@ -227,30 +266,18 @@ public partial class ShopContext : DbContext, IShopContext
                 var fisPeriodUid = getEntityType.FindProperty("FisPeriodUid");
 
 
-                if (entry.State == EntityState.Added && busUnitUid != null)
-                    entry.Property("BusUnitUid").CurrentValue = baseConfig.BusUnitUId;
-                if (entry.State == EntityState.Added && fisPeriodUid != null)
-                    entry.Property("FisPeriodUid").CurrentValue = baseConfig.FisPeriodUId; //TODO current user
+                if (entry.State == EntityState.Added && busUnitUid != null) entry.Property("BusUnitUid").CurrentValue = baseConfig.BusUnitUId;
+                if (entry.State == EntityState.Added && fisPeriodUid != null) entry.Property("FisPeriodUid").CurrentValue = baseConfig.FisPeriodUId;//TODO current user
 
-                if (entry.State == EntityState.Added && insert != null)
-                    entry.Property("SysUsrCreatedon").CurrentValue = DateTime.Now;
-                if (entry.State == EntityState.Added && insertBy != null)
-                    entry.Property("SysUsrCreatedby").CurrentValue = new Guid(); //TODO current user
+                if (entry.State == EntityState.Added && insert != null) entry.Property("SysUsrCreatedon").CurrentValue = DateTime.Now;
+                if (entry.State == EntityState.Added && insertBy != null) entry.Property("SysUsrCreatedby").CurrentValue = new Guid();//TODO current user
 
-                if (entry.State == EntityState.Modified && updateBy != null)
-                    entry.Property("SysUsrModifiedon").CurrentValue = DateTime.Now;
+                if (entry.State == EntityState.Modified && updateBy != null) entry.Property("SysUsrModifiedon").CurrentValue = DateTime.Now;
                 if (entry.State == EntityState.Modified && updateDate != null)
-                    entry.Property("SysUsrModifiedby").CurrentValue =
-                        entry.Property("SysUsrCreatedby").CurrentValue = new Guid(); //TODO current user
+                    entry.Property("SysUsrModifiedby").CurrentValue = entry.Property("SysUsrCreatedby").CurrentValue = new Guid();//TODO current user
             }
         }
-
         return base.SaveChanges();
-    }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlServer("name=shopConnection1");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -345,12 +372,15 @@ public partial class ShopContext : DbContext, IShopContext
 
             entity.HasIndex(e => e.AccClbName, "IX_ACC_CLB_NAME");
 
-            entity.HasIndex(e => new { e.BusUnitUid, e.FisPeriodUid, e.AccClbStatus, e.AccClbCode, e.AccClbSync },
-                "IX_BUS_UNIT_UID_FIS_PERIOD_UID_ACC_CLB_STATUS_ACC_CLB_CODE_ACC_CLB_SYNC");
+            entity.HasIndex(e => new { e.BusUnitUid, e.FisPeriodUid, e.AccClbStatus, e.AccClbCode, e.AccClbSync }, "IX_BUS_UNIT_UID_FIS_PERIOD_UID_ACC_CLB_STATUS_ACC_CLB_CODE_ACC_CLB_SYNC");
 
             entity.Property(e => e.AccClbUid)
                 .ValueGeneratedNever()
                 .HasColumnName("ACC_CLB_UID");
+            entity.Property(e => e.AccCardSerial)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("ACC_CARD_SERIAL");
             entity.Property(e => e.AccClbAddress).HasColumnName("ACC_CLB_ADDRESS");
             entity.Property(e => e.AccClbAddress2).HasColumnName("ACC_CLB_ADDRESS2");
             entity.Property(e => e.AccClbAgentName)
@@ -434,8 +464,11 @@ public partial class ShopContext : DbContext, IShopContext
             entity.Property(e => e.AccClbSync).HasColumnName("ACC_CLB_SYNC");
             entity.Property(e => e.AccClbTypUid).HasColumnName("ACC_CLB_TYP_UID");
             entity.Property(e => e.AccFloatUid).HasColumnName("ACC_FLOAT_UID");
+            entity.Property(e => e.AccFrContract).HasColumnName("ACC_FR_CONTRACT");
+            entity.Property(e => e.AccFrJob).HasColumnName("ACC_FR_JOB");
             entity.Property(e => e.AccParentUid).HasColumnName("ACC_PARENT_UID");
             entity.Property(e => e.AccRateUid).HasColumnName("ACC_RATE_UID");
+            entity.Property(e => e.AccRelationType).HasColumnName("ACC_RELATION_TYPE");
             entity.Property(e => e.AccUid).HasColumnName("ACC_UID");
             entity.Property(e => e.BusUnitUid).HasColumnName("BUS_UNIT_UID");
             entity.Property(e => e.CityUid).HasColumnName("CITY_UID");
@@ -450,9 +483,55 @@ public partial class ShopContext : DbContext, IShopContext
                 .HasColumnType("datetime")
                 .HasColumnName("SYS_USR_MODIFIEDON");
 
+            entity.HasOne(d => d.AccClbTypU).WithMany(p => p.AccountClubs)
+                .HasForeignKey(d => d.AccClbTypUid)
+                .HasConstraintName("FK_AccountClub_AccountClubType");
+
+            entity.HasOne(d => d.AccFrContractNavigation).WithMany(p => p.AccountClubs)
+                .HasForeignKey(d => d.AccFrContract)
+                .HasConstraintName("FK_AccountClub_Contract");
+
+            entity.HasOne(d => d.AccFrJobNavigation).WithMany(p => p.AccountClubs)
+                .HasForeignKey(d => d.AccFrJob)
+                .HasConstraintName("FK_AccountClub_Jobs");
+
             entity.HasOne(d => d.AccU).WithMany(p => p.AccountClubs)
                 .HasForeignKey(d => d.AccUid)
                 .HasConstraintName("FK_AccountClub_Account");
+        });
+
+        modelBuilder.Entity<AccountClubCard>(entity =>
+        {
+            entity.HasKey(e => e.AccId);
+
+            entity.ToTable("AccountClubCard");
+
+            entity.Property(e => e.AccId).HasColumnName("ACC_ID");
+            entity.Property(e => e.AccCardSerial)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("ACC_CARD_SERIAL");
+            entity.Property(e => e.AccCreateOn)
+                .HasColumnType("date")
+                .HasColumnName("ACC_CREATE_ON");
+            entity.Property(e => e.AccDesc)
+                .IsRequired()
+                .HasMaxLength(200)
+                .HasColumnName("ACC_DESC");
+            entity.Property(e => e.AccFrAccountclub).HasColumnName("ACC_FR_ACCOUNTCLUB");
+            entity.Property(e => e.AccFrCreateBy).HasColumnName("ACC_FR_CREATE_BY");
+            entity.Property(e => e.AccType).HasColumnName("ACC_TYPE");
+
+            entity.HasOne(d => d.AccFrAccountclubNavigation).WithMany(p => p.AccountClubCards)
+                .HasForeignKey(d => d.AccFrAccountclub)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AccountClubCard_AccountClub");
+
+            entity.HasOne(d => d.AccFrCreateByNavigation).WithMany(p => p.AccountClubCards)
+                .HasForeignKey(d => d.AccFrCreateBy)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AccountClubCard_SystemUsers");
         });
 
         modelBuilder.Entity<AccountClubPhoto>(entity =>
@@ -1245,6 +1324,87 @@ public partial class ShopContext : DbContext, IShopContext
             entity.Property(e => e.BusUnitTypStatus).HasColumnName("BUS_UNIT_TYP_STATUS");
         });
 
+        modelBuilder.Entity<Calender>(entity =>
+        {
+            entity.HasKey(e => e.ClrId);
+
+            entity.ToTable("Calender");
+
+            entity.Property(e => e.ClrId)
+                .ValueGeneratedNever()
+                .HasColumnName("CLR_ID");
+            entity.Property(e => e.ClrDate)
+                .HasColumnType("date")
+                .HasColumnName("CLR_DATE");
+            entity.Property(e => e.ClrFrAccountclub).HasColumnName("CLR_FR_ACCOUNTCLUB");
+            entity.Property(e => e.ClrFrContract).HasColumnName("CLR_FR_CONTRACT");
+            entity.Property(e => e.ClrFrSalon).HasColumnName("CLR_FR_SALON");
+            entity.Property(e => e.ClrFrShifts).HasColumnName("CLR_FR_SHIFTS");
+            entity.Property(e => e.ClrGender).HasColumnName("CLR_GENDER");
+            entity.Property(e => e.ClrReserveType).HasColumnName("CLR_RESERVE_TYPE");
+
+            entity.HasOne(d => d.ClrFrAccountclubNavigation).WithMany(p => p.Calenders)
+                .HasForeignKey(d => d.ClrFrAccountclub)
+                .HasConstraintName("FK_Calender_AccountClub");
+
+            entity.HasOne(d => d.ClrFrContractNavigation).WithMany(p => p.Calenders)
+                .HasForeignKey(d => d.ClrFrContract)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Calender_Contract");
+
+            entity.HasOne(d => d.ClrFrSalonNavigation).WithMany(p => p.Calenders)
+                .HasForeignKey(d => d.ClrFrSalon)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Calender_Salon");
+
+            entity.HasOne(d => d.ClrFrShiftsNavigation).WithMany(p => p.Calenders)
+                .HasForeignKey(d => d.ClrFrShifts)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Calender_Shifts");
+        });
+
+        modelBuilder.Entity<CalenderDetail>(entity =>
+        {
+            entity.HasKey(e => e.CdId);
+
+            entity.ToTable("CalenderDetail");
+
+            entity.Property(e => e.CdId)
+                .ValueGeneratedNever()
+                .HasColumnName("CD_ID");
+            entity.Property(e => e.CdEndTime).HasColumnName("CD_END_TIME");
+            entity.Property(e => e.CdFrAccountclub).HasColumnName("CD_FR_ACCOUNTCLUB");
+            entity.Property(e => e.CdFrCalender).HasColumnName("CD_FR_CALENDER");
+            entity.Property(e => e.CdFrCsp).HasColumnName("CD_FR_CSP");
+            entity.Property(e => e.CdFrProduct).HasColumnName("CD_FR_PRODUCT");
+            entity.Property(e => e.CdPersonelCommission)
+                .HasColumnType("decimal(3, 2)")
+                .HasColumnName("CD_PERSONEL_COMMISSION");
+            entity.Property(e => e.CdPersonelPayment)
+                .HasColumnType("decimal(18, 0)")
+                .HasColumnName("CD_PERSONEL_PAYMENT");
+            entity.Property(e => e.CdStartTime).HasColumnName("CD_START_TIME");
+
+            entity.HasOne(d => d.CdFrAccountclubNavigation).WithMany(p => p.CalenderDetails)
+                .HasForeignKey(d => d.CdFrAccountclub)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CalenderDetail_AccountClub");
+
+            entity.HasOne(d => d.CdFrCalenderNavigation).WithMany(p => p.CalenderDetails)
+                .HasForeignKey(d => d.CdFrCalender)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CalenderDetail_Calender");
+
+            entity.HasOne(d => d.CdFrCspNavigation).WithMany(p => p.CalenderDetails)
+                .HasForeignKey(d => d.CdFrCsp)
+                .HasConstraintName("FK_CalenderDetail_ContinuouseServicesPlaning");
+
+            entity.HasOne(d => d.CdFrProductNavigation).WithMany(p => p.CalenderDetails)
+                .HasForeignKey(d => d.CdFrProduct)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CalenderDetail_Product");
+        });
+
         modelBuilder.Entity<Car>(entity =>
         {
             entity.HasKey(e => e.CarUid);
@@ -1309,6 +1469,63 @@ public partial class ShopContext : DbContext, IShopContext
             entity.Property(e => e.SysUsrModifiedon)
                 .HasColumnType("datetime")
                 .HasColumnName("SYS_USR_MODIFIEDON");
+        });
+
+        modelBuilder.Entity<CardRechage>(entity =>
+        {
+            entity.HasKey(e => e.CrId);
+
+            entity.ToTable("CardRechage");
+
+            entity.Property(e => e.CrId)
+                .ValueGeneratedNever()
+                .HasColumnName("CR_ID");
+            entity.Property(e => e.CrCreatedOn)
+                .HasColumnType("date")
+                .HasColumnName("CR_CREATED_ON");
+            entity.Property(e => e.CrExpireDate)
+                .HasColumnType("date")
+                .HasColumnName("CR_EXPIRE_DATE");
+            entity.Property(e => e.CrFrAccountclub).HasColumnName("CR_FR_ACCOUNTCLUB");
+            entity.Property(e => e.CrFrContract).HasColumnName("CR_FR_CONTRACT");
+            entity.Property(e => e.CrFrCreatedBy).HasColumnName("CR_FR_CREATED_BY");
+            entity.Property(e => e.CrFrModifiedBy).HasColumnName("CR_FR_MODIFIED_BY");
+            entity.Property(e => e.CrFrSalon).HasColumnName("CR_FR_SALON");
+            entity.Property(e => e.CrModifiedOn)
+                .HasColumnType("date")
+                .HasColumnName("CR_MODIFIED_ON");
+            entity.Property(e => e.CrRemaining)
+                .HasColumnType("decimal(18, 0)")
+                .HasColumnName("CR_REMAINING");
+            entity.Property(e => e.CrStartDate)
+                .HasColumnType("date")
+                .HasColumnName("CR_START_DATE");
+            entity.Property(e => e.CrStatus).HasColumnName("CR_STATUS");
+            entity.Property(e => e.CrTransactionNum).HasColumnName("CR_TRANSACTION_NUM");
+
+            entity.HasOne(d => d.CrFrAccountclubNavigation).WithMany(p => p.CardRechages)
+                .HasForeignKey(d => d.CrFrAccountclub)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CardRechage_AccountClub");
+
+            entity.HasOne(d => d.CrFrContractNavigation).WithMany(p => p.CardRechages)
+                .HasForeignKey(d => d.CrFrContract)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CardRechage_Contract");
+
+            entity.HasOne(d => d.CrFrCreatedByNavigation).WithMany(p => p.CardRechageCrFrCreatedByNavigations)
+                .HasForeignKey(d => d.CrFrCreatedBy)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CardRechage_SystemUsers_CreateBy");
+
+            entity.HasOne(d => d.CrFrModifiedByNavigation).WithMany(p => p.CardRechageCrFrModifiedByNavigations)
+                .HasForeignKey(d => d.CrFrModifiedBy)
+                .HasConstraintName("FK_CardRechage_SystemUsers_ModifiedBy");
+
+            entity.HasOne(d => d.CrFrSalonNavigation).WithMany(p => p.CardRechages)
+                .HasForeignKey(d => d.CrFrSalon)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CardRechage_Salon");
         });
 
         modelBuilder.Entity<Chequ>(entity =>
@@ -1754,6 +1971,125 @@ public partial class ShopContext : DbContext, IShopContext
                 .HasConstraintName("FK_ConditionLog_Invoice");
         });
 
+        modelBuilder.Entity<ContinuouseServicesPlaning>(entity =>
+        {
+            entity.HasKey(e => e.CspUid);
+
+            entity.ToTable("ContinuouseServicesPlaning");
+
+            entity.Property(e => e.CspUid).HasColumnName("CSP_UID");
+            entity.Property(e => e.CspCapacity).HasColumnName("CSP_CAPACITY");
+            entity.Property(e => e.CspDayPlan).HasColumnName("CSP_DAY_PLAN");
+            entity.Property(e => e.CspEndTime).HasColumnName("CSP_END_TIME");
+            entity.Property(e => e.CspFrAccountclub).HasColumnName("CSP_FR_ACCOUNTCLUB");
+            entity.Property(e => e.CspFrProduct).HasColumnName("CSP_FR_PRODUCT");
+            entity.Property(e => e.CspGenedr).HasColumnName("CSP_GENEDR");
+            entity.Property(e => e.CspNumOfSessions).HasColumnName("CSP_NUM_OF_SESSIONS");
+            entity.Property(e => e.CspStartDate)
+                .HasColumnType("date")
+                .HasColumnName("CSP_START_DATE");
+            entity.Property(e => e.CspStartTime).HasColumnName("CSP_START_TIME");
+
+            entity.HasOne(d => d.CspFrAccountclubNavigation).WithMany(p => p.ContinuouseServicesPlanings)
+                .HasForeignKey(d => d.CspFrAccountclub)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ContinuouseServicesPlaning_AccountClub");
+
+            entity.HasOne(d => d.CspFrProductNavigation).WithMany(p => p.ContinuouseServicesPlanings)
+                .HasForeignKey(d => d.CspFrProduct)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ContinuouseServicesPlaning_Product");
+        });
+
+        modelBuilder.Entity<Contract>(entity =>
+        {
+            entity.HasKey(e => e.CntId);
+
+            entity.ToTable("Contract");
+
+            entity.Property(e => e.CntId)
+                .ValueGeneratedNever()
+                .HasColumnName("CNT_ID");
+            entity.Property(e => e.CntContractNum)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("CNT_CONTRACT_NUM");
+            entity.Property(e => e.CntCreateon)
+                .HasColumnType("date")
+                .HasColumnName("CNT_CREATEON");
+            entity.Property(e => e.CntEndDate)
+                .HasColumnType("date")
+                .HasColumnName("CNT_END_DATE");
+            entity.Property(e => e.CntFrContract).HasColumnName("CNT_FR_CONTRACT");
+            entity.Property(e => e.CntFrCreatedby).HasColumnName("CNT_FR_CREATEDBY");
+            entity.Property(e => e.CntFrModifiedby).HasColumnName("CNT_FR_MODIFIEDBY");
+            entity.Property(e => e.CntModifiedon)
+                .HasColumnType("date")
+                .HasColumnName("CNT_MODIFIEDON");
+            entity.Property(e => e.CntStartDate)
+                .HasColumnType("date")
+                .HasColumnName("CNT_START_DATE");
+            entity.Property(e => e.CntTitle)
+                .IsRequired()
+                .HasMaxLength(150)
+                .HasColumnName("CNT_TITLE");
+            entity.Property(e => e.CntType).HasColumnName("CNT_TYPE");
+
+            entity.HasOne(d => d.CntFrContractNavigation).WithMany(p => p.InverseCntFrContractNavigation)
+                .HasForeignKey(d => d.CntFrContract)
+                .HasConstraintName("FK_Contract_Contract");
+
+            entity.HasOne(d => d.CntFrCreatedbyNavigation).WithMany(p => p.ContractCntFrCreatedbyNavigations)
+                .HasForeignKey(d => d.CntFrCreatedby)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Contract_SystemUsers_Create");
+
+            entity.HasOne(d => d.CntFrModifiedbyNavigation).WithMany(p => p.ContractCntFrModifiedbyNavigations)
+                .HasForeignKey(d => d.CntFrModifiedby)
+                .HasConstraintName("FK_Contract_SystemUsers_Modify");
+        });
+
+        modelBuilder.Entity<ContractDetail>(entity =>
+        {
+            entity.HasKey(e => e.CdId);
+
+            entity.ToTable("ContractDetail");
+
+            entity.Property(e => e.CdId)
+                .ValueGeneratedNever()
+                .HasColumnName("CD_ID");
+            entity.Property(e => e.CdBaseTime).HasColumnName("CD_BASE_TIME");
+            entity.Property(e => e.CdBaseTimeCost)
+                .HasColumnType("decimal(18, 0)")
+                .HasColumnName("CD_BASE_TIME_COST");
+            entity.Property(e => e.CdCreditLimit)
+                .HasColumnType("decimal(18, 0)")
+                .HasColumnName("CD_CREDIT_LIMIT");
+            entity.Property(e => e.CdDiscountPercent)
+                .HasColumnType("decimal(3, 2)")
+                .HasColumnName("CD_DISCOUNT_PERCENT");
+            entity.Property(e => e.CdDiscountRial)
+                .HasColumnType("decimal(18, 0)")
+                .HasColumnName("CD_DISCOUNT_RIAL");
+            entity.Property(e => e.CdExtraCost)
+                .HasColumnType("decimal(18, 0)")
+                .HasColumnName("CD_EXTRA_COST");
+            entity.Property(e => e.CdExtraTime).HasColumnName("CD_EXTRA_TIME");
+            entity.Property(e => e.CdFrContract).HasColumnName("CD_FR_CONTRACT");
+            entity.Property(e => e.CdFrProduct).HasColumnName("CD_FR_PRODUCT");
+
+            entity.HasOne(d => d.CdFrContractNavigation).WithMany(p => p.ContractDetails)
+                .HasForeignKey(d => d.CdFrContract)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ContractDetail_Contract");
+
+            entity.HasOne(d => d.CdFrProductNavigation).WithMany(p => p.ContractDetails)
+                .HasForeignKey(d => d.CdFrProduct)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ContractDetail_Product");
+        });
+
         modelBuilder.Entity<Cost>(entity =>
         {
             entity.HasKey(e => e.CstUid);
@@ -1892,6 +2228,23 @@ public partial class ShopContext : DbContext, IShopContext
                 .HasColumnName("SYS_USR_MODIFIEDON");
         });
 
+        modelBuilder.Entity<CurrentCalender>(entity =>
+        {
+            entity.HasKey(e => e.CcId);
+
+            entity.ToTable("CurrentCalender");
+
+            entity.Property(e => e.CcId).HasColumnName("CC_ID");
+            entity.Property(e => e.CcDate)
+                .HasColumnType("date")
+                .HasColumnName("CC_DATE");
+            entity.Property(e => e.CcEvents)
+                .HasMaxLength(200)
+                .HasColumnName("CC_EVENTS");
+            entity.Property(e => e.CcIsFriday).HasColumnName("CC_IS_FRIDAY");
+            entity.Property(e => e.CcIsHoliday).HasColumnName("CC_IS_HOLIDAY");
+        });
+
         modelBuilder.Entity<DefualtAccountDefinition>(entity =>
         {
             entity.HasKey(e => e.DftAccDfinUid);
@@ -1905,10 +2258,8 @@ public partial class ShopContext : DbContext, IShopContext
             entity.Property(e => e.BusUnitUid).HasColumnName("BUS_UNIT_UID");
             entity.Property(e => e.DftAccDfinIsUsedInCheque).HasColumnName("DFT_ACC_DFIN_IS_USED_IN_CHEQUE");
             entity.Property(e => e.DftAccDfinIsUsedInDocuments).HasColumnName("DFT_ACC_DFIN_IS_USED_IN_DOCUMENTS");
-            entity.Property(e => e.DftAccDfinIsUsedInPaymentSheet)
-                .HasColumnName("DFT_ACC_DFIN_IS_USED_IN_PAYMENT_SHEET");
-            entity.Property(e => e.DftAccDfinIsUsedInRecieptSheet)
-                .HasColumnName("DFT_ACC_DFIN_IS_USED_IN_RECIEPT_SHEET");
+            entity.Property(e => e.DftAccDfinIsUsedInPaymentSheet).HasColumnName("DFT_ACC_DFIN_IS_USED_IN_PAYMENT_SHEET");
+            entity.Property(e => e.DftAccDfinIsUsedInRecieptSheet).HasColumnName("DFT_ACC_DFIN_IS_USED_IN_RECIEPT_SHEET");
             entity.Property(e => e.DftAccDfinName)
                 .HasMaxLength(100)
                 .HasColumnName("DFT_ACC_DFIN_NAME");
@@ -2186,14 +2537,57 @@ public partial class ShopContext : DbContext, IShopContext
                 .HasConstraintName("FK_FiscalPeriod_BusinessUnits1");
         });
 
+        modelBuilder.Entity<InOut>(entity =>
+        {
+            entity.HasKey(e => e.IoId);
+
+            entity.ToTable("InOut");
+
+            entity.Property(e => e.IoId)
+                .ValueGeneratedNever()
+                .HasColumnName("IO_ID");
+            entity.Property(e => e.IoDate)
+                .HasColumnType("date")
+                .HasColumnName("IO_DATE");
+            entity.Property(e => e.IoFrAccountclub).HasColumnName("IO_FR_ACCOUNTCLUB");
+            entity.Property(e => e.IoFrCalender).HasColumnName("IO_FR_CALENDER");
+            entity.Property(e => e.IoFrCalenderDetail).HasColumnName("IO_FR_CALENDER_DETAIL");
+            entity.Property(e => e.IoFrCsp).HasColumnName("IO_FR_CSP");
+            entity.Property(e => e.IoFrServiceTransactions).HasColumnName("IO_FR_SERVICE_TRANSACTIONS");
+            entity.Property(e => e.IoTime).HasColumnName("IO_TIME");
+            entity.Property(e => e.IoType).HasColumnName("IO_TYPE");
+
+            entity.HasOne(d => d.IoFrAccountclubNavigation).WithMany(p => p.InOuts)
+                .HasForeignKey(d => d.IoFrAccountclub)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_InOut_AccountClub");
+
+            entity.HasOne(d => d.IoFrCalenderNavigation).WithMany(p => p.InOuts)
+                .HasForeignKey(d => d.IoFrCalender)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_InOut_Calender");
+
+            entity.HasOne(d => d.IoFrCalenderDetailNavigation).WithMany(p => p.InOuts)
+                .HasForeignKey(d => d.IoFrCalenderDetail)
+                .HasConstraintName("FK_InOut_CalenderDetail");
+
+            entity.HasOne(d => d.IoFrCspNavigation).WithMany(p => p.InOuts)
+                .HasForeignKey(d => d.IoFrCsp)
+                .HasConstraintName("FK_InOut_ContinuouseServicesPlaning");
+
+            entity.HasOne(d => d.IoFrServiceTransactionsNavigation).WithMany(p => p.InOuts)
+                .HasForeignKey(d => d.IoFrServiceTransactions)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_InOut_ServiceTransactions");
+        });
+
         modelBuilder.Entity<Invoice>(entity =>
         {
             entity.HasKey(e => e.InvUid);
 
             entity.ToTable("Invoice");
 
-            entity.HasIndex(e => new { e.BusUnitUid, e.FisPeriodUid, e.SalCatUid, e.InvReference },
-                "IX_BUS_UNIT_UID_FIS_PERIOD_UID_SAL_CAT_UID_INV_REFERENCE");
+            entity.HasIndex(e => new { e.BusUnitUid, e.FisPeriodUid, e.SalCatUid, e.InvReference }, "IX_BUS_UNIT_UID_FIS_PERIOD_UID_SAL_CAT_UID_INV_REFERENCE");
 
             entity.HasIndex(e => e.InvDate, "IX_INV_DATE");
 
@@ -2484,6 +2878,15 @@ public partial class ShopContext : DbContext, IShopContext
                 .HasColumnName("SYS_USR_MODIFIEDON");
             entity.Property(e => e.UomUid).HasColumnName("UOM_UID");
             entity.Property(e => e.WarHosUid).HasColumnName("WAR_HOS_UID");
+        });
+
+        modelBuilder.Entity<Job>(entity =>
+        {
+            entity.Property(e => e.JobId).HasColumnName("JOB_ID");
+            entity.Property(e => e.JobName)
+                .IsRequired()
+                .HasMaxLength(150)
+                .HasColumnName("JOB_NAME");
         });
 
         modelBuilder.Entity<Language>(entity =>
@@ -2851,8 +3254,7 @@ public partial class ShopContext : DbContext, IShopContext
 
             entity.ToTable("PaymentRecieptSheet");
 
-            entity.HasIndex(e => new { e.BusUnitUid, e.FisPeriodUid, e.PayRciptSheetType, e.PayRciptSheetStatus },
-                "IX_BUS_UNIT_UID_FIS_PERIOD_UID_PAY_RCIPT_SHEET_TYPE_PAY_RCIPT_SHEET_STATUS");
+            entity.HasIndex(e => new { e.BusUnitUid, e.FisPeriodUid, e.PayRciptSheetType, e.PayRciptSheetStatus }, "IX_BUS_UNIT_UID_FIS_PERIOD_UID_PAY_RCIPT_SHEET_TYPE_PAY_RCIPT_SHEET_STATUS");
 
             entity.HasIndex(e => e.PayRciptSheetUid, "IX_PAY_RCIPT_SHEET_UID");
 
@@ -2915,6 +3317,29 @@ public partial class ShopContext : DbContext, IShopContext
             entity.HasOne(d => d.WarHosRecU).WithMany(p => p.PaymentRecieptSheets)
                 .HasForeignKey(d => d.WarHosRecUid)
                 .HasConstraintName("FK_PaymentRecieptSheet_WarehouseReciept");
+        });
+
+        modelBuilder.Entity<PersonelCalender>(entity =>
+        {
+            entity.HasKey(e => e.PcId);
+
+            entity.ToTable("Personel_Calender");
+
+            entity.Property(e => e.PcId)
+                .ValueGeneratedNever()
+                .HasColumnName("PC_ID");
+            entity.Property(e => e.PcFrAccountclub).HasColumnName("PC_FR_ACCOUNTCLUB");
+            entity.Property(e => e.PcFrCalender).HasColumnName("PC_FR_CALENDER");
+
+            entity.HasOne(d => d.PcFrAccountclubNavigation).WithMany(p => p.PersonelCalenders)
+                .HasForeignKey(d => d.PcFrAccountclub)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Personel_Calender_AccountClub");
+
+            entity.HasOne(d => d.PcFrCalenderNavigation).WithMany(p => p.PersonelCalenders)
+                .HasForeignKey(d => d.PcFrCalender)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Personel_Calender_Calender");
         });
 
         modelBuilder.Entity<Personnel>(entity =>
@@ -3080,6 +3505,10 @@ public partial class ShopContext : DbContext, IShopContext
             entity.Property(e => e.PrdBarcode)
                 .HasMaxLength(50)
                 .HasColumnName("PRD_BARCODE");
+            entity.Property(e => e.PrdBaseCost)
+                .HasColumnType("decimal(18, 0)")
+                .HasColumnName("PRD_BASE_COST");
+            entity.Property(e => e.PrdBaseTime).HasColumnName("PRD_BASE_TIME");
             entity.Property(e => e.PrdCode)
                 .HasMaxLength(50)
                 .HasColumnName("PRD_CODE");
@@ -3090,6 +3519,7 @@ public partial class ShopContext : DbContext, IShopContext
                 .HasDefaultValueSql("((0))")
                 .HasColumnType("decimal(18, 0)")
                 .HasColumnName("PRD_COEFFICIENT2");
+            entity.Property(e => e.PrdContinuouseType).HasColumnName("PRD_CONTINUOUSE_TYPE");
             entity.Property(e => e.PrdDiscount)
                 .HasDefaultValueSql("((0))")
                 .HasColumnType("decimal(18, 0)")
@@ -3097,6 +3527,12 @@ public partial class ShopContext : DbContext, IShopContext
             entity.Property(e => e.PrdDiscountType)
                 .HasDefaultValueSql("((0))")
                 .HasColumnName("PRD_DISCOUNT_TYPE");
+            entity.Property(e => e.PrdExtraCost)
+                .HasColumnType("decimal(18, 0)")
+                .HasColumnName("PRD_EXTRA_COST");
+            entity.Property(e => e.PrdExtraTime).HasColumnName("PRD_EXTRA_TIME");
+            entity.Property(e => e.PrdHasPersonel).HasColumnName("PRD_HAS_PERSONEL");
+            entity.Property(e => e.PrdHasTiming).HasColumnName("PRD_HAS_TIMING");
             entity.Property(e => e.PrdImage).HasColumnName("PRD_IMAGE");
             entity.Property(e => e.PrdImageShow)
                 .HasDefaultValueSql("((0))")
@@ -3104,6 +3540,7 @@ public partial class ShopContext : DbContext, IShopContext
             entity.Property(e => e.PrdIranCode)
                 .HasMaxLength(50)
                 .HasColumnName("PRD_IRAN_CODE");
+            entity.Property(e => e.PrdIsContonuouse).HasColumnName("PRD_IS_CONTONUOUSE");
             entity.Property(e => e.PrdIsUnit1Bigger).HasColumnName("PRD_IsUnit1Bigger");
             entity.Property(e => e.PrdLatinName)
                 .HasMaxLength(100)
@@ -3113,9 +3550,14 @@ public partial class ShopContext : DbContext, IShopContext
             entity.Property(e => e.PrdLvlUid3).HasColumnName("PRD_LVL_UID3");
             entity.Property(e => e.PrdMaxQuantityOnHand).HasColumnName("PRD_MAX_QUANTITY_ON_HAND");
             entity.Property(e => e.PrdMaxSale).HasColumnName("PRD_MAX_SALE");
+            entity.Property(e => e.PrdMaxTime).HasColumnName("PRD_MAX_TIME");
             entity.Property(e => e.PrdMemory).HasColumnName("PRD_MEMORY");
             entity.Property(e => e.PrdMemory2).HasColumnName("PRD_MEMORY2");
+            entity.Property(e => e.PrdMinCharge)
+                .HasColumnType("decimal(18, 0)")
+                .HasColumnName("PRD_MIN_CHARGE");
             entity.Property(e => e.PrdMinQuantityOnHand).HasColumnName("PRD_MIN_QUANTITY_ON_HAND");
+            entity.Property(e => e.PrdMinTime).HasColumnName("PRD_MIN_TIME");
             entity.Property(e => e.PrdName)
                 .HasMaxLength(100)
                 .HasColumnName("PRD_NAME");
@@ -3129,6 +3571,12 @@ public partial class ShopContext : DbContext, IShopContext
                 .HasDefaultValueSql("((1))")
                 .HasColumnName("PRD_NAME_SHOW");
             entity.Property(e => e.PrdPercentDiscount).HasColumnName("PRD_PERCENT_DISCOUNT");
+            entity.Property(e => e.PrdPersonelCommission)
+                .HasColumnType("decimal(3, 2)")
+                .HasColumnName("PRD_PERSONEL_COMMISSION");
+            entity.Property(e => e.PrdPersonelPayment)
+                .HasColumnType("decimal(18, 0)")
+                .HasColumnName("PRD_PERSONEL_PAYMENT");
             entity.Property(e => e.PrdPriceInPrint)
                 .HasDefaultValueSql("((1))")
                 .HasColumnName("PRD_PRICE_IN_PRINT");
@@ -3190,6 +3638,8 @@ public partial class ShopContext : DbContext, IShopContext
             entity.Property(e => e.TaxUid).HasColumnName("TAX_UID");
             entity.Property(e => e.UomUid1).HasColumnName("UOM_UID1");
             entity.Property(e => e.UomUid2).HasColumnName("UOM_UID2");
+            entity.Property(e => e.Volume).HasMaxLength(128);
+            entity.Property(e => e.Weight).HasMaxLength(128);
 
             entity.HasOne(d => d.FkProductUnitNavigation).WithMany(p => p.ProductFkProductUnitNavigations)
                 .HasForeignKey(d => d.FkProductUnit)
@@ -3222,8 +3672,7 @@ public partial class ShopContext : DbContext, IShopContext
 
             entity.ToTable("ProductLevel");
 
-            entity.HasIndex(e => new { e.PrdLvlParentUid, e.BusUnitUid, e.FisPeriodUid, e.PrdLvlStatus },
-                "IX_PRD_LVL_PARENT_UID_BUS_UNIT_UID_FIS_PERIOD_UID_PRD_LVL_STATUS");
+            entity.HasIndex(e => new { e.PrdLvlParentUid, e.BusUnitUid, e.FisPeriodUid, e.PrdLvlStatus }, "IX_PRD_LVL_PARENT_UID_BUS_UNIT_UID_FIS_PERIOD_UID_PRD_LVL_STATUS");
 
             entity.Property(e => e.PrdLvlUid)
                 .ValueGeneratedNever()
@@ -3837,6 +4286,69 @@ public partial class ShopContext : DbContext, IShopContext
                 .HasColumnName("SYS_USR_MODIFIEDON");
         });
 
+        modelBuilder.Entity<Salon>(entity =>
+        {
+            entity.HasKey(e => e.SlnId);
+
+            entity.ToTable("Salon");
+
+            entity.Property(e => e.SlnId).HasColumnName("SLN_ID");
+            entity.Property(e => e.FrWarHosUid).HasColumnName("FR_WAR_HOS_UID");
+            entity.Property(e => e.SlnName)
+                .IsRequired()
+                .HasMaxLength(150)
+                .HasColumnName("SLN_NAME");
+            entity.Property(e => e.SlnType).HasColumnName("SLN_TYPE");
+
+            entity.HasOne(d => d.FrWarHosU).WithMany(p => p.Salons)
+                .HasForeignKey(d => d.FrWarHosUid)
+                .HasConstraintName("FK_Salon_WareHouse");
+        });
+
+        modelBuilder.Entity<SalonDetail>(entity =>
+        {
+            entity.HasKey(e => e.SdId);
+
+            entity.ToTable("SalonDetail");
+
+            entity.Property(e => e.SdId).HasColumnName("SD_ID");
+            entity.Property(e => e.SdFrAccountclub).HasColumnName("SD_FR_ACCOUNTCLUB");
+            entity.Property(e => e.SdFrSalon).HasColumnName("SD_FR_SALON");
+
+            entity.HasOne(d => d.SdFrAccountclubNavigation).WithMany(p => p.SalonDetails)
+                .HasForeignKey(d => d.SdFrAccountclub)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SalonDetail_AccountClub");
+
+            entity.HasOne(d => d.SdFrSalonNavigation).WithMany(p => p.SalonDetails)
+                .HasForeignKey(d => d.SdFrSalon)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SalonDetail_Salon");
+        });
+
+        modelBuilder.Entity<SalonProduct>(entity =>
+        {
+            entity.HasKey(e => e.SpId).HasName("PK_SalonProduct_1");
+
+            entity.ToTable("SalonProduct");
+
+            entity.Property(e => e.SpId)
+                .ValueGeneratedNever()
+                .HasColumnName("SP_ID");
+            entity.Property(e => e.SpFrProduct).HasColumnName("SP_FR_PRODUCT");
+            entity.Property(e => e.SpFrSalon).HasColumnName("SP_FR_SALON");
+
+            entity.HasOne(d => d.SpFrProductNavigation).WithMany(p => p.SalonProducts)
+                .HasForeignKey(d => d.SpFrProduct)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SalonProduct_Product");
+
+            entity.HasOne(d => d.SpFrSalonNavigation).WithMany(p => p.SalonProducts)
+                .HasForeignKey(d => d.SpFrSalon)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SalonProduct_Salon");
+        });
+
         modelBuilder.Entity<SelectDeliverer>(entity =>
         {
             entity.HasKey(e => e.SlcPrsUid);
@@ -3900,6 +4412,93 @@ public partial class ShopContext : DbContext, IShopContext
                 .HasConstraintName("FK_SerialDetail_PurchaseDetails");
         });
 
+        modelBuilder.Entity<ServiceTransaction>(entity =>
+        {
+            entity.HasKey(e => e.StrId);
+
+            entity.Property(e => e.StrId)
+                .ValueGeneratedNever()
+                .HasColumnName("STR_ID");
+            entity.Property(e => e.StrAmount)
+                .HasColumnType("decimal(18, 0)")
+                .HasColumnName("STR_AMOUNT");
+            entity.Property(e => e.StrCheckoutType).HasColumnName("STR_CHECKOUT_TYPE");
+            entity.Property(e => e.StrCreateOn)
+                .HasColumnType("date")
+                .HasColumnName("STR_CREATE_ON");
+            entity.Property(e => e.StrDesc)
+                .HasMaxLength(200)
+                .HasColumnName("STR_DESC");
+            entity.Property(e => e.StrDiscount)
+                .HasColumnType("decimal(18, 0)")
+                .HasColumnName("STR_DISCOUNT");
+            entity.Property(e => e.StrFrAccountclub).HasColumnName("STR_FR_ACCOUNTCLUB");
+            entity.Property(e => e.StrFrContract).HasColumnName("STR_FR_CONTRACT");
+            entity.Property(e => e.StrFrCreateBy).HasColumnName("STR_FR_CREATE_BY");
+            entity.Property(e => e.StrFrCsp).HasColumnName("STR_FR_CSP");
+            entity.Property(e => e.StrFrModifiedBy).HasColumnName("STR_FR_MODIFIED_BY");
+            entity.Property(e => e.StrFrProduct).HasColumnName("STR_FR_PRODUCT");
+            entity.Property(e => e.StrFrRecharge).HasColumnName("STR_FR_RECHARGE");
+            entity.Property(e => e.StrFrSalon).HasColumnName("STR_FR_SALON");
+            entity.Property(e => e.StrFrTicketDetail).HasColumnName("STR_FR_TICKET_DETAIL");
+            entity.Property(e => e.StrFullName)
+                .HasMaxLength(200)
+                .HasColumnName("STR_FULL_NAME");
+            entity.Property(e => e.StrIndicator).HasColumnName("STR_INDICATOR");
+            entity.Property(e => e.StrMobile)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasColumnName("STR_MOBILE");
+            entity.Property(e => e.StrModifiedOn)
+                .HasColumnType("date")
+                .HasColumnName("STR_MODIFIED_ON");
+            entity.Property(e => e.StrStatus).HasColumnName("STR_STATUS");
+            entity.Property(e => e.StrType).HasColumnName("STR_TYPE");
+            entity.Property(e => e.StrYear).HasColumnName("STR_YEAR");
+
+            entity.HasOne(d => d.StrFrAccountclubNavigation).WithMany(p => p.ServiceTransactions)
+                .HasForeignKey(d => d.StrFrAccountclub)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ServiceTransactions_AccountClub");
+
+            entity.HasOne(d => d.StrFrContractNavigation).WithMany(p => p.ServiceTransactions)
+                .HasForeignKey(d => d.StrFrContract)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ServiceTransactions_Contract");
+
+            entity.HasOne(d => d.StrFrCreateByNavigation).WithMany(p => p.ServiceTransactionStrFrCreateByNavigations)
+                .HasForeignKey(d => d.StrFrCreateBy)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ServiceTransactions_SystemUsers_CreateBy");
+
+            entity.HasOne(d => d.StrFrCspNavigation).WithMany(p => p.ServiceTransactions)
+                .HasForeignKey(d => d.StrFrCsp)
+                .HasConstraintName("FK_ServiceTransactions_ContinuouseServicesPlaning");
+
+            entity.HasOne(d => d.StrFrModifiedByNavigation).WithMany(p => p.ServiceTransactionStrFrModifiedByNavigations)
+                .HasForeignKey(d => d.StrFrModifiedBy)
+                .HasConstraintName("FK_ServiceTransactions_SystemUsers_ModifiedBy");
+
+            entity.HasOne(d => d.StrFrProductNavigation).WithMany(p => p.ServiceTransactions)
+                .HasForeignKey(d => d.StrFrProduct)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ServiceTransactions_Product");
+
+            entity.HasOne(d => d.StrFrRechargeNavigation).WithMany(p => p.ServiceTransactions)
+                .HasForeignKey(d => d.StrFrRecharge)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ServiceTransactions_CardRechage");
+
+            entity.HasOne(d => d.StrFrSalonNavigation).WithMany(p => p.ServiceTransactions)
+                .HasForeignKey(d => d.StrFrSalon)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ServiceTransactions_Salon");
+
+            entity.HasOne(d => d.StrFrTicketDetailNavigation).WithMany(p => p.ServiceTransactions)
+                .HasForeignKey(d => d.StrFrTicketDetail)
+                .HasConstraintName("FK_ServiceTransactions_TicketDetail");
+        });
+
         modelBuilder.Entity<Setting>(entity =>
         {
             entity.HasKey(e => e.SetUid);
@@ -3918,6 +4517,20 @@ public partial class ShopContext : DbContext, IShopContext
             entity.Property(e => e.SetValue)
                 .HasMaxLength(255)
                 .HasColumnName("SET_VALUE");
+        });
+
+        modelBuilder.Entity<Shift>(entity =>
+        {
+            entity.HasKey(e => e.ShfId);
+
+            entity.Property(e => e.ShfId).HasColumnName("SHF_ID");
+            entity.Property(e => e.ShfEndTime).HasColumnName("SHF_END_TIME");
+            entity.Property(e => e.ShfName)
+                .IsRequired()
+                .HasMaxLength(150)
+                .HasColumnName("SHF_NAME");
+            entity.Property(e => e.ShfStartTime).HasColumnName("SHF_START_TIME");
+            entity.Property(e => e.ShfTelorance).HasColumnName("SHF_TELORANCE");
         });
 
         modelBuilder.Entity<SmsDetail>(entity =>
@@ -4351,6 +4964,98 @@ public partial class ShopContext : DbContext, IShopContext
                 .HasConstraintName("FK_Tax_Account1");
         });
 
+        modelBuilder.Entity<Ticket>(entity =>
+        {
+            entity.HasKey(e => e.TktId);
+
+            entity.Property(e => e.TktId).HasColumnName("TKT_ID");
+            entity.Property(e => e.TktAmount)
+                .HasColumnType("decimal(18, 0)")
+                .HasColumnName("TKT_AMOUNT");
+            entity.Property(e => e.TktCreateOn)
+                .HasColumnType("date")
+                .HasColumnName("TKT_CREATE_ON");
+            entity.Property(e => e.TktDiscountPercent)
+                .HasColumnType("decimal(3, 2)")
+                .HasColumnName("TKT_DISCOUNT_PERCENT");
+            entity.Property(e => e.TktDiscountRial)
+                .HasColumnType("decimal(18, 0)")
+                .HasColumnName("TKT_DISCOUNT_RIAL");
+            entity.Property(e => e.TktExpireDate)
+                .HasColumnType("date")
+                .HasColumnName("TKT_EXPIRE_DATE");
+            entity.Property(e => e.TktFrCreateBy).HasColumnName("TKT_FR_CREATE_BY");
+            entity.Property(e => e.TktFrSalon).HasColumnName("TKT_FR_SALON");
+            entity.Property(e => e.TktName)
+                .IsRequired()
+                .HasMaxLength(150)
+                .HasColumnName("TKT_NAME");
+            entity.Property(e => e.TktNumber).HasColumnName("TKT_NUMBER");
+            entity.Property(e => e.TktSaleAmount)
+                .HasColumnType("decimal(18, 0)")
+                .HasColumnName("TKT_SALE_AMOUNT");
+            entity.Property(e => e.TktType).HasColumnName("TKT_TYPE");
+
+            entity.HasOne(d => d.TktFrCreateByNavigation).WithMany(p => p.Tickets)
+                .HasForeignKey(d => d.TktFrCreateBy)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Tickets_SystemUsers");
+
+            entity.HasOne(d => d.TktFrSalonNavigation).WithMany(p => p.Tickets)
+                .HasForeignKey(d => d.TktFrSalon)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Tickets_Salon");
+        });
+
+        modelBuilder.Entity<TicketDetail>(entity =>
+        {
+            entity.HasKey(e => e.TdId);
+
+            entity.ToTable("TicketDetail");
+
+            entity.Property(e => e.TdId)
+                .ValueGeneratedNever()
+                .HasColumnName("TD_ID");
+            entity.Property(e => e.TdExpireDate)
+                .HasColumnType("date")
+                .HasColumnName("TD_EXPIRE_DATE");
+            entity.Property(e => e.TdFrTicket).HasColumnName("TD_FR_TICKET");
+            entity.Property(e => e.TdSerial)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("TD_SERIAL");
+            entity.Property(e => e.TdStatus).HasColumnName("TD_STATUS");
+
+            entity.HasOne(d => d.TdFrTicketNavigation).WithMany(p => p.TicketDetails)
+                .HasForeignKey(d => d.TdFrTicket)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_TicketDetail_Tickets");
+        });
+
+        modelBuilder.Entity<TicketProduct>(entity =>
+        {
+            entity.HasKey(e => e.TpId);
+
+            entity.ToTable("TicketProduct");
+
+            entity.Property(e => e.TpId)
+                .ValueGeneratedNever()
+                .HasColumnName("TP_ID");
+            entity.Property(e => e.TpFrProduct).HasColumnName("TP_FR_PRODUCT");
+            entity.Property(e => e.TpFrTicket).HasColumnName("TP_FR_TICKET");
+
+            entity.HasOne(d => d.TpFrProductNavigation).WithMany(p => p.TicketProducts)
+                .HasForeignKey(d => d.TpFrProduct)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_TicketProduct_Product");
+
+            entity.HasOne(d => d.TpFrTicketNavigation).WithMany(p => p.TicketProducts)
+                .HasForeignKey(d => d.TpFrTicket)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_TicketProduct_Tickets");
+        });
+
         modelBuilder.Entity<UnitOfMeasurement>(entity =>
         {
             entity.HasKey(e => e.UomUid);
@@ -4722,6 +5427,15 @@ public partial class ShopContext : DbContext, IShopContext
                 .HasMaxLength(20)
                 .HasColumnName("WRK_STT_SERIAL_PORT_IRAN_KISH");
             entity.Property(e => e.WrkSttStatus).HasColumnName("WRK_STT_STATUS");
+        });
+
+        modelBuilder.Entity<WorkYear>(entity =>
+        {
+            entity.HasKey(e => e.WyId);
+
+            entity.Property(e => e.WyId).HasColumnName("WY_ID");
+            entity.Property(e => e.WyStatus).HasColumnName("WY_STATUS");
+            entity.Property(e => e.WyYear).HasColumnName("WY_YEAR");
         });
 
         OnModelCreatingPartial(modelBuilder);

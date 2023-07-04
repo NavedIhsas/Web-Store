@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class AccountClub
+namespace Domain.ShopModels;
+
+public partial class AccountClub
 {
     public Guid AccClbUid { get; set; }
 
@@ -98,7 +101,39 @@ public class AccountClub
 
     public string AccClbFolder { get; set; }
 
+    public int? AccFrJob { get; set; }
+
+    public Guid? AccFrContract { get; set; }
+
+    public string AccCardSerial { get; set; }
+
+    public short? AccRelationType { get; set; }
+
+    public virtual AccountClubType AccClbTypU { get; set; }
+
+    public virtual Contract AccFrContractNavigation { get; set; }
+
+    public virtual Job AccFrJobNavigation { get; set; }
+
     public virtual Account AccU { get; set; }
 
+    public virtual ICollection<AccountClubCard> AccountClubCards { get; set; } = new List<AccountClubCard>();
+
+    public virtual ICollection<CalenderDetail> CalenderDetails { get; set; } = new List<CalenderDetail>();
+
+    public virtual ICollection<Calender> Calenders { get; set; } = new List<Calender>();
+
+    public virtual ICollection<CardRechage> CardRechages { get; set; } = new List<CardRechage>();
+
+    public virtual ICollection<ContinuouseServicesPlaning> ContinuouseServicesPlanings { get; set; } = new List<ContinuouseServicesPlaning>();
+
+    public virtual ICollection<InOut> InOuts { get; set; } = new List<InOut>();
+
     public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
+
+    public virtual ICollection<PersonelCalender> PersonelCalenders { get; set; } = new List<PersonelCalender>();
+
+    public virtual ICollection<SalonDetail> SalonDetails { get; set; } = new List<SalonDetail>();
+
+    public virtual ICollection<ServiceTransaction> ServiceTransactions { get; set; } = new List<ServiceTransaction>();
 }

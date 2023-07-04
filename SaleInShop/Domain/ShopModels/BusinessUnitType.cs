@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class BusinessUnitType
+namespace Domain.ShopModels;
+
+public partial class BusinessUnitType
 {
     public Guid BusUnitTypUid { get; set; }
 

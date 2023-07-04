@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class FiscalPeriod
+namespace Domain.ShopModels;
+
+public partial class FiscalPeriod
 {
     public Guid FisPeriodUid { get; set; }
 

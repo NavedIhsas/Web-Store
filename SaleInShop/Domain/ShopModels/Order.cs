@@ -1,6 +1,9 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
 
-public class Order
+namespace Domain.ShopModels;
+
+public partial class Order
 {
     public Guid OrdUid { get; set; }
 
@@ -52,8 +55,7 @@ public class Order
 
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 
-    public virtual ICollection<PaymentRecieptSheet> PaymentRecieptSheets { get; set; } =
-        new List<PaymentRecieptSheet>();
+    public virtual ICollection<PaymentRecieptSheet> PaymentRecieptSheets { get; set; } = new List<PaymentRecieptSheet>();
 
     public virtual ICollection<Purchase> Purchases { get; set; } = new List<Purchase>();
 
