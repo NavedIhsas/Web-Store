@@ -17,6 +17,19 @@ public static class PriceInvoiceLevel
     public const int Level5 = 5;
 
 }
+public static class SessionName
+{
+    public const string ProductList = "ProductList";
+    public const string ProductListDes = "ProductList-Des";
+}
+
+
+public static class InvoiceDetDiscountStatus
+{
+    public const int Product = 0;
+    public const int AccountClubType = 1;
+    public const int Both = 2;
+}
 
 public static class ConstantParameter
 {
@@ -63,6 +76,7 @@ public static class ConstantParameter
     /// 3:Both Product and AccountClubType
     /// </summary>
     public static string InvoiceDetDiscountStatus = new("InvoiceDetDiscountStatus");
+
     public static Guid InvoiceDetDiscountStatusId = new("f9058772-e87e-485f-ba57-ff1ae3596c9b");
 
 
@@ -80,16 +94,4 @@ public static class ConstantParameter
 
 }
 
-public enum InvoiceDetDiscountStatus
-{
-    Product = 0,
-    AccountClubType = 1,
-    Both = 3
-}
-
-public static class SessionName
-{
-    public const string ProductList = "ProductList";
-    public const string ProductListDes = "ProductList-Des";
-}
 

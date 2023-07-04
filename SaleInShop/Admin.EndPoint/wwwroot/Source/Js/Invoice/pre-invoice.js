@@ -470,13 +470,13 @@ function bindDatatable() {
         });
 
     function generateButton(data) {
-        return `<center><a onClick="addAccountClub('${data.AccClbUid}','${data.AccClbName}','${data.AccClubDiscount}','${data.AccClubType}','${data.AccClbMobile}','${data.AccClbAddress}','${data.AccClbCode}')" class="btn btn-warning btn-rounded btn-sm">انتخاب مشتری</a>&nbsp; `
+        return `<center><a onClick="addAccountClub('${data.AccClbUid}','${data.AccClbName}','${data.AccClubDiscount}','${data.AccClubType}','${data.AccClbMobile}','${data.AccClbAddress}','${data.AccClbCode}','${data.AccTypePriceLevel}')" class="btn btn-warning btn-rounded btn-sm">انتخاب مشتری</a>&nbsp; `
     };
 
 }
 
 
-function addAccountClub(id, name, discount, type, mobile, address, code) {
+function addAccountClub(id, name, discount, type, mobile, address, code, accTypePriceLevel) {
     deleteCookie(AccountClubCookie);
     
     var accound = {
@@ -486,7 +486,8 @@ function addAccountClub(id, name, discount, type, mobile, address, code) {
         type: type,
         mobile: mobile,
         address: address,
-        code: code
+        code: code,
+        accTypePriceLevel: accTypePriceLevel
     };
 
     setCookie(AccountClubCookie, accound);

@@ -35,7 +35,7 @@ public interface IAuthHelper
     string AutoGenerateCode(Guid prdLvlId);
     bool AutoCodeProduct();
     string GetCookie(string name);
-    InvoiceDetDiscountStatus? GetInvoiceDiscountStatus();
+    int? GetInvoiceDiscountStatus();
 }
 
 public class AuthHelper : IAuthHelper
@@ -234,7 +234,7 @@ public class AuthHelper : IAuthHelper
         return cookie;
     }
 
-    public InvoiceDetDiscountStatus? GetInvoiceDiscountStatus()
+    public int? GetInvoiceDiscountStatus()
     {
         var value = _context.Settings
             .FirstOrDefault(x => x.SetKey == ConstantParameter.InvoiceDetDiscountStatus)?.SetValue;

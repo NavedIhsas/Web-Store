@@ -166,7 +166,7 @@ public class ProductCategory : IProductCategory
                     PrdPricePerUnit1 = x.PrdPricePerUnit1 ?? 0,
                     PrdName = x.PrdName,
                     PrdUid = x.PrdUid,
-                    AccClubDiscount = discount
+                   // AccClubDiscount = discount
                 }).ToList();
         var accType = _context.AccountClubTypes.Find(account.AccClbTypUid);
         if (accType != null)
@@ -178,7 +178,7 @@ public class ProductCategory : IProductCategory
                  PrdPricePerUnit1 = x.PrdPricePerUnit1 ?? 0,
                  PrdName = x.PrdName,
                  PrdUid = x.PrdUid,
-                 AccClubDiscount = discount
+                // AccClubDiscount = discount
  
              }).ToList();
     }

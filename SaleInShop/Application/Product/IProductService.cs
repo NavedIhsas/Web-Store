@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace Application.Product
 {
@@ -36,6 +37,7 @@ namespace Application.Product
 
         ResultDto Remove(Guid id);
         ResultDto UpdateProduct(EditProduct command);
+        decimal CalculateDiscount(Guid? productId, Guid? accountClubId, int priceLevel);
     }
 
     public class ProductService : IProductService
@@ -337,6 +339,7 @@ namespace Application.Product
         {
             var cookie = _authHelper.GetCookie("AccountClubList");
             var account = JsonConvert.DeserializeObject<AccountClubDto>(cookie);
+
             if (account == null) return new JsonResult("false");
             var list = _shopContext.Products.Include(x => x.PrdLvlUid3Navigation).Include(x => x.TaxU).AsNoTracking().Select(x => new
             {
@@ -351,7 +354,8 @@ namespace Application.Product
                 PrdLevelId = x.PrdLvlName,
                 PrdPricePerUnit1 = x.PrdPricePerUnit1 ?? 0,
                 PrdLvlName = x.PrdLvlName,
-                AccClubDiscount = account.AccClubDiscount,
+                PriceLevel = account.AccTypePriceLevel,
+                AccClubTypeId = account.AccClbTypUid??Guid.Empty,
             });
 
             if (!string.IsNullOrEmpty(param.SSearch))
@@ -396,10 +400,10 @@ namespace Application.Product
             else displayResult = list;
             var totalRecords = list.Count();
 
-            //foreach (var productDto in list)
-            //{
-            //    CalculateDiscount(productDto.PrdUid, productDto.AccClubDiscount)
-            //}
+            foreach (var productDto in list)
+            {
+              productDto.DiscountPercent=  CalculateDiscount(productDto.PrdUid, productDto.AccClubTypeId, productDto.PriceLevel);
+            }
             var result1 = (new
             {
                 param.SEcho,

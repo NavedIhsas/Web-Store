@@ -84,7 +84,11 @@ namespace Application.BaseData
               this.CreateMap<CreateAccountClub, AccountClub>().ForMember(x=>x.AccClbBrithday,opt=>opt.MapFrom(x=>x.ShamsiBirthDay.ToGeorgianDateTime()));
               this.CreateMap<EditAccountClub, AccountClub>().ForMember(x => x.AccClbBrithday, opt => opt.MapFrom(x => x.ShamsiBirthDay.ToGeorgianDateTime())).ReverseMap()
                   .ForMember(x=>x.ShamsiBirthDay,opt=>opt.MapFrom(t=>t.AccClbBrithday.ToFarsi())); 
-              this.CreateMap<AccountClub, AccountClubDto>().ForMember(x=>x.ShamsiBirthDay,opt=>opt.MapFrom(x=>x.AccClbBrithday.ToFarsi()));
+              this.CreateMap<AccountClub, AccountClubDto>().
+                  ForMember(x=>x.ShamsiBirthDay,opt=>opt.MapFrom(x=>x.AccClbBrithday.ToFarsi())).
+                      ForMember(x=>x.AccTypePriceLevel, opt=>opt.MapFrom(x=>x.AccClbTypU.AccClbTypDefaultPriceInvoice)
+                  
+                  );
         }
     }
 }

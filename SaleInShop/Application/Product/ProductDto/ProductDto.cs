@@ -3,6 +3,8 @@
 public class ProductDto
 {
     public Guid PrdUid { get; set; }
+    public Guid AccClubTypeId { get; set; }
+    public int PriceLevel { get; set; }
     public string PrdName { get; set; }
     public string PrdCode { get; set; }
     public string PrdLevelId { get; set; }
@@ -20,5 +22,5 @@ public class ProductDto
     public string Volume { get; set; }
     public string IranCode { get; set; }
     public string BarCode { get; set; }
-    public double AccClubDiscount { get; set; }
+    public decimal DiscountPercent { get; set; }
 }

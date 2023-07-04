@@ -11,6 +11,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using Application.Product;
 using Microsoft.AspNetCore.Http.HttpResults;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
@@ -50,19 +51,22 @@ namespace Application.BaseData
         EditAccountClub GetDetailsAccountClub(Guid id);
         JsonResult GetAllAccountClub(JqueryDatatableParam param);
         ResultDto RemoveAccountClub(Guid id);
+        JsonResult GetAllAccountClubProduct(JqueryDatatableParam param, Guid productId);
     }
     internal class BaseDataService : IBaseDataService
     {
         private readonly IShopContext _shopContext;
+        private readonly IProductService _productService;
         private readonly ILogger<BaseDataService> _logger;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _contextAccessor;
-        public BaseDataService(IShopContext shopContext, ILogger<BaseDataService> logger, IMapper mapper, IHttpContextAccessor contextAccessor)
+        public BaseDataService(IShopContext shopContext, ILogger<BaseDataService> logger, IMapper mapper, IHttpContextAccessor contextAccessor, IProductService productService)
         {
             _shopContext = shopContext;
             _logger = logger;
             _mapper = mapper;
             _contextAccessor = contextAccessor;
+            _productService = productService;
         }
 
         #region Unit Of Measurements
@@ -633,7 +637,7 @@ namespace Application.BaseData
         public JsonResult GetAllAccountClub(JqueryDatatableParam param)
         {
 
-            var list = _shopContext.AccountClubs.AsNoTracking();
+            var list = _shopContext.AccountClubs.Include(x => x.AccClbTypU).AsNoTracking();
 
             if (!string.IsNullOrEmpty(param.SSearch))
             {
@@ -684,7 +688,7 @@ namespace Application.BaseData
             var totalRecords = list.Count();
             var map = _mapper.Map<List<AccountClubDto>>(displayResult.ToList());
 
-            
+
 
             foreach (var clubTypeDto in map)
             {
@@ -697,8 +701,8 @@ namespace Application.BaseData
 
                 if (clubTypeDto.AccClbTypUid != null)
                 {
-                    var accType= _shopContext.AccountClubTypes.Find(clubTypeDto.AccClbTypUid);
-                    if(accType!=null)
+                    var accType = _shopContext.AccountClubTypes.Find(clubTypeDto.AccClbTypUid);
+                    if (accType != null)
                     {
                         clubTypeDto.AccClubType = accType.AccClbTypName;
                         clubTypeDto.AccClubDiscount = accType.AccClbTypPercentDiscount ?? 0;
@@ -706,6 +710,85 @@ namespace Application.BaseData
 
 
                 }
+
+                if (clubTypeDto.AccRateUid != null)
+                    clubTypeDto.AccRatioText = _shopContext.AccountRatings.Find(clubTypeDto.AccRateUid)?.AccRateName;
+
+            }
+
+            var result = (new
+            {
+                param.SEcho,
+                iTotalRecords = totalRecords,
+                iTotalDisplayRecords = totalRecords,
+                aaData = map
+            });
+            return new JsonResult(result, new JsonSerializerOptions { PropertyNamingPolicy = null });
+        }
+
+        public JsonResult GetAllAccountClubProduct(JqueryDatatableParam param, Guid productId)
+        {
+
+            var list = _shopContext.AccountClubs.Include(x => x.AccClbTypU).AsNoTracking();
+
+            if (!string.IsNullOrEmpty(param.SSearch))
+            {
+                list = list.Where(x =>
+                    x.AccClbName.ToLower().Contains(param.SSearch.ToLower())
+                    || x.AccClbCode.ToLower().Contains(param.SSearch.ToLower())
+                    || x.AccClbMobile.ToLower().Contains(param.SSearch.ToLower()));
+            }
+
+            var sortColumnIndex = Convert.ToInt32(_contextAccessor.HttpContext.Request.Query["iSortCol_0"]);
+            var sortDirection = _contextAccessor.HttpContext.Request.Query["sSortDir_0"];
+
+            switch (sortColumnIndex)
+            {
+                case 0:
+                    list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbName) : list.OrderByDescending(c => c.AccClbName);
+                    break;
+                case 1:
+                    list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbCode) : list.OrderByDescending(c => c.AccClbCode);
+                    break;
+                case 2:
+                    list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbBrithday) : list.OrderByDescending(c => c.AccClbBrithday);
+                    break;
+                case 5:
+                    list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbMobile) : list.OrderByDescending(c => c.AccClbMobile);
+                    break;
+
+
+                default:
+                    {
+                        string OrderingFunction(Domain.ShopModels.AccountClub e) => sortColumnIndex == 0 ? e.AccClbName : "";
+                        IOrderedEnumerable<Domain.ShopModels.AccountClub> rr = null;
+
+                        rr = sortDirection == "asc"
+                            ? list.AsEnumerable().OrderBy((Func<Domain.ShopModels.AccountClub, string>)OrderingFunction)
+                            : list.AsEnumerable().OrderByDescending((Func<Domain.ShopModels.AccountClub, string>)OrderingFunction);
+
+                        list = rr.AsQueryable();
+                        break;
+                    }
+            }
+
+            IQueryable<AccountClub> displayResult;
+            if (param.IDisplayLength != 0)
+                displayResult = list.Skip(param.IDisplayStart)
+                .Take(param.IDisplayLength);
+            else displayResult = list;
+            var totalRecords = list.Count();
+            var map = _mapper.Map<List<AccountClubDto>>(displayResult.ToList());
+
+
+
+            foreach (var clubTypeDto in map)
+            {
+
+                var discount = Convert.ToDouble(_productService.CalculateDiscount(productId, clubTypeDto.AccClbTypUid,
+                    clubTypeDto.AccTypePriceLevel));
+                // clubTypeDto.AccClubType = accType.AccClbTypName;
+                clubTypeDto.AccClubDiscount = discount;
 
                 if (clubTypeDto.AccRateUid != null)
                     clubTypeDto.AccRatioText = _shopContext.AccountRatings.Find(clubTypeDto.AccRateUid)?.AccRateName;

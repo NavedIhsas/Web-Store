@@ -63,7 +63,7 @@ namespace Application.BaseData.Dto
         public string AccClbName { get; set; }
 
         public string AccClbCode { get; set; }
-
+        public int AccTypePriceLevel { get; set; }
         public Guid? AccRateUid { get; set; }
         public Guid? AccClbTypUid { get; set; }
         public string AccClbNationalCode { get; set; }
