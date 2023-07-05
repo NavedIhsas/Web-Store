@@ -12,6 +12,7 @@ public class ProductDto
     public Guid PrdLvlUId { get; set; }
     public bool? PrdStatus { get; set; }
     public decimal PrdPricePerUnit1 { get; set; }
+    public decimal? Price { get; set; }
     public string TaxName { get; set; }
     public decimal? TaxValue { get; set; }
     public string PrdLvlName { get; set; }

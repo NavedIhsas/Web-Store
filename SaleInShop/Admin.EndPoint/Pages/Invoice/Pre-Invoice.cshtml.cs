@@ -5,8 +5,6 @@ using Application.Product.Category;
 using Application.Product.ProductDto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Primitives;
-using Microsoft.Net.Http.Headers;
 
 namespace SaleInWeb.Pages.Invoice
 {
@@ -15,6 +13,8 @@ namespace SaleInWeb.Pages.Invoice
         private readonly IProductCategory _category;
         private readonly IInvoiceService _invoiceService;
         private readonly IProductService _product;
+
+        public string Message = "";
         public PreInvoiceModel(IProductCategory category, IInvoiceService invoiceService, IProductService product)
         {
             _category = category;
@@ -29,21 +29,28 @@ namespace SaleInWeb.Pages.Invoice
             Categories = _category.GetLevelList();
         }
 
-        public  IActionResult OnPost()
+        public IActionResult OnPost()
         {
             return new JsonResult(_invoiceService.Create());
         }
-        public IActionResult OnGetData(JqueryDatatableParam param)
+        public JsonResult OnGetData(JqueryDatatableParam param)
         {
-            return _product.GetAllProductForInvoice(param);
+            var result = _product.GetAllProductForInvoice(param);
+            if (result.IsSucceeded)
+                return result.Data;
+            else
+            {
+                Message = result.Message;
+                return new JsonResult(result.Message);
+            }
         }
 
-        public IActionResult OnGetInvoiceList()
+        public IActionResult OnGetInvoiceList(JqueryDatatableParam param)
         {
-            return new JsonResult(_invoiceService.GetInvoiceList());
+            return _invoiceService.GetInvoiceList(param);
         }
 
-        public IActionResult OnGetProductLevel(Guid productLvl,Guid accClbType)=>new JsonResult(_category.GetProductLvl(productLvl, accClbType));
+        public IActionResult OnGetInvoiceDetails(Guid invoiceId) => new JsonResult(_invoiceService.InvoiceDetails(invoiceId));
         public IActionResult OnGetProductToList(Guid id) => new JsonResult(_invoiceService.ProductToList(id));
         public IActionResult OnGetRemoveFromProductList(Guid id) => new JsonResult(_invoiceService.RemoveFromProductList(id));
     }

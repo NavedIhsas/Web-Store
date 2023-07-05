@@ -19,7 +19,7 @@ namespace Application.Product
     {
         Domain.ShopModels.Product GetProduct(Guid id);
         JsonResult GetAllProduct(JqueryDatatableParam param);
-        JsonResult GetAllProductForInvoice(JqueryDatatableParam param);
+        ResultDto<JsonResult> GetAllProductForInvoice(JqueryDatatableParam param);
         ResultDto CreateProduct(CreateProduct command);
         List<ProductDto.ProductDto> GetAll();
         ProductDetails GetDetails(Guid id);
@@ -34,7 +34,7 @@ namespace Application.Product
 
         EditProduct GetDetailsForEdit(Guid id);
         List<ProductPicturesDto> GetProductPictures(Guid productId);
-
+        decimal? GetPrice(Guid? productId, int priceLevel);
         ResultDto Remove(Guid id);
         ResultDto UpdateProduct(EditProduct command);
         decimal CalculateDiscount(Guid? productId, Guid? accountClubId, int priceLevel);
@@ -258,10 +258,11 @@ namespace Application.Product
 
         }
 
-        private decimal ConvertPercentToAmount(decimal? price, decimal? discountPrice)
+        private static int ConvertPercentToAmount(decimal? price, decimal? discountPrice)
         {
+            if (price is 0 or null) return 0;
             var result = (discountPrice * 100) / price;
-            return result??0;
+            return Convert.ToInt32(result);
         }
 
 
@@ -290,23 +291,50 @@ namespace Application.Product
             {
                 discount = priceLevel switch
                 {
-                    PriceInvoiceLevel.Zero => this.ConvertPercentToAmount(0, productDiscount ?? 0),
                     PriceInvoiceLevel.Level1 =>
-                        this.ConvertPercentToAmount(product.PrdPricePerUnit1, productDiscount),
+                        ConvertPercentToAmount(product.PrdPricePerUnit1, productDiscount),
                     PriceInvoiceLevel.Level2 =>
-                        this.ConvertPercentToAmount(product.PrdPricePerUnit2, productDiscount),
+                        ConvertPercentToAmount(product.PrdPricePerUnit2, productDiscount),
                     PriceInvoiceLevel.Level3 =>
-                        this.ConvertPercentToAmount(product.PrdPricePerUnit3, productDiscount),
+                        ConvertPercentToAmount(product.PrdPricePerUnit3, productDiscount),
                     PriceInvoiceLevel.Level4 =>
-                        this.ConvertPercentToAmount(product.PrdPricePerUnit4, productDiscount),
+                        ConvertPercentToAmount(product.PrdPricePerUnit4, productDiscount),
                     PriceInvoiceLevel.Level5 =>
-                        this.ConvertPercentToAmount(product.PrdPricePerUnit5, productDiscount),
+                        ConvertPercentToAmount(product.PrdPricePerUnit5, productDiscount),
 
                     _ => discount
                 };
             }
 
             return discount;
+        }
+        
+        public decimal? GetPrice(Guid? productId, int priceLevel)
+        {
+            var product = _shopContext.Products
+                .Select(x => new { x.PrdUid, x.PrdPercentDiscount, x.PrdPricePerUnit1, x.PrdPricePerUnit2, x.PrdPricePerUnit3, x.PrdPricePerUnit4, x.PrdPricePerUnit5, })
+                .AsNoTracking().SingleOrDefault(x => x.PrdUid == productId);
+
+            if (product == null)
+                return null;
+           
+            decimal? price = null;
+            price = priceLevel switch
+            {
+                PriceInvoiceLevel.Level1 =>
+                  product.PrdPricePerUnit1,
+                PriceInvoiceLevel.Level2 =>
+                  price = product.PrdPricePerUnit2,
+                PriceInvoiceLevel.Level3 =>
+                  price = product.PrdPricePerUnit3,
+                PriceInvoiceLevel.Level4 =>
+                  price = product.PrdPricePerUnit4,
+                PriceInvoiceLevel.Level5 =>
+                  price = product.PrdPricePerUnit5,
+                _ => null
+            };
+
+            return price;
         }
         public decimal CalculateDiscount(Guid? productId, Guid? accountClubId, int priceLevel)
         {
@@ -335,18 +363,26 @@ namespace Application.Product
 
             return discount;
         }
-        public JsonResult GetAllProductForInvoice(JqueryDatatableParam param)
+        public ResultDto<JsonResult> GetAllProductForInvoice(JqueryDatatableParam param)
         {
+            var result = new ResultDto<JsonResult>();
             var cookie = _authHelper.GetCookie("AccountClubList");
             var account = JsonConvert.DeserializeObject<AccountClubDto>(cookie);
 
-            if (account == null) return new JsonResult("false");
+            if (account == null)
+            {
+                _logger.LogError($"An error occurred while retrieving data from cookie (AccountClubList) ");
+                return result.Failed("خطا در دریافت اطلاعات، لطفا با پشتیبانی تماس بگرید");
+            }
             var list = _shopContext.Products.Include(x => x.PrdLvlUid3Navigation).Include(x => x.TaxU).AsNoTracking().Select(x => new
             {
+
                 x.PrdUid,
                 x.PrdName,
                 x.PrdPricePerUnit1,
                 x.PrdLvlUid3Navigation.PrdLvlName,
+                x.TaxU.TaxValue,
+                x.TaxU.TaxTaxesValue
             }).Select(x => new ProductDto.ProductDto
             {
                 PrdUid = x.PrdUid,
@@ -356,6 +392,7 @@ namespace Application.Product
                 PrdLvlName = x.PrdLvlName,
                 PriceLevel = account.AccTypePriceLevel,
                 AccClubTypeId = account.AccClbTypUid??Guid.Empty,
+                TaxValue = x.TaxValue??0 + x.TaxTaxesValue??0
             });
 
             if (!string.IsNullOrEmpty(param.SSearch))
@@ -400,18 +437,22 @@ namespace Application.Product
             else displayResult = list;
             var totalRecords = list.Count();
 
-            foreach (var productDto in list)
-            {
-              productDto.DiscountPercent=  CalculateDiscount(productDto.PrdUid, productDto.AccClubTypeId, productDto.PriceLevel);
-            }
+            
             var result1 = (new
             {
                 param.SEcho,
                 iTotalRecords = totalRecords,
                 iTotalDisplayRecords = totalRecords,
-                aaData = displayResult
+                
+                aaData = displayResult.ToList()
             });
-            return new JsonResult(result1, new JsonSerializerOptions { PropertyNamingPolicy = null });
+            foreach (var dto in result1.aaData)
+            {
+                dto.DiscountPercent = this.CalculateDiscount(dto.PrdUid, dto.AccClubTypeId, dto.PriceLevel);
+                dto.Price=this.GetPrice(dto.PrdUid, dto.PriceLevel);
+            }
+            var  jsonRe =new JsonResult(result1, new JsonSerializerOptions { PropertyNamingPolicy = null });
+            return result.Succeeded(jsonRe);
 
         }
 

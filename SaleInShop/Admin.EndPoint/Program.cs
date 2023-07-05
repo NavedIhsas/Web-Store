@@ -83,12 +83,12 @@ try
         var connectionString = configuration.GetConnectionString("shopConnection");
         var connection = new SqlConnectionStringBuilder(connectionString)
         {
-            InitialCatalog = "876812d7-85ec-4706-9eef-fe26f206e794"
+            InitialCatalog = "ee7d41c7-9be6-4ac8-9fc9-5ad4d7b852f1"
         };
         httpContext.Session.SetStringText("Branch", connection);
         var baseConfig = httpContext.Session.GetJson<BaseConfigDto>("BaseConfig") ?? new BaseConfigDto
         {
-            FisPeriodUId = new Guid("876812d7-85ec-4706-9eef-fe26f206e794"),
+            FisPeriodUId = new Guid("ee7d41c7-9be6-4ac8-9fc9-5ad4d7b852f1"),
             BusUnitUId = new Guid("c75701ae-e064-4718-a96f-09ae5858b0c2")
         };
         httpContext.Session.SetJson("BaseConfig", baseConfig);

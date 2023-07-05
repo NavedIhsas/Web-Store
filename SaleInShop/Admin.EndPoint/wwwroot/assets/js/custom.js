@@ -182,7 +182,7 @@ function setCookie(cname, cvalue, path = "/", exdays = 1) {
 }
 
 
-function setCookieList(cname, cvalue,productId, path = "/", exdays = 1) {
+function setCookieList(cname, cvalue, productId, path = "/", exdays = 1) {
     debugger
     var cookie = getCookie(cname);
 
@@ -190,19 +190,19 @@ function setCookieList(cname, cvalue,productId, path = "/", exdays = 1) {
         setCookie(cname, cvalue, path, exdays);
     else {
         var parse = JSON.parse(cookie);
-    
+
         const found = parse.find(element => element.productId === productId);
         if (found != undefined) {
-           var test= parse.filter(element => element.productId === found.productId);
+            var test = parse.filter(element => element.productId === found.productId);
 
-            test.push.apply(test,cvalue);
+            test.push.apply(test, cvalue);
             setCookie(cname, parse);
         }
         else {
             cvalue.push.apply(cvalue, parse);
             setCookie(cname, cvalue, path, exdays);
         }
-        
+
     }
 }
 
@@ -218,4 +218,19 @@ function deleteAllCookies() {
 }
 function deleteCookie(name, path = "/") {
     document.cookie = name + '=; Path=' + path + '; Expires = Thu, 01 Jan 1970 00: 00: 01 GMT; ';
+}
+
+
+$(document).on('click', '[data-dismiss="modal"]', function () {
+
+    //To Do when close modal
+
+})
+
+function reinitialise(dataTableId) {
+    if ($.fn.DataTable.isDataTable("#" + dataTableId)) {
+       
+        $("#" + dataTableId).dataTable().fnClearTable();
+        $("#" + dataTableId).dataTable().fnDestroy();
+    }
 }

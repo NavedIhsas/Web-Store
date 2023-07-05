@@ -686,8 +686,17 @@ namespace Application.BaseData
                 .Take(param.IDisplayLength);
             else displayResult = list;
             var totalRecords = list.Count();
-            var map = _mapper.Map<List<AccountClubDto>>(displayResult.ToList());
+            var map = new List<AccountClubDto>();
+            try
+            {
+                 map = _mapper.Map<List<AccountClubDto>>(displayResult);
 
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
 
 
             foreach (var clubTypeDto in map)

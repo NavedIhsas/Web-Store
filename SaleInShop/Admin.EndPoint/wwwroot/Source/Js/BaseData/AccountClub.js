@@ -139,7 +139,7 @@ function Edit(id, name, discountType, priceInvoice, percentDiscount, detDiscount
     $("#Command_PriceInvoice").val(priceInvoice);
     $("#Command_PercentDiscount").val(percentDiscount);
     $("#Command_DetDiscount").val(detDiscount);
-    $("#Command_Command_Id").val(id);
+    $("#Command_Id").val(id);
 }
 
 function bindDatatable() {

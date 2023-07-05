@@ -9,12 +9,12 @@ namespace Application.Common;
 /// </summary>
 public static class PriceInvoiceLevel
 {
-    public const int Zero = 0;
-    public const int Level1 = 1;
-    public const int Level2 = 2;
-    public const int Level3 = 3;
-    public const int Level4 = 4;
-    public const int Level5 = 5;
+    public  const int Zero = 0;
+    public  const int Level1 = 1;
+    public  const int Level2 = 2;
+    public  const int Level3 = 3;
+    public  const int Level4 = 4;
+    public  const int Level5 = 5;
 
 }
 public static class SessionName

@@ -1,7 +1,4 @@
-﻿
-
-
-const ProductListCookie = "productList";
+﻿const ProductListCookie = "productList";
 const AccountClubCookie = "AccountClubList";
 
 $(document).ready(function () {
@@ -10,6 +7,7 @@ $(document).ready(function () {
         format: 'YYYY/MM/DD',
         autoClose: true,
     });
+  
     bindDatatable();
     deleteAllCookies();
     deleteCookie(ProductListCookie);
@@ -18,7 +16,15 @@ $(document).ready(function () {
 });
 
 
-const table = $('.property-dataTable').DataTable({
+const table = $('#property-dataTable').DataTable({
+    paging: false,
+    ordering: true,
+    info: false,
+    order: [[2, 'desc']],
+    searching: false,
+});
+
+const invoiceTable = $('.invoiceDet-dataTable').DataTable({
     paging: false,
     ordering: true,
     info: false,
@@ -27,7 +33,7 @@ const table = $('.property-dataTable').DataTable({
 });
 
 $("#submitPrint").on('click', function () {
-    debugger
+
     swal({
         title: 'این فاکتور تسویه نشده است!',
         text: "آیا مطمئن هستید که میخواهید ادامه دهید؟",
@@ -50,14 +56,13 @@ $("#submitPrint").on('click', function () {
                     RequestVerificationToken:
                         $('input:hidden[name="__RequestVerificationToken"]').val()
                 },
-                success: function (result)
-                {
-                    debugger
+                success: function (result) {
+
                     if (result.isSucceeded) {
                         $("#invoiceStatus").removeClass("d-none").text("وضعیت فاکتور: ثبت اولیه");
                         $("#invoicePayStatus").removeClass("d-none").text("وضعیت تسویه: تسویه نشده");
-                       document.querySelectorAll(".invoicePay").removeClass("d-none").forEach(el => el.removeClass("d-none"));
-                       
+                        document.querySelectorAll(".invoicePay").removeClass("d-none").forEach(el => el.removeClass("d-none"));
+
 
                         swal(
                             'موفق!',
@@ -115,57 +120,70 @@ function getProduct(evt, cityName) {
     evt.currentTarget.className += " active";
 
 
+    try {
 
+        reinitialise("dataTable_1");
+        datatable = $('#dataTable_1')
+            .DataTable({
+                "sAjaxSource": "?handler=Data",
+                "bServerSide": true,
+                "bProcessing": true,
+                "bSearchable": true,
+                "order": [[1, 'asc']],
 
-    datatable = $('#dataTable_1')
-        .DataTable({
-
-            "sAjaxSource": "?handler=Data",
-            "bServerSide": true,
-            "bProcessing": true,
-            "bSearchable": true,
-            "order": [[1, 'asc']],
-
-            "language": {
-                "oPaginate": { "sPrevious": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>', "sNext": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>' },
-                "sInfo": "صفحه _PAGE_ از _PAGES_",
-                "sSearch": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
-                "sSearchPlaceholder": "جستجو کنید...",
-                "sLengthMenu": "نتایج :  _MENU_",
-            },
-            "columns": [
-                {
-                    "data": "PrdName",
-                    "autoWidth": true,
-                    "searchable": true
+                "language": {
+                    "oPaginate": { "sPrevious": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>', "sNext": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>' },
+                    "sInfo": "صفحه _PAGE_ از _PAGES_",
+                    "sSearch": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
+                    "sSearchPlaceholder": "جستجو کنید...",
+                    "sLengthMenu": "نتایج :  _MENU_",
                 },
-                {
-                    "data": "PrdLvlName",
-                    "autoWidth": true,
-                    "searchable": true
-                },
+                "columns": [
+                    {
+                        "data": "PrdName",
+                        "autoWidth": true,
+                        "searchable": true,
 
-                {
-                    "data": "PrdPricePerUnit1",
-                    "autoWidth": true,
-                    "searchable": true
-                },
-
-
-                {
-                    data: null,
-                    render: function (data, row, full) {
-                        return generateButton(data);
                     },
-                }
+                    {
+                        "data": "PrdLvlName",
+                        "autoWidth": true,
+                        "searchable": true
+                    },
 
-            ]
-        });
+                    {
+                        "data": "Price",
+                        "autoWidth": true,
+                        "searchable": true,
+                        render: function (data, row, full) {
 
+                            if (data == null)
+                                return "تعریف نشده";
+                            return data;
+                        },
+                    },
+
+
+                    {
+                        data: null,
+                        render: function (data, row, full) {
+                            if (full.Price == null)
+                                return "ابتدا قیمت را در این سطح تعریف کنید";
+                            return generateButton(data);
+                        },
+                    }
+
+                ]
+            });
+
+
+    } catch (e) {
+
+    }
 
     function generateButton(data) {
-        
-        return ` <a onClick="addProductToList('${data.PrdUid}','${data.PrdName}','${data.PrdPricePerUnit1}','${data.AccClubDiscount}')" type="button" >
+
+        return ` <a onClick="addProductToList('${data.PrdUid}','${data.PrdName}','${data.Price}','${data.DiscountPercent}','${data.TaxValue}')" type="button" >
         <svg style="color:green" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
     </a>
     `
@@ -223,14 +241,16 @@ function openDetails(evt, name, accclubType) {
 }
 
 
-function tax(amount) {
-    return (amount * 9) / 100;
+function calculateTax(tax, totalAmount) {
+    debugger
+    return (totalAmount * tax) / 100;
 }
 
-function updateTable(obj) {
 
+function updateTable(obj) {
+    debugger
     var amount = 0, total = 0, priceWithDiscount = 0, paidAmount = 0, getTax = 0;
-    var totalPriceWithDiscount = 0, totalPaidAmount = 0, totalGetTax = 0, rowNo = 0;
+    var totalPriceWithDiscount = 0, totalPaidAmount = 0, totalGetTax = 0, rowNo = 0, accClbUid;
 
     table.clear().draw();
     var footer = document.getElementsByTagName("tfoot");
@@ -238,12 +258,12 @@ function updateTable(obj) {
         footer[0].parentNode.removeChild(footer[0]);
 
     obj.forEach(x => {
-       
+
         amount += parseInt(x.price);
         total += parseInt(x.total);
         priceWithDiscount = Math.abs(parseInt(((parseInt(x.discount) * total) / 100) - total));
         discountAmount = parseInt((parseInt(x.discount) * total) / 100);
-        getTax = parseInt(tax(total));
+        getTax = calculateTax(x.tax, total);
         paidAmount = Math.abs(parseInt(priceWithDiscount - getTax));
 
         totalPriceWithDiscount += priceWithDiscount;
@@ -287,29 +307,29 @@ function updateTable(obj) {
 
         var invoice =
         {
+            // accUid: accClbUid,
             amount: amount,
             total: total,
             priceWithDiscount: priceWithDiscount,
             paidAmount: paidAmount,
-            getTax: getTax,
+            tax: getTax,
             totalPriceWithDiscount: Math.abs(totalPriceWithDiscount),
             totalPaidAmount: Math.abs(totalPaidAmount),
             totalGetTax: Math.abs(totalGetTax),
+            totalDiscountAmount: discountAmount,
         };
 
         setCookie("invoice", invoice);
-        //);
-        //                        $('#property-dataTable').append("<tfoot id='footer'> <tr> <td>مجموع:</td> <td></td><td></td> <td>" + parseInt(amount) + "</td> <td></td> <td></td> <td></td> <td></td> <tr> ")
-        //                         
+
     });
 }
 
-function addProductToList(id, name, price, discount) {
-    
+function addProductToList(id, name, price, discount, tax) {
+    debugger
     var discountAmount = parseInt((discount * price) / 100);
-    var getTax = parseInt(tax(price));
+    var getTax = parseInt(calculateTax(tax, price));
     var priceWithDiscount = Math.abs(parseInt(((discount) * price) / 100) - price);
-   var paidAmount = Math.abs(parseInt(priceWithDiscount - getTax));
+    var paidAmount = Math.abs(parseInt(priceWithDiscount - getTax));
     var account = getCookie(AccountClubCookie);
     if (account == "") {
         notify("top center", "لطفا ابتدا مشتری را انتخاب کنید", "error");
@@ -320,6 +340,7 @@ function addProductToList(id, name, price, discount) {
         [
             {
                 productId: id,
+                taxPercent: tax,
                 name: name,
                 price: price,
                 discount: discount,
@@ -327,7 +348,7 @@ function addProductToList(id, name, price, discount) {
                 value: 1,
                 discountAmount: discountAmount,
                 paidAmount: paidAmount,
-                getTax:getTax,
+                tax: tax,
                 des: "",
             }
         ];
@@ -340,14 +361,14 @@ function addProductToList(id, name, price, discount) {
         var parse = JSON.parse(cookie);
         const found = parse.find(element => element.productId === id);
         if (found !== undefined) {
-           
+
             found.value = found.value + 1;
             found.total = found.value * price;
 
             var priceWithDiscount = Math.abs(parseInt(((found.discount) * found.total) / 100) - found.total);
             found.discountAmount = parseInt(((found.discount) * found.total) / 100);
-            found.getTax = parseInt(tax(found.total));
-            found.paidAmount = Math.abs(parseInt(priceWithDiscount - found.getTax));
+            found.tax = parseInt(calculateTax(found.tax, found.total));
+            found.paidAmount = Math.abs(parseInt(priceWithDiscount - found.tax));
 
             obj = parse.filter(element => element.productId !== id);
             obj.push(found);
@@ -365,7 +386,7 @@ function addProductToList(id, name, price, discount) {
 
 
 function removeProductList(id) {
-    
+
     var parse = JSON.parse(getCookie(ProductListCookie));
     const found = parse.find(element => element.productId === id);
     if (found !== undefined) {
@@ -478,7 +499,7 @@ function bindDatatable() {
 
 function addAccountClub(id, name, discount, type, mobile, address, code, accTypePriceLevel) {
     deleteCookie(AccountClubCookie);
-    
+
     var accound = {
         accClbUid: id,
         accClbName: name,
@@ -491,10 +512,10 @@ function addAccountClub(id, name, discount, type, mobile, address, code, accType
     };
 
     setCookie(AccountClubCookie, accound);
-    notify('top center', 'مشترک مورد نظر انتخاب شد', 'success');
+   // notify('top center', 'مشترک مورد نظر انتخاب شد', 'success');
     getAccountClub();
     $("#AccClbList").modal('hide');
-
+  
 }
 
 function getAccountClub() {
@@ -507,101 +528,111 @@ function getAccountClub() {
 }
 
 
-   // invlice list from dataBase
+// invlice list from dataBase
 
 
-
-
-const invoiceTable = $('#invoice-dataTable').DataTable({
-    paging: false,
-    ordering: true,
-    info: false,
-    order: [[2, 'desc']],
-    searching: false,
-});
 
 function InvoiceList() {
-
+    bindInvoiceDatatable();
     $("#invoiceList").modal('show');
 
+}
+
+
+
+
+function bindInvoiceDatatable() {
+
+    reinitialise("invoice-dataTable");
+    dataTable = $('#invoice-dataTable')
+        .DataTable({
+            "sAjaxSource": "/Invoice/Pre-Invoice?handler=InvoiceList",
+            "bServerSide": true,
+            "bProcessing": true,
+            "bSearchable": true,
+            "order": [[1, 'asc']],
+
+            "language": {
+                "oPaginate": { "sPrevious": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>', "sNext": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>' },
+                "sInfo": "صفحه _PAGE_ از _PAGES_",
+                "sSearch": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
+                "sSearchPlaceholder": "جستجو کنید...",
+                "sLengthMenu": "نتایج :  _MENU_",
+            },
+
+            "columns": [
+                {
+                    "data": "CreationDate",
+                    "autoWidth": true,
+                    "searchable": true
+                }, {
+                    "data": "Number",
+                    "autoWidth": true,
+                    "searchable": true
+                },
+                {
+                    "data": "Name",
+                    "autoWidth": true,
+                    "searchable": true
+                },
+                {
+                    "data": "Code",
+                    "autoWidth": true,
+                    "searchable": true
+                },
+
+                {
+                    "data": "TotalAmount",
+                    "autoWidth": true,
+                    "searchable": true
+                },
+
+                {
+                    data: null,
+                    render: function (data, row, full) {
+                        return generateRemoveButton(data);
+                    },
+                }
+
+            ]
+        });
+
+    function generateRemoveButton(data) {
+        return `<center><a class="btn btn-danger btn-rounded btn-sm">حذف</a>&nbsp;<a  onclick="invoiceDetails('${data.Id}')" class="btn btn-success btn-rounded btn-sm">انتخاب</a>&nbsp; `
+    };
+
+}
+
+
+function invoiceDetails(invoiceId) {
+  
     $.ajax({
-        url: "/Invoice/Pre-Invoice?handler=InvoiceList",
+        url: "?handler=invoiceDetails&InvoiceId=" + invoiceId,
         type: "Get",
         success: function (result) {
-            debugger
             if (result.isSucceeded) {
-                deleteCookie(ProductListCookie);
-                result.data.forEach(x => {
-                    getInvoiceList(x.productId, x.name, x.price, x.discount);
-                })
+                setCookie(ProductListCookie, result.data);
+                updateInvoiceTable(result.data);
+                debugger
+                var account = result.data[0];
+                addAccountClub(account.accountId, account.accountName, account.accountDiscount, account.accountType, account.mobile, account.address, account.accountCode, account.priceLevel);
+              
+                $("#invoiceList").modal('hide');
+            } else {
+                notify("top center", result.message, "error");
+                return false;
             }
+
         }
     })
 }
 
 
-function getInvoiceList(id, name, price, discount) {
-
-   debugger
-    var discountAmount = parseInt((discount * price) / 100);
-    var getTax = parseInt(tax(price));
-    var priceWithDiscount = Math.abs(parseInt(((discount) * price) / 100) - price);
-    var paidAmount = Math.abs(parseInt(priceWithDiscount - getTax));
-  
-    var obj =
-        [
-            {
-                productId: id,
-                name: name,
-                price: price,
-                discount: discount,
-                total: price,
-                value: 1,
-                discountAmount: discountAmount,
-                paidAmount: paidAmount,
-                getTax: getTax,
-                des: "",
-            }
-        ];
-        
-    var cookie = getCookie(ProductListCookie);
-    if (cookie === "")
-        setCookie(ProductListCookie, obj);
-
-    else {
-        var parse = JSON.parse(cookie);
-        const found = parse.find(element => element.productId === id);
-        if (found !== undefined) {
-
-            found.value = found.value + 1;
-            found.total = found.value * price;
-
-            var priceWithDiscount = Math.abs(parseInt(((found.discount) * found.total) / 100) - found.total);
-            found.discountAmount = parseInt(((found.discount) * found.total) / 100);
-            found.getTax = parseInt(tax(found.total));
-            found.paidAmount = Math.abs(parseInt(priceWithDiscount - found.getTax));
-
-            obj = parse.filter(element => element.productId !== id);
-            obj.push(found);
-            setCookie(ProductListCookie, obj);
-        }
-        else {
-
-            obj.push.apply(obj, parse);
-            setCookie(ProductListCookie, obj);
-        }
-    }
-    updateInvoiceTable(obj);
-    $("#invoice-dataTable").removeClass("d-none")
-}
-
-
 function updateInvoiceTable(obj) {
-
     var amount = 0, total = 0, priceWithDiscount = 0, paidAmount = 0, getTax = 0;
     var totalPriceWithDiscount = 0, totalPaidAmount = 0, totalGetTax = 0, rowNo = 0;
 
-    invoiceTable.clear().draw();
+    table.clear().draw();
     var footer = document.getElementsByTagName("tfoot");
     if (footer.length !== 0)
         footer[0].parentNode.removeChild(footer[0]);
@@ -612,7 +643,7 @@ function updateInvoiceTable(obj) {
         total += parseInt(x.total);
         priceWithDiscount = Math.abs(parseInt(((parseInt(x.discount) * total) / 100) - total));
         discountAmount = parseInt((parseInt(x.discount) * total) / 100);
-        getTax = parseInt(tax(total));
+        getTax = calculateTax(x.tax, total);
         paidAmount = Math.abs(parseInt(priceWithDiscount - getTax));
 
         totalPriceWithDiscount += priceWithDiscount;
@@ -646,13 +677,13 @@ function updateInvoiceTable(obj) {
         </td>
     </tr>
     `
-        invoiceTable.row.add($(result)).draw();
+        table.row.add($(result)).draw();
 
         var footer = document.getElementsByTagName("tfoot");
         if (footer.length !== 0)
             footer[0].parentNode.removeChild(footer[0]);
 
-        $("invoice-dataTable").append($('<tfoot />').append($("<tr> <td>مجموع:</td> <td></td><td></td> <td>" + parseInt(amount).toLocaleString() + "</td> <td>" + parseInt(total).toLocaleString() + "</td><td></td> <td>" + Math.abs(totalPriceWithDiscount).toLocaleString() + "</td> <td>" + Math.abs(totalGetTax).toLocaleString() + "</td> <td>" + Math.abs(totalPaidAmount).toLocaleString() + "</td> <tr>").clone()));
+        $("#property-dataTable").append($('<tfoot />').append($("<tr> <td>مجموع:</td> <td></td><td></td> <td>" + parseInt(amount).toLocaleString() + "</td> <td>" + parseInt(total).toLocaleString() + "</td><td></td> <td>" + Math.abs(totalPriceWithDiscount).toLocaleString() + "</td> <td>" + Math.abs(totalGetTax).toLocaleString() + "</td> <td>" + Math.abs(totalPaidAmount).toLocaleString() + "</td> <tr>").clone()));
 
         var invoice =
         {
@@ -660,13 +691,13 @@ function updateInvoiceTable(obj) {
             total: total,
             priceWithDiscount: priceWithDiscount,
             paidAmount: paidAmount,
-            getTax: getTax,
+            tax: getTax,
             totalPriceWithDiscount: Math.abs(totalPriceWithDiscount),
             totalPaidAmount: Math.abs(totalPaidAmount),
             totalGetTax: Math.abs(totalGetTax),
         };
 
         setCookie("invoice", invoice);
-                             
+
     });
 }
