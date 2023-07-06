@@ -7,7 +7,7 @@ $(document).ready(function () {
         format: 'YYYY/MM/DD',
         autoClose: true,
     });
-  
+
     bindDatatable();
     deleteAllCookies();
     deleteCookie(ProductListCookie);
@@ -166,6 +166,9 @@ function getProduct(evt, cityName) {
 
                     {
                         data: null,
+                        "autoWidth": false,
+                        "searchable": false,
+                        "orderable":false,
                         render: function (data, row, full) {
                             if (full.Price == null)
                                 return "ابتدا قیمت را در این سطح تعریف کنید";
@@ -242,13 +245,13 @@ function openDetails(evt, name, accclubType) {
 
 
 function calculateTax(tax, totalAmount) {
-    debugger
+    
     return (totalAmount * tax) / 100;
 }
 
 
 function updateTable(obj) {
-    debugger
+    
     var amount = 0, total = 0, priceWithDiscount = 0, paidAmount = 0, getTax = 0;
     var totalPriceWithDiscount = 0, totalPaidAmount = 0, totalGetTax = 0, rowNo = 0, accClbUid;
 
@@ -263,9 +266,9 @@ function updateTable(obj) {
         total += parseInt(x.total);
         priceWithDiscount = Math.abs(parseInt(((parseInt(x.discount) * total) / 100) - total));
         discountAmount = parseInt((parseInt(x.discount) * total) / 100);
-        getTax = calculateTax(x.tax, total);
+        getTax = calculateTax(x.taxPercent, total);
         paidAmount = Math.abs(parseInt(priceWithDiscount - getTax));
-
+        debugger
         totalPriceWithDiscount += priceWithDiscount;
         totalPaidAmount += paidAmount;
         totalGetTax += getTax;
@@ -324,8 +327,8 @@ function updateTable(obj) {
     });
 }
 
-function addProductToList(id, name, price, discount, tax) {
-    debugger
+function addProductToList(id, name, price, discount, tax, value = 1)
+{  
     var discountAmount = parseInt((discount * price) / 100);
     var getTax = parseInt(calculateTax(tax, price));
     var priceWithDiscount = Math.abs(parseInt(((discount) * price) / 100) - price);
@@ -345,7 +348,7 @@ function addProductToList(id, name, price, discount, tax) {
                 price: price,
                 discount: discount,
                 total: price,
-                value: 1,
+                value: value,
                 discountAmount: discountAmount,
                 paidAmount: paidAmount,
                 tax: tax,
@@ -367,7 +370,8 @@ function addProductToList(id, name, price, discount, tax) {
 
             var priceWithDiscount = Math.abs(parseInt(((found.discount) * found.total) / 100) - found.total);
             found.discountAmount = parseInt(((found.discount) * found.total) / 100);
-            found.tax = parseInt(calculateTax(found.tax, found.total));
+            debugger
+            found.tax = parseInt(calculateTax(found.taxPercent, found.total));
             found.paidAmount = Math.abs(parseInt(priceWithDiscount - found.tax));
 
             obj = parse.filter(element => element.productId !== id);
@@ -460,6 +464,17 @@ function bindDatatable() {
                     "searchable": true
                 },
                 {
+                    "data": "AccTypePriceLevel",
+                    "autoWidth": true,
+                    "searchable": true,
+                    render: function (data, row, full) {
+                        
+                        if (data == "")
+                            return "تعریف نشده";
+                        else return data;
+                    },
+                },
+                {
                     "data": "AccClubDiscount",
                     "autoWidth": true,
                     "searchable": true
@@ -482,6 +497,9 @@ function bindDatatable() {
 
                 {
                     data: null,
+                    "autoWidth": true,
+                    "searchable": false,
+                    "orderable": false,
                     render: function (data, row, full) {
                         return generateButton(data);
                     },
@@ -491,17 +509,18 @@ function bindDatatable() {
         });
 
     function generateButton(data) {
-        return `<center><a onClick="addAccountClub('${data.AccClbUid}','${data.AccClbName}','${data.AccClubDiscount}','${data.AccClubType}','${data.AccClbMobile}','${data.AccClbAddress}','${data.AccClbCode}','${data.AccTypePriceLevel}')" class="btn btn-warning btn-rounded btn-sm">انتخاب مشتری</a>&nbsp; `
+        return `<center><a onClick="addAccountClub('${data.AccClbUid}','${data.AccClbTypUid}','${data.AccClbName}','${data.AccClubDiscount}','${data.AccClubType}','${data.AccClbMobile}','${data.AccClbAddress}','${data.AccClbCode}','${data.AccTypePriceLevel}')" class="btn btn-warning btn-rounded btn-sm">انتخاب مشتری</a>&nbsp; `
     };
 
 }
 
 
-function addAccountClub(id, name, discount, type, mobile, address, code, accTypePriceLevel) {
+function addAccountClub(id,accTypeId, name, discount, type, mobile, address, code, accTypePriceLevel) {
     deleteCookie(AccountClubCookie);
 
     var accound = {
         accClbUid: id,
+        accClbTypUid: accTypeId,
         accClbName: name,
         accClubDiscount: discount,
         type: type,
@@ -511,11 +530,31 @@ function addAccountClub(id, name, discount, type, mobile, address, code, accType
         accTypePriceLevel: accTypePriceLevel
     };
 
+    var cookie = getCookie(ProductListCookie);
+    if (cookie !== "") {
+        
+        $.ajax({
+            url: "?handler=changeAccountClub&priceLevel=" + parseInt(accTypePriceLevel),
+            type: "get",
+            success: function (result) {
+                
+                if (result.isSucceeded) {
+                    setCookie(ProductListCookie, result.data);
+                    result.data.forEach(x => {
+                        
+                        addProductToList(x.productId, x.name, x.price, x.discount, x.tax,x.value);
+                    })
+                
+                }
+            }
+        });
+    }
+
     setCookie(AccountClubCookie, accound);
-   // notify('top center', 'مشترک مورد نظر انتخاب شد', 'success');
+    // notify('top center', 'مشترک مورد نظر انتخاب شد', 'success');
     getAccountClub();
     $("#AccClbList").modal('hide');
-  
+
 }
 
 function getAccountClub() {
@@ -589,6 +628,9 @@ function bindInvoiceDatatable() {
 
                 {
                     data: null,
+                    "orderable": false,
+                    "autoWidth": false,
+                    "searchable": false,
                     render: function (data, row, full) {
                         return generateRemoveButton(data);
                     },
@@ -605,7 +647,7 @@ function bindInvoiceDatatable() {
 
 
 function invoiceDetails(invoiceId) {
-  
+
     $.ajax({
         url: "?handler=invoiceDetails&InvoiceId=" + invoiceId,
         type: "Get",
@@ -613,10 +655,10 @@ function invoiceDetails(invoiceId) {
             if (result.isSucceeded) {
                 setCookie(ProductListCookie, result.data);
                 updateInvoiceTable(result.data);
-                debugger
+                
                 var account = result.data[0];
                 addAccountClub(account.accountId, account.accountName, account.accountDiscount, account.accountType, account.mobile, account.address, account.accountCode, account.priceLevel);
-              
+
                 $("#invoiceList").modal('hide');
             } else {
                 notify("top center", result.message, "error");
@@ -644,6 +686,7 @@ function updateInvoiceTable(obj) {
         priceWithDiscount = Math.abs(parseInt(((parseInt(x.discount) * total) / 100) - total));
         discountAmount = parseInt((parseInt(x.discount) * total) / 100);
         getTax = calculateTax(x.tax, total);
+        
         paidAmount = Math.abs(parseInt(priceWithDiscount - getTax));
 
         totalPriceWithDiscount += priceWithDiscount;

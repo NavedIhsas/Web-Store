@@ -162,6 +162,9 @@ function bindDatatable() {
             
                 {
                     data: null,
+                    "autoWidth": false,
+                    "searchable": false,
+                    "orderable": false,
                     render: function (data, row, full) {
                         return generateButton(data);
                     },

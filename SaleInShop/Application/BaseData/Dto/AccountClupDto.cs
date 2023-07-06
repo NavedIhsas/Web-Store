@@ -63,7 +63,9 @@ namespace Application.BaseData.Dto
         public string AccClbName { get; set; }
 
         public string AccClbCode { get; set; }
-        public int AccTypePriceLevel { get; set; }
+        public int? AccTypePriceLevel { get; set; }
+        public string AccTypePriceLevelText { get; set; }
+        public bool IsPriceLevel { get; set; }
         public Guid? AccRateUid { get; set; }
         public Guid? AccClbTypUid { get; set; }
         public string AccClbNationalCode { get; set; }
@@ -77,6 +79,7 @@ namespace Application.BaseData.Dto
         public int? AccClbSex { get; set; }
         public string AccClbSexText { get; set; }
         public string AccClbAddress { get; set; }
+      
     }
 
     public class EditAccountClub : CreateAccountClub

@@ -390,7 +390,7 @@ namespace Application.Product
                 PrdLevelId = x.PrdLvlName,
                 PrdPricePerUnit1 = x.PrdPricePerUnit1 ?? 0,
                 PrdLvlName = x.PrdLvlName,
-                PriceLevel = account.AccTypePriceLevel,
+                PriceLevel = account.AccTypePriceLevel?? 0,
                 AccClubTypeId = account.AccClbTypUid??Guid.Empty,
                 TaxValue = x.TaxValue??0 + x.TaxTaxesValue??0
             });

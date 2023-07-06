@@ -1,4 +1,5 @@
 using Application.Common;
+using Application.Interfaces;
 using Application.Invoice;
 using Application.Product;
 using Application.Product.Category;
@@ -13,13 +14,14 @@ namespace SaleInWeb.Pages.Invoice
         private readonly IProductCategory _category;
         private readonly IInvoiceService _invoiceService;
         private readonly IProductService _product;
-
+        private readonly IAuthHelper _authHelper;
         public string Message = "";
-        public PreInvoiceModel(IProductCategory category, IInvoiceService invoiceService, IProductService product)
+        public PreInvoiceModel(IProductCategory category, IInvoiceService invoiceService, IProductService product, IAuthHelper authHelper)
         {
             _category = category;
             _invoiceService = invoiceService;
             _product = product;
+            _authHelper = authHelper;
         }
 
         public List<ProductCategory.ProductLevelDto> Categories;
@@ -53,5 +55,10 @@ namespace SaleInWeb.Pages.Invoice
         public IActionResult OnGetInvoiceDetails(Guid invoiceId) => new JsonResult(_invoiceService.InvoiceDetails(invoiceId));
         public IActionResult OnGetProductToList(Guid id) => new JsonResult(_invoiceService.ProductToList(id));
         public IActionResult OnGetRemoveFromProductList(Guid id) => new JsonResult(_invoiceService.RemoveFromProductList(id));
+
+        public IActionResult OnGetChangeAccountClub(int priceLevel)
+        {
+            return new JsonResult(_invoiceService.ChangeAccountClub(priceLevel));
+        }
     }
 }

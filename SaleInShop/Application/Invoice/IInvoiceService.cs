@@ -5,11 +5,14 @@ using Application.Common;
 using Application.Interfaces;
 using Application.Interfaces.Context;
 using Application.Product;
+using Application.Product.ProductDto;
 using AutoMapper;
 using Domain.SaleInModels;
+using Domain.ShopModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
@@ -23,6 +26,7 @@ namespace Application.Invoice
         ResultDto Create();
         JsonResult GetInvoiceList(JqueryDatatableParam param);
         ResultDto<List<InvoiceDetailsDto>> InvoiceDetails(Guid invoiceId);
+        ResultDto<List<ProductListDot>> ChangeAccountClub(int priceLevel);
     }
 
     public class InvoiceService : IInvoiceService
@@ -154,7 +158,7 @@ namespace Application.Invoice
 
         public JsonResult GetInvoiceList(JqueryDatatableParam param)
         {
-            
+
             var list = _context.Invoices.Include(x => x.AccClbU).AsNoTracking();
 
             if (!string.IsNullOrEmpty(param.SSearch))
@@ -210,10 +214,10 @@ namespace Application.Invoice
                 .Take(param.IDisplayLength);
             else displayResult = list;
             var totalRecords = list.Count();
-            var map=new List<InvoiceDto>();
+            var map = new List<InvoiceDto>();
             try
             {
-                 map = _mapper.Map<List<InvoiceDto>>(displayResult.ToList());
+                map = _mapper.Map<List<InvoiceDto>>(displayResult.ToList());
 
             }
             catch (Exception e)
@@ -257,12 +261,41 @@ namespace Application.Invoice
                 Mobile = x.InvU.AccClbU.AccClbMobile,
                 AccountType = x.InvU.AccClbU.AccClbTypU.AccClbTypName,
                 Address = x.InvU.AccClbU.AccClbAddress,
-                AccountDiscount = x.InvU.AccClbU.AccClbTypU.AccClbTypDiscountType??0,
-                PriceLevel = x.InvU.AccClbU.AccClbTypU.AccClbTypDefaultPriceInvoice?? 0,
-              
+                AccountDiscount = x.InvU.AccClbU.AccClbTypU.AccClbTypDiscountType ?? 0,
+                PriceLevel = x.InvU.AccClbU.AccClbTypU.AccClbTypDefaultPriceInvoice ?? 0,
+
             }).AsNoTracking().ToList();
             return dto.Succeeded(result);
         }
+
+        public ResultDto<List<ProductListDot>> ChangeAccountClub(int priceLevel)
+        {
+            var result = new ResultDto<List<ProductListDot>>();
+            var productCookie = _authHelper.GetCookie("productList");
+            var products = JsonConvert.DeserializeObject<List<ProductListDot>>(productCookie);
+
+            var cookie = _authHelper.GetCookie("AccountClubList");
+            var account = JsonConvert.DeserializeObject<AccountClubDto>(cookie);
+
+            if (account == null)
+            {
+                _logger.LogError($"An error occurred while retrieving data from cookie (AccountClubList) ");
+                return result.Failed("خطا در دریافت اطلاعات، لطفا با پشتیبانی تماس بگرید");
+            }
+
+
+            foreach (var dto in products)
+            {
+                dto.DiscountPercent = _productService.CalculateDiscount(dto.ProductId, account.AccClbTypUid, priceLevel);
+                dto.Price = _productService.GetPrice(dto.ProductId, priceLevel);
+            }
+
+            return result.Succeeded(products.ToList());
+
+        }
+
+
+
     }
 }
 
@@ -274,6 +307,21 @@ public class ProductSessionList
     public double Price { get; set; }
 }
 
+public class ProductListDot
+{
+    public Guid ProductId { get; set; }
+    public string TaxPercent { get; set; }
+    public string Name { get; set; }
+    public decimal? Price { get; set; }
+    public string Discount { get; set; }
+    public int Total { get; set; }
+    public int Value { get; set; }
+    public int DiscountAmount { get; set; }
+    public int PaidAmount { get; set; }
+    public int Tax { get; set; }
+    public string Des { get; set; }
+    public decimal DiscountPercent { get; set; }
+}
 
 public class InvoiceDetailsDto
 {
@@ -371,8 +419,6 @@ public class InvoiceMapping : Profile
             .ForMember(x => x.InvNumber, opt => opt.MapFrom(x => x.Number))
             .ForMember(x => x.InvUid, opt => opt.MapFrom(x => x.Id));
 
-        this.CreateMap<InvoiceDetail, InvoiceDetailsDto>()
-            .ForMember(x => x.Name, opt => opt.MapFrom(x => x.PrdU.PrdName))
-            .ForMember(x => x.Name, opt => opt.MapFrom(x => x.PrdU.TaxU.TaxValue + x.PrdU.TaxU.TaxTaxesValue));
+
     }
 }

@@ -686,11 +686,10 @@ namespace Application.BaseData
                 .Take(param.IDisplayLength);
             else displayResult = list;
             var totalRecords = list.Count();
-            var map = new List<AccountClubDto>();
+            List<AccountClubDto> map;
             try
             {
                  map = _mapper.Map<List<AccountClubDto>>(displayResult);
-
             }
             catch (Exception e)
             {
@@ -706,6 +705,18 @@ namespace Application.BaseData
                     1 => "زن",
                     0 => "مرد",
                     _ => clubTypeDto.AccClbSexText
+                };
+
+                clubTypeDto.AccTypePriceLevelText = clubTypeDto.AccTypePriceLevel switch
+                {
+                    null => string.Empty,
+                    0 => "صفر",
+                    1 => "سطح 1",
+                    2 => "سطح 2",
+                    3 => "سطح 3",
+                    4 => "سطح 4",
+                    5 => "سطح 5",
+                    _ => throw new ArgumentOutOfRangeException()
                 };
 
                 if (clubTypeDto.AccClbTypUid != null)
@@ -795,7 +806,7 @@ namespace Application.BaseData
             {
 
                 var discount = Convert.ToDouble(_productService.CalculateDiscount(productId, clubTypeDto.AccClbTypUid,
-                    clubTypeDto.AccTypePriceLevel));
+                    clubTypeDto.AccTypePriceLevel??0));
                 // clubTypeDto.AccClubType = accType.AccClbTypName;
                 clubTypeDto.AccClubDiscount = discount;
 
