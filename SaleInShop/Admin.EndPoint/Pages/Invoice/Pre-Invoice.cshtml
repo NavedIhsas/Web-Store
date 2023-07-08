@@ -1,13 +1,17 @@
 ﻿@page
 @model SaleInWeb.Pages.Invoice.PreInvoiceModel
+@Html.AntiForgeryToken()
 @{
+    ViewData["Title"] = "پیش فاکتور";
 }
 
 
 <style>
     /* Style the tab */
-
-
+  
+    td.bg-aliceblue {
+        background-color: aliceblue ;
+    }
     .verticalLine {
         float: right;
         border-left: 1px solid darkgrey;
@@ -77,13 +81,18 @@
 
     .product-content {
     }
+
 </style>
 
 
 <link href="~/assets/css/persian-datepicker.css" rel="stylesheet" />
 <link href="~/plugins/flatpickr/custom-flatpickr.css" rel="stylesheet" type="text/css">
 
-
+<div class="overlay"></div>
+<div class="spanner show">
+    <div class="loader show"></div>
+    <p>Uploading music file, please be patient.</p>
+</div>
 
 <div id="content" class="main-content">
     <div class="layout-px-spacing">
@@ -222,6 +231,12 @@
                                                 <tbody>
                                                 </tbody>
                                             </table>
+
+
+                                            <div id="total" class="row d-none">
+                                              
+                                            </div>
+
                                         </div>
                                     </div>
                                     <div class="row col col-md-12" style="right:50%">
@@ -241,6 +256,13 @@
         </div>
     </div>
 </div>
+
+
+
+
+
+
+
 
 <partial name="Modals" />
 

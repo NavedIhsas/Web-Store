@@ -392,6 +392,8 @@ namespace Application.Product
                 PrdLvlName = x.PrdLvlName,
                 PriceLevel = account.AccTypePriceLevel?? 0,
                 AccClubTypeId = account.AccClbTypUid??Guid.Empty,
+                InvoiceDiscount = account.InvoiceDiscount??0,
+                DiscountPercent = Convert.ToDecimal(account.AccClubDiscount),
                 TaxValue = x.TaxValue??0 + x.TaxTaxesValue??0
             });
 
@@ -450,6 +452,7 @@ namespace Application.Product
             {
                 dto.DiscountPercent = this.CalculateDiscount(dto.PrdUid, dto.AccClubTypeId, dto.PriceLevel);
                 dto.Price=this.GetPrice(dto.PrdUid, dto.PriceLevel);
+               // dto.InvoiceDiscount = dto.InvoiceDiscount;
             }
             var  jsonRe =new JsonResult(result1, new JsonSerializerOptions { PropertyNamingPolicy = null });
             return result.Succeeded(jsonRe);

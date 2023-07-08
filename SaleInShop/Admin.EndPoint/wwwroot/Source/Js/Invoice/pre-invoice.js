@@ -61,8 +61,7 @@ $("#submitPrint").on('click', function () {
                     if (result.isSucceeded) {
                         $("#invoiceStatus").removeClass("d-none").text("وضعیت فاکتور: ثبت اولیه");
                         $("#invoicePayStatus").removeClass("d-none").text("وضعیت تسویه: تسویه نشده");
-                        document.querySelectorAll(".invoicePay").removeClass("d-none").forEach(el => el.removeClass("d-none"));
-
+                        document.querySelectorAll(".invoicePay").forEach(x => x.classList.remove("d-none"));
 
                         swal(
                             'موفق!',
@@ -77,6 +76,10 @@ $("#submitPrint").on('click', function () {
                             'error'
                         )
                     }
+                },
+                error: function (error) {
+
+                    alert(error);
                 }
 
             })
@@ -166,9 +169,9 @@ function getProduct(evt, cityName) {
 
                     {
                         data: null,
-                        "autoWidth": false,
+                        "autoWidth": true,
                         "searchable": false,
-                        "orderable":false,
+                        "orderable": false,
                         render: function (data, row, full) {
                             if (full.Price == null)
                                 return "ابتدا قیمت را در این سطح تعریف کنید";
@@ -186,7 +189,8 @@ function getProduct(evt, cityName) {
 
     function generateButton(data) {
 
-        return ` <a onClick="addProductToList('${data.PrdUid}','${data.PrdName}','${data.Price}','${data.DiscountPercent}','${data.TaxValue}')" type="button" >
+
+        return ` <a onClick="addProductToList('${data.PrdUid}','${data.PrdName}','${data.Price}','${data.DiscountPercent}','${data.TaxValue}','${data.InvoiceDiscount}')" type="button" >
         <svg style="color:green" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
     </a>
     `
@@ -245,30 +249,43 @@ function openDetails(evt, name, accclubType) {
 
 
 function calculateTax(tax, totalAmount) {
-    
+
     return (totalAmount * tax) / 100;
 }
 
-
+function dataTableHasRecord(table) {
+    
+}
 function updateTable(obj) {
     
-    var amount = 0, total = 0, priceWithDiscount = 0, paidAmount = 0, getTax = 0;
-    var totalPriceWithDiscount = 0, totalPaidAmount = 0, totalGetTax = 0, rowNo = 0, accClbUid;
+    var amount = 0, total = 0, priceWithDiscount = 0, paidAmount = 0, getTax = 0; amountFooter = 0; totalFooter = 0, totalDiscountAmount = 0;
+    var totalPriceWithDiscount = 0, totalPaidAmount = 0, totalGetTax = 0, rowNo = 0, accClbUid, totalCount = 0; totalInvoiceDiscount = 0;
+
+    
+  
 
     table.clear().draw();
+   
     var footer = document.getElementsByTagName("tfoot");
     if (footer.length !== 0)
         footer[0].parentNode.removeChild(footer[0]);
-
+   
     obj.forEach(x => {
 
-        amount += parseInt(x.price);
-        total += parseInt(x.total);
-        priceWithDiscount = Math.abs(parseInt(((parseInt(x.discount) * total) / 100) - total));
-        discountAmount = parseInt((parseInt(x.discount) * total) / 100);
+        amount = parseFloat(x.price);
+        total = parseFloat(x.total);
+
+        totalInvoiceDiscount = x.invoiceDiscount;
+        amountFooter += parseFloat(x.price);
+        totalFooter += parseFloat(x.total);
+        totalCount += parseFloat(x.value);
+
+        priceWithDiscount = Math.abs(parseFloat(((parseFloat(x.discount) * total) / 100) - total));
+        discountAmount = parseFloat((parseFloat(x.discount) * total) / 100);
         getTax = calculateTax(x.taxPercent, total);
-        paidAmount = Math.abs(parseInt(priceWithDiscount - getTax));
-        debugger
+        paidAmount = Math.abs(parseFloat(priceWithDiscount - getTax));
+
+        totalDiscountAmount += discountAmount;
         totalPriceWithDiscount += priceWithDiscount;
         totalPaidAmount += paidAmount;
         totalGetTax += getTax;
@@ -278,8 +295,8 @@ function updateTable(obj) {
         <td>${rowNo += 1}</td>
         <td>${x.name ?? ""}</td>
         <td>${x.value ?? ""}</td>
-        <td>${parseInt(x.price).toLocaleString()}</td>
-        <td>${parseInt(x.total).toLocaleString()}</td>
+        <td>${parseFloat(x.price).toLocaleString()}</td>
+        <td>${parseFloat(x.total).toLocaleString()}</td>
         <td>${x.discount}</td>
         <td>${priceWithDiscount.toLocaleString()}</td>
         <td>${getTax.toLocaleString()}</td>
@@ -306,7 +323,15 @@ function updateTable(obj) {
         if (footer.length !== 0)
             footer[0].parentNode.removeChild(footer[0]);
 
-        $(".property-dataTable").append($('<tfoot />').append($("<tr> <td>مجموع:</td> <td></td><td></td> <td>" + parseInt(amount).toLocaleString() + "</td> <td>" + parseInt(total).toLocaleString() + "</td><td></td> <td>" + Math.abs(totalPriceWithDiscount).toLocaleString() + "</td> <td>" + Math.abs(totalGetTax).toLocaleString() + "</td> <td>" + Math.abs(totalPaidAmount).toLocaleString() + "</td> <tr>").clone()));
+        $(".property-dataTable").append($('<tfoot />').append($("<tr> <td>مجموع:</td> <td></td><td>" + totalCount + "</td> <td>" + parseFloat(amountFooter).toLocaleString() + "</td> <td>" + parseFloat(totalFooter).toLocaleString() + "</td><td></td> <td>" + Math.abs(totalPriceWithDiscount).toLocaleString() + "</td> <td>" + Math.abs(totalGetTax).toLocaleString() + "</td> <td>" + Math.abs(totalPaidAmount).toLocaleString() + "</td> <tr>").clone()));
+
+        totalInvoiceDiscount = ConvertPercentToAmount(totalPaidAmount, totalInvoiceDiscount);
+        totalPaidAmount -= totalInvoiceDiscount;
+        totalPaidAmount = Math.abs(totalPaidAmount);
+
+
+        applyTotal(totalCount, totalFooter, totalDiscountAmount, totalInvoiceDiscount, totalGetTax, totalPaidAmount)
+
 
         var invoice =
         {
@@ -319,46 +344,99 @@ function updateTable(obj) {
             totalPriceWithDiscount: Math.abs(totalPriceWithDiscount),
             totalPaidAmount: Math.abs(totalPaidAmount),
             totalGetTax: Math.abs(totalGetTax),
-            totalDiscountAmount: discountAmount,
+            totalDiscountAmount: totalDiscountAmount,
+            totalInvoiceDiscount: totalInvoiceDiscount,
         };
 
         setCookie("invoice", invoice);
 
     });
+    var rows = table.rows().any();
+
+    if (!rows)
+        $("#total").html(" ");
 }
 
-function addProductToList(id, name, price, discount, tax, value = 1)
-{  
-    var discountAmount = parseInt((discount * price) / 100);
-    var getTax = parseInt(calculateTax(tax, price));
-    var priceWithDiscount = Math.abs(parseInt(((discount) * price) / 100) - price);
-    var paidAmount = Math.abs(parseInt(priceWithDiscount - getTax));
+function ConvertPercentToAmount(price, percent) {
+    price = parseFloat(price);
+    percent = parseFloat(percent);
+
+    var result = (percent * price) / 100;
+    return result;
+}
+
+function applyTotal(totalProductCount, totalFooter, totalDiscountAmount, totalInvoiceDiscount, totalGetTax, totalPaidAmount) {
+  
+    $("#total").html(" ");
+
+    $("#total").append(`
+          <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
+            <table class="table table-bordered">
+             <tbody>
+                     <tr class="">
+                         <td class="font-weight-bold text-dark">تجمیع: </td>
+                   
+                         <td class="bg-aliceblue text-dark">تعداد کالا ها</td>
+                         <td> <strong class="text-dark">${totalProductCount.toLocaleString()} </strong></td>
+                   
+                         <td class="bg-aliceblue text-dark">قیمت کل</td>
+                         <td> <strong class="text-dark">${totalFooter.toLocaleString()}</strong></td>
+                   
+                         <td class="bg-aliceblue text-dark">تخفیف ردیف</td>
+                         <td> <strong class=" text-danger">${totalDiscountAmount.toLocaleString()}</strong></td>
+                   
+                         <td class="bg-aliceblue text-dark">تخفیف فاکتور</td>
+                         <td> <strong class="text-danger ">${totalInvoiceDiscount.toLocaleString()}</strong></td>
+                   
+                         <td class="bg-aliceblue text-dark">مالیات</td>
+                         <td> <strong class="text-info">${totalGetTax.toLocaleString()}</strong></td>
+                   
+                         <td class="bg-aliceblue text-dark">قابل پرداخت</td>
+                         <td> <strong class="text-success">${totalPaidAmount.toLocaleString()}</strong></td>
+                     </tr>
+                  </tbody>
+              </table>
+            </div>
+        `).removeClass("d-none");
+}
+
+function addProductToList(id, name, price, discount, tax, invoiceDiscount, value = 1) {
+    
+    var discountAmount = parseFloat((discount * price) / 100);
+    var getTax = parseFloat(calculateTax(tax, price));
+    var priceWithDiscount = Math.abs(parseFloat(((discount) * price) / 100) - price);
+    var paidAmount = Math.abs(parseFloat(priceWithDiscount - getTax));
     var account = getCookie(AccountClubCookie);
     if (account == "") {
         notify("top center", "لطفا ابتدا مشتری را انتخاب کنید", "error");
         return false;
     }
 
-    var obj =
-        [
-            {
-                productId: id,
-                taxPercent: tax,
-                name: name,
-                price: price,
-                discount: discount,
-                total: price,
-                value: value,
-                discountAmount: discountAmount,
-                paidAmount: paidAmount,
-                tax: tax,
-                des: "",
-            }
-        ];
+    var obj = [];
+    var product =
+
+    {
+        productId: id,
+        taxPercent: tax,
+        name: name,
+        price: price,
+        discount: discount,
+        total: price,
+        invoiceDiscount: invoiceDiscount,
+        value: value,
+        discountAmount: discountAmount,
+        paidAmount: paidAmount,
+        tax: tax,
+        des: "",
+    };
+
+
 
     var cookie = getCookie(ProductListCookie);
-    if (cookie === "")
+    if (cookie === "") {
+        obj.push(product);
         setCookie(ProductListCookie, obj);
+    }
 
     else {
         var parse = JSON.parse(cookie);
@@ -368,11 +446,11 @@ function addProductToList(id, name, price, discount, tax, value = 1)
             found.value = found.value + 1;
             found.total = found.value * price;
 
-            var priceWithDiscount = Math.abs(parseInt(((found.discount) * found.total) / 100) - found.total);
-            found.discountAmount = parseInt(((found.discount) * found.total) / 100);
-            debugger
-            found.tax = parseInt(calculateTax(found.taxPercent, found.total));
-            found.paidAmount = Math.abs(parseInt(priceWithDiscount - found.tax));
+            var priceWithDiscount = Math.abs(parseFloat(((found.discount) * found.total) / 100) - found.total);
+            found.discountAmount = parseFloat(((found.discount) * found.total) / 100);
+
+            found.tax = parseFloat(calculateTax(found.taxPercent, found.total));
+            found.paidAmount = Math.abs(parseFloat(priceWithDiscount - found.tax));
 
             obj = parse.filter(element => element.productId !== id);
             obj.push(found);
@@ -380,7 +458,10 @@ function addProductToList(id, name, price, discount, tax, value = 1)
         }
         else {
 
+            var cookie = getCookie(ProductListCookie);
+            parse.push(product);
             obj.push.apply(obj, parse);
+            //obj.push(parse);
             setCookie(ProductListCookie, obj);
         }
     }
@@ -464,11 +545,11 @@ function bindDatatable() {
                     "searchable": true
                 },
                 {
-                    "data": "AccTypePriceLevel",
+                    "data": "AccTypePriceLevelText",
                     "autoWidth": true,
                     "searchable": true,
                     render: function (data, row, full) {
-                        
+
                         if (data == "")
                             return "تعریف نشده";
                         else return data;
@@ -479,6 +560,7 @@ function bindDatatable() {
                     "autoWidth": true,
                     "searchable": true
                 },
+
                 {
                     "data": "AccRatioText",
                     "autoWidth": true,
@@ -509,13 +591,15 @@ function bindDatatable() {
         });
 
     function generateButton(data) {
-        return `<center><a onClick="addAccountClub('${data.AccClbUid}','${data.AccClbTypUid}','${data.AccClbName}','${data.AccClubDiscount}','${data.AccClubType}','${data.AccClbMobile}','${data.AccClbAddress}','${data.AccClbCode}','${data.AccTypePriceLevel}')" class="btn btn-warning btn-rounded btn-sm">انتخاب مشتری</a>&nbsp; `
+
+        return `<center><a onClick="addAccountClub('${data.AccClbUid}','${data.AccClbTypUid}','${data.AccClbName}','${data.AccClubDiscount}','${data.AccClubType}','${data.AccClbMobile}','${data.AccClbAddress}','${data.AccClbCode}','${data.AccTypePriceLevel}','${data.InvoiceDiscount}')" class="btn btn-warning btn-rounded btn-sm">انتخاب </a>&nbsp; `
     };
 
 }
 
 
-function addAccountClub(id,accTypeId, name, discount, type, mobile, address, code, accTypePriceLevel) {
+function addAccountClub(id, accTypeId, name, discount, type, mobile, address, code, accTypePriceLevel, invoiceDiscount) {
+
     deleteCookie(AccountClubCookie);
 
     var accound = {
@@ -527,24 +611,25 @@ function addAccountClub(id,accTypeId, name, discount, type, mobile, address, cod
         mobile: mobile,
         address: address,
         code: code,
+        invoiceDiscount: invoiceDiscount,
         accTypePriceLevel: accTypePriceLevel
     };
 
     var cookie = getCookie(ProductListCookie);
     if (cookie !== "") {
-        
+
         $.ajax({
-            url: "?handler=changeAccountClub&priceLevel=" + parseInt(accTypePriceLevel),
+            url: "?handler=changeAccountClub&priceLevel=" + parseFloat(accTypePriceLevel),
             type: "get",
             success: function (result) {
-                
+
                 if (result.isSucceeded) {
                     setCookie(ProductListCookie, result.data);
                     result.data.forEach(x => {
-                        
-                        addProductToList(x.productId, x.name, x.price, x.discount, x.tax,x.value);
+
+                        addProductToList(x.productId, x.name, x.price, x.discount, x.tax, x.invoiceDiscount, x.value);
                     })
-                
+
                 }
             }
         });
@@ -629,7 +714,7 @@ function bindInvoiceDatatable() {
                 {
                     data: null,
                     "orderable": false,
-                    "autoWidth": false,
+                    "autoWidth": true,
                     "searchable": false,
                     render: function (data, row, full) {
                         return generateRemoveButton(data);
@@ -655,7 +740,7 @@ function invoiceDetails(invoiceId) {
             if (result.isSucceeded) {
                 setCookie(ProductListCookie, result.data);
                 updateInvoiceTable(result.data);
-                
+
                 var account = result.data[0];
                 addAccountClub(account.accountId, account.accountName, account.accountDiscount, account.accountType, account.mobile, account.address, account.accountCode, account.priceLevel);
 
@@ -681,13 +766,13 @@ function updateInvoiceTable(obj) {
 
     obj.forEach(x => {
 
-        amount += parseInt(x.price);
-        total += parseInt(x.total);
-        priceWithDiscount = Math.abs(parseInt(((parseInt(x.discount) * total) / 100) - total));
-        discountAmount = parseInt((parseInt(x.discount) * total) / 100);
+        amount += parseFloat(x.price);
+        total += parseFloat(x.total);
+        priceWithDiscount = Math.abs(parseFloat(((parseFloat(x.discount) * total) / 100) - total));
+        discountAmount = parseFloat((parseFloat(x.discount) * total) / 100);
         getTax = calculateTax(x.tax, total);
-        
-        paidAmount = Math.abs(parseInt(priceWithDiscount - getTax));
+
+        paidAmount = Math.abs(parseFloat(priceWithDiscount - getTax));
 
         totalPriceWithDiscount += priceWithDiscount;
         totalPaidAmount += paidAmount;
@@ -698,8 +783,8 @@ function updateInvoiceTable(obj) {
         <td>${rowNo += 1}</td>
         <td>${x.name ?? ""}</td>
         <td>${x.value ?? ""}</td>
-        <td>${parseInt(x.price).toLocaleString()}</td>
-        <td>${parseInt(x.total).toLocaleString()}</td>
+        <td>${parseFloat(x.price).toLocaleString()}</td>
+        <td>${parseFloat(x.total).toLocaleString()}</td>
         <td>${x.discount}</td>
         <td>${priceWithDiscount.toLocaleString()}</td>
         <td>${getTax.toLocaleString()}</td>
@@ -726,7 +811,7 @@ function updateInvoiceTable(obj) {
         if (footer.length !== 0)
             footer[0].parentNode.removeChild(footer[0]);
 
-        $("#property-dataTable").append($('<tfoot />').append($("<tr> <td>مجموع:</td> <td></td><td></td> <td>" + parseInt(amount).toLocaleString() + "</td> <td>" + parseInt(total).toLocaleString() + "</td><td></td> <td>" + Math.abs(totalPriceWithDiscount).toLocaleString() + "</td> <td>" + Math.abs(totalGetTax).toLocaleString() + "</td> <td>" + Math.abs(totalPaidAmount).toLocaleString() + "</td> <tr>").clone()));
+        $("#property-dataTable").append($('<tfoot />').append($("<tr> <td>مجموع:</td> <td></td><td></td> <td>" + parseFloat(amount).toLocaleString() + "</td> <td>" + parseFloat(total).toLocaleString() + "</td><td></td> <td>" + Math.abs(totalPriceWithDiscount).toLocaleString() + "</td> <td>" + Math.abs(totalGetTax).toLocaleString() + "</td> <td>" + Math.abs(totalPaidAmount).toLocaleString() + "</td> <tr>").clone()));
 
         var invoice =
         {

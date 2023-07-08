@@ -689,7 +689,7 @@ namespace Application.BaseData
             List<AccountClubDto> map;
             try
             {
-                 map = _mapper.Map<List<AccountClubDto>>(displayResult);
+                map = _mapper.Map<List<AccountClubDto>>(displayResult);
             }
             catch (Exception e)
             {
@@ -707,6 +707,7 @@ namespace Application.BaseData
                     _ => clubTypeDto.AccClbSexText
                 };
 
+               
                 clubTypeDto.AccTypePriceLevelText = clubTypeDto.AccTypePriceLevel switch
                 {
                     null => string.Empty,
@@ -725,9 +726,8 @@ namespace Application.BaseData
                     if (accType != null)
                     {
                         clubTypeDto.AccClubType = accType.AccClbTypName;
-                        clubTypeDto.AccClubDiscount = accType.AccClbTypPercentDiscount ?? 0;
+                        clubTypeDto.AccClubDiscount = accType.AccClbTypDetDiscount ?? 0;
                     }
-
 
                 }
 
@@ -806,7 +806,7 @@ namespace Application.BaseData
             {
 
                 var discount = Convert.ToDouble(_productService.CalculateDiscount(productId, clubTypeDto.AccClbTypUid,
-                    clubTypeDto.AccTypePriceLevel??0));
+                    clubTypeDto.AccTypePriceLevel ?? 0));
                 // clubTypeDto.AccClubType = accType.AccClbTypName;
                 clubTypeDto.AccClubDiscount = discount;
 

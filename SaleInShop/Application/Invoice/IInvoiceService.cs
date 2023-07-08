@@ -23,7 +23,7 @@ namespace Application.Invoice
     {
         ResultDto<List<ProductSessionList>> ProductToList(Guid id);
         ResultDto<List<ProductSessionList>> RemoveFromProductList(Guid id);
-        ResultDto Create();
+        ResultDto<CreateInvoice> Create();
         JsonResult GetInvoiceList(JqueryDatatableParam param);
         ResultDto<List<InvoiceDetailsDto>> InvoiceDetails(Guid invoiceId);
         ResultDto<List<ProductListDot>> ChangeAccountClub(int priceLevel);
@@ -109,51 +109,54 @@ namespace Application.Invoice
 
 
 
-        public ResultDto Create()
+        public ResultDto<CreateInvoice> Create()
         {
-            var result = new ResultDto();
+            var result = new ResultDto<CreateInvoice>();
 
             var cookie = _authHelper.GetCookie("AccountClubList");
             var account = JsonConvert.DeserializeObject<AccountClubDto>(cookie);
             var invoice = _authHelper.GetCookie("invoice");
             var invoiceDetails = _authHelper.GetCookie("productList");
             var single = JsonConvert.DeserializeObject<CreateInvoice>(invoice);
-            var map = new Domain.ShopModels.Invoice();
             try
             {
-                map = _mapper.Map<Domain.ShopModels.Invoice>(single);
+                var map = _mapper.Map<Domain.ShopModels.Invoice>(single);
                 map.AccClbUid = account.AccClbUid;
                 _context.Invoices.Add(map);
                 _context.SaveChanges();
+
+
+                var details = JsonConvert.DeserializeObject<List<InvoiceDetailsDto>>(invoiceDetails);
+
+                foreach (var detail in details)
+                {
+                    var addNews = new Domain.ShopModels.InvoiceDetail()
+                    {
+                        InvDetUid = Guid.NewGuid(),
+                        InvUid = map.InvUid,
+                        PrdUid = detail.ProductId,
+                        InvDetQuantity = detail.Value,
+                        InvDetPricePerUnit = Convert.ToDecimal(detail.Price),
+                        InvDetDiscount = detail.DiscountAmount,
+                        InvDetTax = detail.Tax,
+                        InvDetTotalAmount = detail.Total,
+                        InvDetDescribtion = detail.Des,
+                        InvDetPercentDiscount = Convert.ToInt64(detail.Discount),
+                        InvDetTaxValue = Convert.ToDouble(detail.Tax),
+                        InvDetPayment = detail.PaidAmount,
+                    };
+                    _context.InvoiceDetails.Add(addNews);
+                    _context.SaveChanges();
+                }
+
+                return result.Succeeded(single);
+
             }
             catch (Exception e)
             {
                 _logger.LogError($"An error occurred while creating the invoice {e}");
-                result.Failed("هنگام ثبت اطلاعات خطای رخ داد.");
+                return result.Failed("هنگام ثبت اطلاعات خطای رخ داد.");
             }
-            var details = JsonConvert.DeserializeObject<List<InvoiceDetailsDto>>(invoiceDetails);
-
-            foreach (var detail in details)
-            {
-                var addNews = new Domain.ShopModels.InvoiceDetail()
-                {
-                    InvDetUid = Guid.NewGuid(),
-                    InvUid = map.InvUid,
-                    PrdUid = detail.ProductId,
-                    InvDetQuantity = detail.Value,
-                    InvDetPricePerUnit = Convert.ToDecimal(detail.Price),
-                    InvDetDiscount = detail.DiscountAmount,
-                    InvDetTax = detail.Tax,
-                    InvDetTotalAmount = detail.Total,
-                    InvDetDescribtion = detail.Des,
-                    InvDetPercentDiscount = Convert.ToInt64(detail.Discount),
-                    InvDetTaxValue = Convert.ToDouble(detail.Tax),
-                    InvDetPayment = detail.PaidAmount,
-                };
-                _context.InvoiceDetails.Add(addNews);
-                _context.SaveChanges();
-            }
-            return result.Succeeded();
         }
 
         public JsonResult GetInvoiceList(JqueryDatatableParam param)
@@ -373,7 +376,10 @@ public class CreateInvoice
         var branch = 3001;
         var number = new Random();
         Number = branch + number.Next(1, 1000);
+        InvStatusControl = false;
+        InvStep = 1;
     }
+
     public Guid Id { get; set; }
     public int Amount { get; set; }
     public int Total { get; set; }
@@ -388,6 +394,9 @@ public class CreateInvoice
     public Guid? AccUid { get; set; }
     public string Description { get; set; }
     public int Number { get; set; }
+    public bool InvStatusControl { get; set; }
+    public int InvStep { get; set; }
+
 }
 
 public class InvoiceMapping : Profile

@@ -86,7 +86,8 @@ namespace Application.BaseData
                   .ForMember(x=>x.ShamsiBirthDay,opt=>opt.MapFrom(t=>t.AccClbBrithday.ToFarsi())); 
               this.CreateMap<AccountClub, AccountClubDto>().
                   ForMember(x=>x.ShamsiBirthDay,opt=>opt.MapFrom(x=>x.AccClbBrithday.ToFarsi())).
-                      ForMember(x=>x.AccTypePriceLevel, opt=>opt.MapFrom(x=>x.AccClbTypU.AccClbTypDefaultPriceInvoice)
+                      ForMember(x=>x.AccTypePriceLevel, opt=>opt.MapFrom(x=>x.AccClbTypU.AccClbTypDefaultPriceInvoice)).
+                      ForMember(x=>x.InvoiceDiscount, opt=>opt.MapFrom(x=>x.AccClbTypU.AccClbTypPercentDiscount)
                   
                   );
         }

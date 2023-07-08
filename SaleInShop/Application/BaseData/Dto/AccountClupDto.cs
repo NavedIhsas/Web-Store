@@ -59,9 +59,7 @@ namespace Application.BaseData.Dto
         public Guid AccClbUid { get; set; }
         public DateTime? AccClbBrithday { get; set; }
         public string ShamsiBirthDay { get; set; }
-
         public string AccClbName { get; set; }
-
         public string AccClbCode { get; set; }
         public int? AccTypePriceLevel { get; set; }
         public string AccTypePriceLevelText { get; set; }
@@ -79,6 +77,8 @@ namespace Application.BaseData.Dto
         public int? AccClbSex { get; set; }
         public string AccClbSexText { get; set; }
         public string AccClbAddress { get; set; }
+        public double? InvoiceDiscount { get; set; }
+        public decimal TotalPaidAmount { get;}
       
     }
 

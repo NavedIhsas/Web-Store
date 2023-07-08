@@ -24,4 +24,6 @@ public class ProductDto
     public string IranCode { get; set; }
     public string BarCode { get; set; }
     public decimal DiscountPercent { get; set; }
+    public double InvoiceDiscount { get; set; }
+    public decimal TotalPaidAmount { get; set; }
 }
