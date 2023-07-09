@@ -267,7 +267,12 @@ namespace Application.Invoice
                 AccountDiscount = x.InvU.AccClbU.AccClbTypU.AccClbTypDiscountType ?? 0,
                 PriceLevel = x.InvU.AccClbU.AccClbTypU.AccClbTypDefaultPriceInvoice ?? 0,
 
+                InvoiceDiscount = x.InvU.InvPercentDiscount,
+                TotalInvoiceDiscount = x.InvU.InvDiscount2,
+                TotalDiscountAmount = x.InvU.InvDetTotalDiscount
+
             }).AsNoTracking().ToList();
+            
             return dto.Succeeded(result);
         }
 
@@ -346,6 +351,9 @@ public class InvoiceDetailsDto
     public string AccountType { get; set; }
     public int PriceLevel { get; set; }
     public int AccountDiscount { get; set; }
+    public double? InvoiceDiscount { get; set; }
+    public decimal? TotalInvoiceDiscount { get; set; }
+    public decimal? TotalDiscountAmount { get; set; }
 }
 
 
@@ -375,28 +383,31 @@ public class CreateInvoice
         Date = DateTime.Now;
         var branch = 3001;
         var number = new Random();
+
         Number = branch + number.Next(1, 1000);
         InvStatusControl = false;
         InvStep = 1;
     }
 
     public Guid Id { get; set; }
-    public int Amount { get; set; }
-    public int Total { get; set; }
-    public int PriceWithDiscount { get; set; }
-    public int PaidAmount { get; set; }
-    public int Tax { get; set; }
-    public int TotalPriceWithDiscount { get; set; }
-    public int TotalPaidAmount { get; set; }
-    public int TotalGetTax { get; set; }
+    public decimal Amount { get; set; }
+    public decimal Total { get; set; }
+    public decimal PriceWithDiscount { get; set; }
+    public decimal PaidAmount { get; set; }
+    public decimal Tax { get; set; }
+    public decimal TotalPriceWithDiscount { get; set; }
+    public decimal TotalPaidAmount { get; set; }
+    public decimal TotalGetTax { get; set; }
     public DateTime Date { get; set; }
-    public int TotalDiscountAmount { get; set; }
+   
     public Guid? AccUid { get; set; }
     public string Description { get; set; }
-    public int Number { get; set; }
+    public decimal Number { get; set; }
     public bool InvStatusControl { get; set; }
-    public int InvStep { get; set; }
-
+    public decimal InvStep { get; set; }
+    public double? InvoiceDiscountPercent { get; set; }
+    public decimal? TotalInvoiceDiscount { get; set; }
+    public decimal? TotalDiscountAmount { get; set; }
 }
 
 public class InvoiceMapping : Profile
@@ -420,12 +431,15 @@ public class InvoiceMapping : Profile
 
         this.CreateMap<CreateInvoice, Domain.ShopModels.Invoice>()
             .ForMember(x => x.InvTotalAmount, opt => opt.MapFrom(x => x.Total))
-            .ForMember(x => x.InvTotalDiscount, opt => opt.MapFrom(x => x.TotalDiscountAmount))
+            //.ForMember(x => x.InvTotalDiscount, opt => opt.MapFrom(x => x.TotalDiscountAmount))
             .ForMember(x => x.InvTotalTax, opt => opt.MapFrom(x => x.TotalGetTax))
             .ForMember(x => x.InvExtendedAmount, opt => opt.MapFrom(x => x.TotalPaidAmount))
             .ForMember(x => x.InvDescribtion, opt => opt.MapFrom(x => x.Description))
             .ForMember(x => x.InvDate, opt => opt.MapFrom(x => x.Date))
             .ForMember(x => x.InvNumber, opt => opt.MapFrom(x => x.Number))
+            .ForMember(x => x.InvDiscount2, opt => opt.MapFrom(x => x.TotalInvoiceDiscount))
+            .ForMember(x => x.InvPercentDiscount, opt => opt.MapFrom(x => x.InvoiceDiscountPercent))
+            .ForMember(x => x.InvDetTotalDiscount, opt => opt.MapFrom(x => x.TotalDiscountAmount))
             .ForMember(x => x.InvUid, opt => opt.MapFrom(x => x.Id));
 
 

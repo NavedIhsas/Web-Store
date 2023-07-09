@@ -229,8 +229,17 @@ $(document).on('click', '[data-dismiss="modal"]', function () {
 
 function reinitialise(dataTableId) {
     if ($.fn.DataTable.isDataTable("#" + dataTableId)) {
-       
+
         $("#" + dataTableId).dataTable().fnClearTable();
         $("#" + dataTableId).dataTable().fnDestroy();
     }
+}
+
+
+function showLoader() {
+   $("#requestLoader").removeClass("d-none");
+}
+function hideLoader() {
+    $("#requestLoader").addClass("d-none");
+
 }

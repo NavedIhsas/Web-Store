@@ -21,3 +21,27 @@ div#load_screen .loader-content {
 .spinner-grow {
     color: #304aca;
 }
+
+div#requestLoader{
+   
+      opacity: 1;
+      position: fixed;
+      z-index:999999;
+      top: 0px;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+}
+div#requestLoader .loader {
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+}
+div#requestLoader .loader-content {
+    right: 0;
+    align-self: center;
+}
+.spinner-grow {
+    color: #304aca;
+}

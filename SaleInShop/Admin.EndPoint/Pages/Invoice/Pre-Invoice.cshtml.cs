@@ -4,11 +4,13 @@ using Application.Invoice;
 using Application.Product;
 using Application.Product.Category;
 using Application.Product.ProductDto;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace SaleInWeb.Pages.Invoice
 {
+    
     public class PreInvoiceModel : PageModel
     {
         private readonly IProductCategory _category;
@@ -23,7 +25,6 @@ namespace SaleInWeb.Pages.Invoice
             _product = product;
             _authHelper = authHelper;
         }
-
         public List<ProductCategory.ProductLevelDto> Categories;
         public List<ProductDto> Products;
         public void OnGet()
