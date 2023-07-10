@@ -14,7 +14,7 @@ $(document).ready(function () {
 
 $("#editSubmit").on('click', function (evn) {
     evn.preventDefault();
-    debugger
+    
 
     var form = $("#submitForm");
     form.validate();
@@ -51,7 +51,7 @@ $("#editSubmit").on('click', function (evn) {
 
 $("#addSubmit").on('click', function (evn) {
     evn.preventDefault();
-    debugger
+    
 
     var form = $("#submitAddForm");
     form.validate();
@@ -90,7 +90,7 @@ $("#addSubmit").on('click', function (evn) {
 
 $("#state").on('change', function (evn) {
     evn.preventDefault();
-    debugger
+    
     var stateId = this.value;
     $.ajax({
         url: "/BaseData/CreateAccountClub?handler=Cities&stateId=" + stateId,
@@ -98,7 +98,7 @@ $("#state").on('change', function (evn) {
         success: function (result) {
             $('#cities').empty();
 
-            debugger
+            
             result.forEach(x => {
                 $('#cities').append(`<option value="${x.id}">${x.name}</option> `);
 

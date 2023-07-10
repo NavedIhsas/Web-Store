@@ -203,7 +203,7 @@
 
 
         $(document).ready(function () {
-            debugger
+            
             bindDatatable();
         });
 
@@ -288,7 +288,7 @@
                     return "فعال"
             }
             function generateButton(data) {
-                debugger
+                
                 return `<a title="جزییات بیشستر" onclick="showModal('${data.PrdUid}')">
                                                 <svg style="color:#2196f3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-info">
                                                     <circle cx="12" cy="12" r="10"></circle>
@@ -335,7 +335,7 @@
 
 
         function Remove(id) {
-            debugger
+            
 
             swal({
                 title: 'آیا مطمئنید؟',
@@ -352,7 +352,7 @@
                         url: "?handler=Remove&id=" + id,
                         type: "get",
                         success: function (result) {
-                            debugger
+                            
                             if (result.isSucceeded) {
                                 swal(
                                     'موفق!',
@@ -394,7 +394,7 @@
 
 
         $('#detailsProduct').on('hidden.bs.modal', function () {
-            debugger
+            
             $(this).find('form').trigger('reset');
         })
 
@@ -406,7 +406,7 @@
                 type: "GET",
                 url: "?handler=Details&id=" + id,
                 success: function (result) {
-                    debugger
+                    
 
                     var discountTotal = "";
                     if (result.prdDiscountType == 0)
@@ -439,7 +439,7 @@
                         table.row.add($(list)).draw();
                     });
 
-                    debugger
+                    
                     pictureTable.clear().draw();
                     result.pictures.forEach(x => {
                         const list1 =
@@ -450,7 +450,7 @@
                                                                                  </td>
                                                                              </tr>
                                                                              `
-                        debugger
+                        
                         pictureTable.row.add($(list1)).draw();
                     });
                 }
@@ -460,7 +460,7 @@
 
 
         function pictures(id) {
-            debugger
+            
             $("#pictureProduct").modal('show')
             $.ajax({
                 type: "GET",
@@ -477,7 +477,7 @@
                                                                                           alt="Mountains in the Clouds" />
                                                                                  </div>
                                                                                  `
-                        debugger
+                        
                         $("#gallery").append(list1)
                     });
                 }

@@ -256,7 +256,7 @@
 
         $("#editCategory").on('click', function (evn) {
             evn.preventDefault();
-           debugger
+           
            
 
             var result = editCalculateCode();
@@ -285,7 +285,7 @@
                 },
 
                 success: function (result) {
-                    debugger
+                    
                     if (result.isSucceeded) {
 
                         notify("top center", "عملیات با موفقیت انجام شد", "success")
@@ -302,7 +302,7 @@
        
        })
         function Edit(id, name, code, setCode, parentId, status) {
-            debugger
+            
             $("#edit-category").modal("show");
             $("#Command_Name").val(name);
             $("#Command_Code").val(code);
@@ -499,7 +499,7 @@
             $("#code").val(code);
             code = $("#code").val();
 
-            debugger
+            
             $("#setCode").val("").toString();
 
             var isMax = false;
@@ -522,7 +522,7 @@
             var code = $("#Command_Code").val();
             var codeS = $("#Command_Code").val();
 
-        debugger
+        
             // check Exist code
             if (codeS === "" || codeS === undefined) {
                 code = editGetMaxCode(group);
@@ -601,7 +601,7 @@
             if (m === null)
                 m = "";
             getCode(m + code);
-            debugger
+            
             $("#Command_CodeValue").val(m + code).toString();
         }
 
@@ -630,7 +630,7 @@
                 },
 
                 success: function (result) {
-                    debugger
+                    
                     if (result.isSucceeded) {
 
                         notify("top center", "عملیات با موفقیت انجام شد", "success")
@@ -648,12 +648,12 @@
         })
 
         function Remove(id) {
-            debugger
+            
             $.ajax({
                 url: '?handler=remove&id=' + id,
                 type: 'Get',
                 success: function (result) {
-                    debugger
+                    
                     if (result.isSucceeded) {
                         notify("top center", "عملیات با موفقیت انجام شد", "success")
                         window.location.href = "/Products/Category";

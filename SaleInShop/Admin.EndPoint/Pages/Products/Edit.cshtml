@@ -441,7 +441,7 @@
             var fkUnit = @Html.Raw(Json.Serialize(Model.Command.FkProductUnit2.HasValue));
 
             $(document).ready(function () {
-                debugger
+                
                 if (fkUnit==true)
                    {
                        $("#productUnit").prop("checked", true)

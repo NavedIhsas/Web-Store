@@ -183,7 +183,7 @@ function setCookie(cname, cvalue, path = "/", exdays = 1) {
 
 
 function setCookieList(cname, cvalue, productId, path = "/", exdays = 1) {
-    debugger
+    
     var cookie = getCookie(cname);
 
     if (cookie === "")

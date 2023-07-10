@@ -132,7 +132,7 @@ function Remove(id) {
 };
 
 function Edit(id, name, discountType, priceInvoice, percentDiscount, detDiscount) {
-    debugger
+    
     $("#edit").modal("show");
     $("#Command_Name").val(name);
     $("#Command_DiscountType").val(discountType);

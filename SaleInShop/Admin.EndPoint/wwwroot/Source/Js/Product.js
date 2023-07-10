@@ -46,7 +46,7 @@ $(".product-unit").change(function () {
 
 
 $("input[name='Command.PrdDiscountType']").change(function () {
-    debugger
+    
     var input = $("input[name='Command.PrdDiscount");
     input.prop('disabled', false);
 
@@ -64,7 +64,7 @@ $("input[name='Command.PrdDiscountType']").change(function () {
 
 
 function ChangeDiscountValue() {
-    debugger
+    
   
     var input = $("input[name='Command.PrdDiscountType']:checked");
    
@@ -85,7 +85,7 @@ function ChangeDiscountValue() {
 
 $("#submit-property").on("click", function (env) {
     env.preventDefault();
-    debugger
+    
     var value = $("#propertyValue").val();
     var id = $("#propertyName").val();
     if (value === "" || id == 0) {
@@ -100,7 +100,7 @@ $("#submit-property").on("click", function (env) {
         url: "/Products/Create?handler=Property&id=" + id + "&name=" + name + "&value=" + value,
 
         success: function (list) {
-            debugger
+            
             if (list === "Duplicate") {
                 notify("top center", "این ویژگی از قبل وجود دارد", "warning");
                 return false;
@@ -131,7 +131,7 @@ $("#submit-property").on("click", function (env) {
 
 $("#submit-propertyEdit").on("click", function (env) {
     env.preventDefault();
-    debugger
+    
     var value = $("#propertyValue").val();
     var id = $("#propertyName").val();
     if (value === "" || id == 0) {
@@ -146,7 +146,7 @@ $("#submit-propertyEdit").on("click", function (env) {
         url: "?handler=AddProperty&propertyId=" + id + "&name=" + name + "&value=" + value,
 
         success: function (list) {
-            debugger
+            
             if (list === "Duplicate") {
                 notify("top center", "این ویژگی از قبل وجود دارد", "warning");
                 return false;
@@ -181,7 +181,7 @@ function removePropertyEdit(id) {
         url: "?handler=removeProperty&id=" + id,
         type: "get",
         success: function (list) {
-            debugger
+            
             table.clear().draw();
             list.forEach(x => {
                 const result =
@@ -208,7 +208,7 @@ function removeProperty(id) {
         url: "/Products/Create?handler=removeProperty&id=" + id,
         type: "get",
         success: function (list) {
-            debugger
+            
             table.clear().draw();
             list.forEach(x => {
                 const result =
@@ -235,7 +235,7 @@ function removePicture(id) {
         url: "?handler=RemovePictures&id=" + id,
         type: "get",
         success: function (list) {
-            debugger
+            
             pictureTable.clear().draw();
             list.forEach(x => {
                 const result =
@@ -257,12 +257,12 @@ function removePicture(id) {
 
 
 function CheckControl(value) {
-    debugger
+    
     $.ajax({
         url: "?handler=CheckCode&Code=" + value,
         type: "Get",
         success: function (result) {
-            debugger
+            
             $("#validateCode").text("")
             $("#validateCode").text(result)
         }
@@ -312,7 +312,7 @@ var submitForm3 = false;
 $("#first-form").on('click', function (env) {
     env.preventDefault();
 
-    debugger
+    
     var form = $("#createForm");
     form.validate();
     if (form.valid() === false) {
@@ -382,7 +382,7 @@ $("#second-form").on('click', function (env) {
         return false;
     }
 
-    debugger
+    
     var editor_content = quill.container.innerHTML
     $("#Command_WebDescription").val(editor_content);
     notify("top center", "فرم تایید شد", "success");
@@ -444,7 +444,7 @@ $("#final-submit").on('click', function (env) {
         },
 
         success: function (result) {
-            debugger
+            
             if (result.isSucceeded) {
                 notify("top center", "اطلاعات با موفقیت ثبت شد", "success");
                 window.location.href = "/Products/Index";

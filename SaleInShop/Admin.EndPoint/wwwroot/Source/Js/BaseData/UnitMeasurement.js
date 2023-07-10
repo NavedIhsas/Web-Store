@@ -8,7 +8,7 @@ $(document).ready(function () {
 
 $("#editSubmit").on('click', function (evn) {
     evn.preventDefault();
-    debugger
+    
 
     var form = $("#submitEditForm");
     form.validate();
@@ -28,7 +28,7 @@ $("#editSubmit").on('click', function (evn) {
         },
 
         success: function (result) {
-            debugger
+            
             if (result.isSucceeded) {
                 notify("top center", "عملیات با موفقیت انجام شد", "success")
                 window.location.href = "/BaseData/UnitMeasurement";
@@ -45,7 +45,7 @@ $("#editSubmit").on('click', function (evn) {
 
 $("#addSubmit").on('click', function (evn) {
     evn.preventDefault();
-    debugger
+    
 
     var form = $("#submitAddForm");
     form.validate();
@@ -64,7 +64,7 @@ $("#addSubmit").on('click', function (evn) {
                 $('input:hidden[name="__RequestVerificationToken"]').val()
         },
         success: function (result) {
-            debugger
+            
             if (result.isSucceeded) {
                 notify("top center", "عملیات با موفقیت انجام شد", "success")
                 window.location.href = "/BaseData/UnitMeasurement";
@@ -78,7 +78,7 @@ $("#addSubmit").on('click', function (evn) {
 
 })
 function Edit(id, name, code) {
-    debugger
+    
     $("#edit").modal("show");
     $("#Command_Name").val(name);
     $("#Command_Code").val(code);
@@ -86,7 +86,7 @@ function Edit(id, name, code) {
 }
 
 function Add() {
-    debugger
+    
     $("#add").modal("show");
 
 }
@@ -97,7 +97,7 @@ function Add() {
 
 
 function Remove(id) {
-    debugger
+    
 
     swal({
         title: 'آیا مطمئنید؟',
@@ -114,7 +114,7 @@ function Remove(id) {
                 url: "?handler=Remove&id=" + id,
                 type: "get",
                 success: function (result) {
-                    debugger
+                    
                     if (result.isSucceeded) {
                         swal(
                             'موفق!',
@@ -180,7 +180,7 @@ function bindDatatable() {
         });
 
     function generateButton(data) {
-        debugger
+        
         return `<center><button onclick="Edit('${data.Id}','${data.Name}','${data.Code}')" class="btn btn-warning btn-rounded btn-sm">ویرایش</button>&nbsp; <button onclick="Remove('${data.Id}')" class="btn btn-danger btn-rounded btn-sm"> حذف </button></center>`
     };
 
