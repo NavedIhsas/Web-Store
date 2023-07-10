@@ -88,20 +88,28 @@ namespace Application.Invoice
         }
 
 
-        public ResultDto<InvoiceStatus> GetStatus(Guid invoiceId,Domain.ShopModels.Invoice invoice=null)
+        public InvoiceStatus GetStatus(Guid invoiceId, Domain.ShopModels.Invoice invoice = null)
         {
-            var result = new ResultDto<InvoiceStatus>();
             Domain.ShopModels.Invoice status = null;
             status = invoice ?? _context.Invoices.Find(invoiceId);
-            
-            var dto = new InvoiceStatus();
-            dto.Id = invoiceId;
-            if (status.InvStep is null or 0)
+            if (status == null) return null;
+            var dto = new InvoiceStatus
+            {
+                Id = invoiceId
+            };
+            if (status is { InvStep: null or 0 })
                 dto.StatusSubmit = "ثبت اولیه";
-            if (status.InvStatusControl is null or false)
+
+            else if (status.InvStep == 1)
+                dto.StatusSubmit = "در انتظار تایید";
+
+            if (status.InvStatusControl == false)
+                dto.StatusPay = "پرداخت شده";
+
+            else if (status is { InvStatusControl: null or false })
                 dto.StatusPay = "پرداخت نشده";
 
-            return result.Succeeded(dto);
+            return dto;
 
         }
 
@@ -126,7 +134,6 @@ namespace Application.Invoice
         }
 
 
-
         public ResultDto<InvoiceStatus> Create()
         {
             var result = new ResultDto<InvoiceStatus>();
@@ -139,14 +146,14 @@ namespace Application.Invoice
             Domain.ShopModels.Invoice map;
             try
             {
-                 map = _mapper.Map<Domain.ShopModels.Invoice>(single);
+                map = _mapper.Map<Domain.ShopModels.Invoice>(single);
                 map.AccClbUid = account.AccClbUid;
                 _context.Invoices.Add(map);
                 _context.SaveChanges();
 
 
                 var details = JsonConvert.DeserializeObject<List<InvoiceDetailsDto>>(invoiceDetails);
-                
+
                 foreach (var detail in details)
                 {
                     var addNews = new Domain.ShopModels.InvoiceDetail()
@@ -261,6 +268,7 @@ namespace Application.Invoice
         public ResultDto<List<InvoiceDetailsDto>> InvoiceDetails(Guid invoiceId)
         {
             var dto = new ResultDto<List<InvoiceDetailsDto>>();
+            var status = this.GetStatus(invoiceId);
             var result = _context.InvoiceDetails
                 .Where(x => x.InvUid == invoiceId)
                 .Include(x => x.PrdU)
@@ -286,14 +294,15 @@ namespace Application.Invoice
                 Address = x.InvU.AccClbU.AccClbAddress,
                 AccountDiscount = x.InvU.AccClbU.AccClbTypU.AccClbTypDiscountType ?? 0,
                 PriceLevel = x.InvU.AccClbU.AccClbTypU.AccClbTypDefaultPriceInvoice ?? 0,
-                InvTotalTax=x.InvU.InvTotalTax,
+                InvTotalTax = x.InvU.InvTotalTax,
                 InvoiceDiscount = x.InvU.InvPercentDiscount,
                 TotalInvoiceDiscount = x.InvU.InvDiscount2,
                 TotalDiscountAmount = x.InvU.InvDetTotalDiscount,
-                TotalPaidAmount=x.InvU.InvExtendedAmount,
-
+                TotalPaidAmount = x.InvU.InvExtendedAmount,
+                Status = status
             }).AsNoTracking().ToList();
-            
+
+
             return dto.Succeeded(result);
         }
 
@@ -386,6 +395,7 @@ public class InvoiceDetailsDto
     public decimal? TotalDiscountAmount { get; set; }
     public decimal? TotalPaidAmount { get; set; }
     public decimal? InvTotalTax { get; set; }
+    public InvoiceStatus Status { get; set; }
 }
 
 

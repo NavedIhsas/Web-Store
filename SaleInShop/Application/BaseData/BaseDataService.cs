@@ -631,9 +631,7 @@ namespace Application.BaseData
 
 
         #region Account Club
-
-
-
+        
         public JsonResult GetAllAccountClub(JqueryDatatableParam param)
         {
 

@@ -145,9 +145,7 @@ public class ProductCategory : IProductCategory
         if (id == "0")
             return _context.ProductLevels.Any(x => x.PrdLvlParentUid == null && x.PrdLvlCodeValue == code);
 
-        if (string.IsNullOrEmpty(currentId))
-            result = _context.ProductLevels.Any(x => x.PrdLvlParentUid != null && x.PrdLvlCodeValue == code);
-        else result = _context.ProductLevels.Any(x => x.PrdLvlCodeValue == code && x.PrdLvlUid != new Guid(currentId));
+        result = string.IsNullOrEmpty(currentId) ? _context.ProductLevels.Any(x => x.PrdLvlParentUid != null && x.PrdLvlCodeValue == code) : _context.ProductLevels.Any(x => x.PrdLvlCodeValue == code && x.PrdLvlUid != new Guid(currentId));
 
         return result;
     }
@@ -194,9 +192,6 @@ public class ProductCategory : IProductCategory
         }
     }
 
-
-
-    public ResultDto<ProductDetails> 
     public List<ProductLevelDto> GetLevelList()
     {
         var result = _context.ProductLevels.AsNoTracking().Select(x => new ProductLevelDto

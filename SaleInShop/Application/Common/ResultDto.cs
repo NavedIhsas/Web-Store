@@ -26,7 +26,7 @@ public class ResultDto<T>
     public bool IsSucceeded { get; set; }
     public T Data { get; set; }
 
-    public ResultDto<T> Succeeded(ResultDto<InvoiceStatus> date, string message = "عملیات با موفقیت انجام شد")
+    public ResultDto<T> Succeeded(T date, string message = "عملیات با موفقیت انجام شد")
     {
         IsSucceeded = true;
         Message = message;

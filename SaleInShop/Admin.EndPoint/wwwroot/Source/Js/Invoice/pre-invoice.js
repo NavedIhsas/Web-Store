@@ -63,10 +63,10 @@ $("#submitPrint").on('click', function () {
                 success: function (result) {
 
                     if (result.isSucceeded) {
-                        $("#invoiceStatus").removeClass("d-none").text("وضعیت فاکتور: ثبت اولیه");
-                        $("#invoicePayStatus").removeClass("d-none").text("وضعیت تسویه: تسویه نشده");
-                        document.querySelectorAll(".invoicePay").forEach(x => x.classList.remove("d-none"));
 
+                        debugger
+                        checkStatus(result.data.statusSubmit, result.data.statusPay)
+                  
                         swal(
                             'موفق!',
                             result.message,
@@ -180,7 +180,7 @@ function getProduct(evt, cityName) {
                         "autoWidth": true,
                         "searchable": false,
                         "orderable": false,
-                        render: function (data, row, full) {     
+                        render: function (data, row, full) {
                             if (full.Price == null)
                                 return "ابتدا قیمت را در این سطح تعریف کنید";
                             return generateButton(data);
@@ -212,8 +212,9 @@ function openDetails(evt, name, accclubType) {
         url: "?handler=ProductLevel&productLvl=" + name + "&accClbType=" + accclubType,
         type: "get",
         beforeSend: function () {
-            showLoader()},
-            
+            showLoader()
+        },
+
         success: function (result) {
             debugger
             result.forEach(x => {
@@ -331,11 +332,11 @@ function updateTable(obj) {
         $(".property-dataTable").append($('<tfoot />').append($("<tr> <td>مجموع:</td> <td></td><td>" + totalCount + "</td> <td>" + parseFloat(amountFooter).toLocaleString() + "</td> <td>" + parseFloat(totalFooter).toLocaleString() + "</td><td></td> <td>" + Math.abs(totalPriceWithDiscount).toLocaleString() + "</td> <td>" + Math.abs(totalGetTax).toLocaleString() + "</td> <td>" + Math.abs(totalPaidAmount).toLocaleString() + "</td> <tr>").clone()));
         debugger
         totalInvoiceDiscount = ConvertPercentToAmount(totalPaidAmount, totalInvoiceDiscount);
-        
+
         totalPaidAmount -= totalInvoiceDiscount;
         totalPaidAmount = Math.abs(totalPaidAmount);
-       
-        var InvoiceDiscountPercent = totalInvoiceDiscount;      
+
+        var InvoiceDiscountPercent = totalInvoiceDiscount;
         applyTotal(totalCount, totalFooter, totalDiscountAmount, totalInvoiceDiscount, totalGetTax, totalPaidAmount)
 
 
@@ -600,12 +601,12 @@ function bindDatatable() {
 
     function generateButton(data) {
         debugger
-        return `<center><a onClick="addAccountClub('${data.AccClbUid}','${data.AccClbTypUid}','${data.AccClbName ?? ""}','${data.AccClubDiscount}','${data.AccClubType ?? ""}','${data.AccClbMobile ?? ""}','${data.AccClbAddress ?? ""}','${data.AccClbCode?? ""}','${data.AccTypePriceLevel}','${data.InvoiceDiscount}')" class="btn btn-warning btn-rounded btn-sm">انتخاب </a>&nbsp; `
+        return `<center><a onClick="addAccountClub('${data.AccClbUid}','${data.AccClbTypUid}','${data.AccClbName ?? ""}','${data.AccClubDiscount}','${data.AccClubType ?? ""}','${data.AccClbMobile ?? ""}','${data.AccClbAddress ?? ""}','${data.AccClbCode ?? ""}','${data.AccTypePriceLevel}','${data.InvoiceDiscount}')" class="btn btn-warning btn-rounded btn-sm">انتخاب </a>&nbsp; `
     };
 
 }
 function addAccountClub(id, accTypeId, name, discount, type, mobile, address, code, accTypePriceLevel, invoiceDiscount) {
-    
+
     deleteCookie(AccountClubCookie);
 
     var accound = {
@@ -629,7 +630,7 @@ function addAccountClub(id, accTypeId, name, discount, type, mobile, address, co
             type: "get",
             beforeSend: function () {
                 showLoader()
-                },
+            },
             success: function (result) {
 
                 if (result.isSucceeded) {
@@ -657,13 +658,13 @@ function addAccountClub(id, accTypeId, name, discount, type, mobile, address, co
 
 function getAccountClub() {
 
-    
+
     var account = getParseCookie(AccountClubCookie);
     $("#accClubDetails").removeClass("d-none");
-    $("#accClubName").text('مشتری: ' + account.accClbName??"" + '- ' + account.code??"")
+    $("#accClubName").text('مشتری: ' + account.accClbName ?? "" + '- ' + account.code ?? "")
     $("#accClubType").text('نوع اشتراک: ' + account.type ?? "")
     $("#accClubMobile").text('موبایل: ' + account.mobile)
-    $("#accClubAddress").text('آدرس: ' + account.address?? "")
+    $("#accClubAddress").text('آدرس: ' + account.address ?? "")
 }
 
 
@@ -751,7 +752,7 @@ function invoiceDetails(invoiceId) {
         type: "Get",
         beforeSend: function () {
             showLoader()
-                },
+        },
         success: function (result) {
             if (result.isSucceeded) {
                 setCookie(ProductListCookie, result.data);
@@ -776,7 +777,7 @@ function invoiceDetails(invoiceId) {
 
 
 function updateInvoiceTable(obj) {
-   
+
     var amount = 0, total = 0, priceWithDiscount = 0, paidAmount = 0, getTax = 0; amountFooter = 0; totalFooter = 0, totalDiscountAmount = 0;
     var totalPriceWithDiscount = 0, totalPaidAmount = 0, totalGetTax = 0, rowNo = 0, accClbUid, totalCount = 0; totalInvoiceDiscount = 0;
 
@@ -787,7 +788,7 @@ function updateInvoiceTable(obj) {
         footer[0].parentNode.removeChild(footer[0]);
 
     obj.forEach(x => {
-        debugger 
+        debugger
         amount = parseFloat(x.price);
         total = parseFloat(x.total);
         debugger
@@ -801,7 +802,7 @@ function updateInvoiceTable(obj) {
         getTax = calculateTax(x.tax, total);
         paidAmount = parseFloat(x.paidAmount),
 
-        totalDiscountAmount += discountAmount;
+            totalDiscountAmount += discountAmount;
         totalPriceWithDiscount += priceWithDiscount;
         totalPaidAmount = x.totalPaidAmount;
         totalGetTax == getTax;
@@ -841,7 +842,7 @@ function updateInvoiceTable(obj) {
 
         $(".property-dataTable").append($('<tfoot />').append($("<tr> <td>مجموع:</td> <td></td><td>" + totalCount + "</td> <td>" + parseFloat(amountFooter).toLocaleString() + "</td> <td>" + parseFloat(totalFooter).toLocaleString() + "</td><td></td> <td>" + Math.abs(totalPriceWithDiscount).toLocaleString() + "</td> <td>" + Math.abs(totalGetTax).toLocaleString() + "</td> <td>" + Math.abs(totalPaidAmount).toLocaleString() + "</td> <tr>").clone()));
 
-       // totalInvoiceDiscount = ConvertPercentToAmount(totalPaidAmount, totalInvoiceDiscount);
+        // totalInvoiceDiscount = ConvertPercentToAmount(totalPaidAmount, totalInvoiceDiscount);
         //totalPaidAmount -= totalInvoiceDiscount;
         //totalPaidAmount = Math.abs(totalPaidAmount);
 
@@ -858,8 +859,22 @@ function updateInvoiceTable(obj) {
             totalPaidAmount: x.totalPaidAmount,
             totalGetTax: x.invTotalTax,
         };
-
         setCookie("invoice", invoice);
+        debugger
+        checkStatus(obj[0].status.statusSubmit, obj[0].status.statusPay)
 
     });
+}
+
+
+
+function checkStatus(statusSubmit, statusPay) {
+
+    $("#invoiceStatus").removeClass("d-none");
+    $("#invoicePayStatus").removeClass("d-none");
+
+    $("#invoiceStatusText").text(statusSubmit);
+    $("#invoicePayStatusText").text(statusPay);
+    if (statusPay == "تسویه نشده")
+        document.querySelectorAll(".invoicePay").forEach(x => x.classList.remove("d-none"));
 }
