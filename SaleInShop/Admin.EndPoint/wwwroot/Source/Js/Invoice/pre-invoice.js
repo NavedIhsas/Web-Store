@@ -180,7 +180,7 @@ function getProduct(evt, cityName) {
                         "autoWidth": true,
                         "searchable": false,
                         "orderable": false,
-                        render: function (data, row, full) {
+                        render: function (data, row, full) {     
                             if (full.Price == null)
                                 return "ابتدا قیمت را در این سطح تعریف کنید";
                             return generateButton(data);
@@ -196,8 +196,6 @@ function getProduct(evt, cityName) {
     }
 
     function generateButton(data) {
-
-
         return ` <a onClick="addProductToList('${data.PrdUid}','${data.PrdName}','${data.Price}','${data.DiscountPercent}','${data.TaxValue}','${data.InvoiceDiscount}')" type="button" >
         <svg style="color:green" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
     </a>
@@ -217,7 +215,7 @@ function openDetails(evt, name, accclubType) {
             showLoader()},
             
         success: function (result) {
-
+            debugger
             result.forEach(x => {
                 const list = `
 
@@ -279,10 +277,9 @@ function updateTable(obj) {
         footer[0].parentNode.removeChild(footer[0]);
 
     obj.forEach(x => {
-
+        debugger
         amount = parseFloat(x.price);
         total = parseFloat(x.total);
-
         totalInvoiceDiscount = x.invoiceDiscount;
         amountFooter += parseFloat(x.price);
         totalFooter += parseFloat(x.total);
@@ -291,7 +288,7 @@ function updateTable(obj) {
         priceWithDiscount = Math.abs(parseFloat(((parseFloat(x.discount) * total) / 100) - total));
         discountAmount = parseFloat((parseFloat(x.discount) * total) / 100);
         getTax = calculateTax(x.taxPercent, total);
-        paidAmount = Math.abs(parseFloat(priceWithDiscount - getTax));
+        paidAmount = Math.abs(parseFloat(priceWithDiscount + getTax));
 
         totalDiscountAmount += discountAmount;
         totalPriceWithDiscount += priceWithDiscount;
@@ -332,8 +329,9 @@ function updateTable(obj) {
             footer[0].parentNode.removeChild(footer[0]);
 
         $(".property-dataTable").append($('<tfoot />').append($("<tr> <td>مجموع:</td> <td></td><td>" + totalCount + "</td> <td>" + parseFloat(amountFooter).toLocaleString() + "</td> <td>" + parseFloat(totalFooter).toLocaleString() + "</td><td></td> <td>" + Math.abs(totalPriceWithDiscount).toLocaleString() + "</td> <td>" + Math.abs(totalGetTax).toLocaleString() + "</td> <td>" + Math.abs(totalPaidAmount).toLocaleString() + "</td> <tr>").clone()));
-
+        debugger
         totalInvoiceDiscount = ConvertPercentToAmount(totalPaidAmount, totalInvoiceDiscount);
+        
         totalPaidAmount -= totalInvoiceDiscount;
         totalPaidAmount = Math.abs(totalPaidAmount);
        
@@ -410,7 +408,7 @@ function applyTotal(totalProductCount, totalFooter, totalDiscountAmount, totalIn
 }
 
 function addProductToList(id, name, price, discount, tax, invoiceDiscount, value = 1) {
-
+    debugger
     var discountAmount = parseFloat((discount * price) / 100);
     var getTax = parseFloat(calculateTax(tax, price));
     var priceWithDiscount = Math.abs(parseFloat(((discount) * price) / 100) - price);
@@ -592,6 +590,7 @@ function bindDatatable() {
                     "searchable": false,
                     "orderable": false,
                     render: function (data, row, full) {
+                        debugger
                         return generateButton(data);
                     },
                 }
@@ -600,13 +599,11 @@ function bindDatatable() {
         });
 
     function generateButton(data) {
-        
+        debugger
         return `<center><a onClick="addAccountClub('${data.AccClbUid}','${data.AccClbTypUid}','${data.AccClbName ?? ""}','${data.AccClubDiscount}','${data.AccClubType ?? ""}','${data.AccClbMobile ?? ""}','${data.AccClbAddress ?? ""}','${data.AccClbCode?? ""}','${data.AccTypePriceLevel}','${data.InvoiceDiscount}')" class="btn btn-warning btn-rounded btn-sm">انتخاب </a>&nbsp; `
     };
 
 }
-
-
 function addAccountClub(id, accTypeId, name, discount, type, mobile, address, code, accTypePriceLevel, invoiceDiscount) {
     
     deleteCookie(AccountClubCookie);
@@ -638,7 +635,7 @@ function addAccountClub(id, accTypeId, name, discount, type, mobile, address, co
                 if (result.isSucceeded) {
                     setCookie(ProductListCookie, result.data);
                     result.data.forEach(x => {
-
+                        debugger
                         addProductToList(x.productId, x.name, x.price, x.discount, x.tax, x.invoiceDiscount, x.value);
                     })
 
@@ -761,7 +758,7 @@ function invoiceDetails(invoiceId) {
                 updateInvoiceTable(result.data);
 
                 var account = result.data[0];
-                addAccountClub(account.accountId, account.accountName ?? "", account.accountDiscount, account.accountType ?? "", account.mobile ?? "", account.address ?? "", account.accountCode ?? "", account.priceLevel);
+                addAccountClub(account.accountId, account.accountName ?? "", account.accountDiscount, account.accountType ?? "", account.mobile ?? "", account.address ?? "", account.accountCode ?? "", account.priceLevel, account.invoiceDiscount);
 
                 $("#invoiceList").modal('hide');
             } else {
@@ -790,7 +787,7 @@ function updateInvoiceTable(obj) {
         footer[0].parentNode.removeChild(footer[0]);
 
     obj.forEach(x => {
-
+        debugger 
         amount = parseFloat(x.price);
         total = parseFloat(x.total);
         debugger
@@ -802,11 +799,11 @@ function updateInvoiceTable(obj) {
         priceWithDiscount = Math.abs(parseFloat(((parseFloat(x.discount) * total) / 100) - total));
         discountAmount = parseFloat((parseFloat(x.discount) * total) / 100);
         getTax = calculateTax(x.tax, total);
-        paidAmount = Math.abs(parseFloat(priceWithDiscount - getTax));
+        paidAmount = parseFloat(x.paidAmount),
 
         totalDiscountAmount += discountAmount;
         totalPriceWithDiscount += priceWithDiscount;
-        totalPaidAmount += paidAmount;
+        totalPaidAmount = x.totalPaidAmount;
         totalGetTax == getTax;
         const result =
             `
@@ -844,12 +841,12 @@ function updateInvoiceTable(obj) {
 
         $(".property-dataTable").append($('<tfoot />').append($("<tr> <td>مجموع:</td> <td></td><td>" + totalCount + "</td> <td>" + parseFloat(amountFooter).toLocaleString() + "</td> <td>" + parseFloat(totalFooter).toLocaleString() + "</td><td></td> <td>" + Math.abs(totalPriceWithDiscount).toLocaleString() + "</td> <td>" + Math.abs(totalGetTax).toLocaleString() + "</td> <td>" + Math.abs(totalPaidAmount).toLocaleString() + "</td> <tr>").clone()));
 
-        totalInvoiceDiscount = ConvertPercentToAmount(totalPaidAmount, totalInvoiceDiscount);
-        totalPaidAmount -= totalInvoiceDiscount;
-        totalPaidAmount = Math.abs(totalPaidAmount);
+       // totalInvoiceDiscount = ConvertPercentToAmount(totalPaidAmount, totalInvoiceDiscount);
+        //totalPaidAmount -= totalInvoiceDiscount;
+        //totalPaidAmount = Math.abs(totalPaidAmount);
 
         debugger
-        applyTotal(totalCount, totalFooter, totalDiscountAmount, totalInvoiceDiscount, totalGetTax, totalPaidAmount)
+        applyTotal(totalCount, totalFooter, totalDiscountAmount, totalInvoiceDiscount, x.invTotalTax, x.totalPaidAmount)
         var invoice =
         {
             amount: amount,
@@ -858,8 +855,8 @@ function updateInvoiceTable(obj) {
             paidAmount: paidAmount,
             tax: getTax,
             totalPriceWithDiscount: Math.abs(totalPriceWithDiscount),
-            totalPaidAmount: Math.abs(totalPaidAmount),
-            totalGetTax: Math.abs(totalGetTax),
+            totalPaidAmount: x.totalPaidAmount,
+            totalGetTax: x.invTotalTax,
         };
 
         setCookie("invoice", invoice);

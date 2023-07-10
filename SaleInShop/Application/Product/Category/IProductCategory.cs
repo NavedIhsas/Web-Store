@@ -1,5 +1,6 @@
 ﻿using Application.Common;
 using Application.Interfaces.Context;
+using Application.Product.ProductDto;
 using AutoMapper;
 using Domain.ShopModels;
 using Microsoft.AspNetCore.Http;
@@ -194,6 +195,8 @@ public class ProductCategory : IProductCategory
     }
 
 
+
+    public ResultDto<ProductDetails> 
     public List<ProductLevelDto> GetLevelList()
     {
         var result = _context.ProductLevels.AsNoTracking().Select(x => new ProductLevelDto
@@ -265,4 +268,15 @@ public class ProductCategory : IProductCategory
         public Guid Id { get; set; }
         public string Name { get; set; }
     }
+
+
+    public class InvoiceStatus
+    {
+        public Guid Id { get; set; }
+        public string StatusPay { get; set; }
+        public string StatusSubmit { get; set; }
+
+    }
 }
+
+

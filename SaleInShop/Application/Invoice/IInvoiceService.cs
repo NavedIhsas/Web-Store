@@ -23,7 +23,7 @@ namespace Application.Invoice
     {
         ResultDto<List<ProductSessionList>> ProductToList(Guid id);
         ResultDto<List<ProductSessionList>> RemoveFromProductList(Guid id);
-        ResultDto<CreateInvoice> Create();
+        ResultDto<InvoiceStatus> Create();
         JsonResult GetInvoiceList(JqueryDatatableParam param);
         ResultDto<List<InvoiceDetailsDto>> InvoiceDetails(Guid invoiceId);
         ResultDto<List<ProductListDot>> ChangeAccountClub(int priceLevel);
@@ -87,6 +87,24 @@ namespace Application.Invoice
             }
         }
 
+
+        public ResultDto<InvoiceStatus> GetStatus(Guid invoiceId,Domain.ShopModels.Invoice invoice=null)
+        {
+            var result = new ResultDto<InvoiceStatus>();
+            Domain.ShopModels.Invoice status = null;
+            status = invoice ?? _context.Invoices.Find(invoiceId);
+            
+            var dto = new InvoiceStatus();
+            dto.Id = invoiceId;
+            if (status.InvStep is null or 0)
+                dto.StatusSubmit = "ثبت اولیه";
+            if (status.InvStatusControl is null or false)
+                dto.StatusPay = "پرداخت نشده";
+
+            return result.Succeeded(dto);
+
+        }
+
         public ResultDto<List<ProductSessionList>> RemoveFromProductList(Guid id)
         {
             var result = new ResultDto<List<ProductSessionList>>();
@@ -109,25 +127,26 @@ namespace Application.Invoice
 
 
 
-        public ResultDto<CreateInvoice> Create()
+        public ResultDto<InvoiceStatus> Create()
         {
-            var result = new ResultDto<CreateInvoice>();
+            var result = new ResultDto<InvoiceStatus>();
 
             var cookie = _authHelper.GetCookie("AccountClubList");
             var account = JsonConvert.DeserializeObject<AccountClubDto>(cookie);
             var invoice = _authHelper.GetCookie("invoice");
             var invoiceDetails = _authHelper.GetCookie("productList");
             var single = JsonConvert.DeserializeObject<CreateInvoice>(invoice);
+            Domain.ShopModels.Invoice map;
             try
             {
-                var map = _mapper.Map<Domain.ShopModels.Invoice>(single);
+                 map = _mapper.Map<Domain.ShopModels.Invoice>(single);
                 map.AccClbUid = account.AccClbUid;
                 _context.Invoices.Add(map);
                 _context.SaveChanges();
 
 
                 var details = JsonConvert.DeserializeObject<List<InvoiceDetailsDto>>(invoiceDetails);
-
+                
                 foreach (var detail in details)
                 {
                     var addNews = new Domain.ShopModels.InvoiceDetail()
@@ -149,7 +168,8 @@ namespace Application.Invoice
                     _context.SaveChanges();
                 }
 
-                return result.Succeeded(single);
+                var status = this.GetStatus(map.InvUid, map);
+                return result.Succeeded(status);
 
             }
             catch (Exception e)
@@ -266,10 +286,11 @@ namespace Application.Invoice
                 Address = x.InvU.AccClbU.AccClbAddress,
                 AccountDiscount = x.InvU.AccClbU.AccClbTypU.AccClbTypDiscountType ?? 0,
                 PriceLevel = x.InvU.AccClbU.AccClbTypU.AccClbTypDefaultPriceInvoice ?? 0,
-
+                InvTotalTax=x.InvU.InvTotalTax,
                 InvoiceDiscount = x.InvU.InvPercentDiscount,
                 TotalInvoiceDiscount = x.InvU.InvDiscount2,
-                TotalDiscountAmount = x.InvU.InvDetTotalDiscount
+                TotalDiscountAmount = x.InvU.InvDetTotalDiscount,
+                TotalPaidAmount=x.InvU.InvExtendedAmount,
 
             }).AsNoTracking().ToList();
             
@@ -305,6 +326,15 @@ namespace Application.Invoice
 
 
     }
+}
+
+
+public class InvoiceStatus
+{
+    public Guid Id { get; set; }
+    public string StatusPay { get; set; }
+    public string StatusSubmit { get; set; }
+
 }
 
 public class ProductSessionList
@@ -354,6 +384,8 @@ public class InvoiceDetailsDto
     public double? InvoiceDiscount { get; set; }
     public decimal? TotalInvoiceDiscount { get; set; }
     public decimal? TotalDiscountAmount { get; set; }
+    public decimal? TotalPaidAmount { get; set; }
+    public decimal? InvTotalTax { get; set; }
 }
 
 
@@ -386,7 +418,7 @@ public class CreateInvoice
 
         Number = branch + number.Next(1, 1000);
         InvStatusControl = false;
-        InvStep = 1;
+        InvStep = 0;//ثبت اولیه
     }
 
     public Guid Id { get; set; }
@@ -399,7 +431,6 @@ public class CreateInvoice
     public decimal TotalPaidAmount { get; set; }
     public decimal TotalGetTax { get; set; }
     public DateTime Date { get; set; }
-   
     public Guid? AccUid { get; set; }
     public string Description { get; set; }
     public decimal Number { get; set; }
@@ -408,6 +439,7 @@ public class CreateInvoice
     public double? InvoiceDiscountPercent { get; set; }
     public decimal? TotalInvoiceDiscount { get; set; }
     public decimal? TotalDiscountAmount { get; set; }
+
 }
 
 public class InvoiceMapping : Profile

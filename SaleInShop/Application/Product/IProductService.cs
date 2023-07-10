@@ -670,16 +670,19 @@ namespace Application.Product
                 _shopContext.Products.Update(productMap).Property(x => x.PrdUniqid).IsModified = false;
                 _shopContext.SaveChanges();
 
-                UpdatePictures(product.PrdUid, command.Files);
-                UpdateProperties(product.PrdUid);
+                if(command.Files.Any())
+                    this.UpdatePictures(product.PrdUid, command.Files);
+                
+              
+                    this.UpdateProperties(product.PrdUid);
                 transaction.Commit();
                 return result.Succeeded();
             }
             catch (Exception exception)
             {
                 transaction.Rollback();
-                _logger.LogError($"حین ثبت سفارش خطای زیر رخ داده است {exception}");
-                throw new Exception($"حین ثبت سفارش خطای زیر رخ داده است {exception.Message}");
+                _logger.LogError($"حین ویرایش محصول خطای زیر رخ داده است {exception}"); 
+                return result.Failed( $"حین ویرایش محصول خطای زیر رخ داده است ");
             }
         }
 
