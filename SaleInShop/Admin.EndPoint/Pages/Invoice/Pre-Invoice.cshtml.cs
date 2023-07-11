@@ -32,9 +32,9 @@ namespace SaleInWeb.Pages.Invoice
             Categories = _category.GetLevelList();
         }
 
-        public IActionResult OnPost()
+        public IActionResult OnPost(Guid type)
         {
-            var result = _invoiceService.Create();
+            var result = _invoiceService.Create(type);
             return new JsonResult(result);
         }
         public JsonResult OnGetData(JqueryDatatableParam param)

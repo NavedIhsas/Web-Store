@@ -12,5 +12,6 @@
         public string SSortDir_0 { get; set; }
         public int ISortingCols { get; set; }
         public string SColumns { get; set; }
+        public Guid Type { get; set; }
     }
 }

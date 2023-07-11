@@ -44,6 +44,7 @@ $("#submitPrint").on('click', function () {
     }).then(function (result) {
 
         if (result.value) {
+            $("#type").val("790C91B5-FACE-4CD4-AD8A-2A49ECA3A68B");
 
             $.ajax({
 
@@ -63,7 +64,7 @@ $("#submitPrint").on('click', function () {
                 success: function (result) {
 
                     if (result.isSucceeded) {
-                        checkStatus(result.data.statusSubmit, result.data.statusPay)
+                        checkStatus(result.data)
                         swal(
                             'موفق!',
                             result.message,
@@ -96,11 +97,13 @@ $("#submitPrint").on('click', function () {
 
 function getProductModal(evt, cityName) {
     var account = getCookie(AccountClubCookie);
+    debugger
     if (account == "") {
         notify("top center", "لطفا ابتدا مشتری را انتخاب کنید", "error");
         return false;
     }
     else {
+        
         getProduct(evt, cityName);
         $("#CustomMenu").modal('show');
     }
@@ -578,17 +581,23 @@ function getAccountClub() {
 
 
 function InvoiceList() {
-    bindInvoiceDatatable();
+    bindInvoiceDatatable("790C91B5-FACE-4CD4-AD8A-2A49ECA3A68B", "invoice-dataTable");
     $("#invoiceList").modal('show');
 }
 
+function invoiceTempList() {
+    bindInvoiceDatatable("09004CE6-3DAC-4EEB-AFE9-E1E7DDD8AD28","invoiceTemp-dataTable");
+    $("#invoiceTempList").modal('show');
 
-function bindInvoiceDatatable() {
 
-    reinitialise("invoice-dataTable");
-    dataTable = $('#invoice-dataTable')
+}
+
+function bindInvoiceDatatable(type,dataTableId) {
+    debugger
+    reinitialise(dataTableId);
+    dataTable = $('#'+ dataTableId)
         .DataTable({
-            "sAjaxSource": "/Invoice/Pre-Invoice?handler=InvoiceList",
+            "sAjaxSource": "/Invoice/Pre-Invoice?handler=InvoiceList&type="+type,
             "bServerSide": true,
             "bProcessing": true,
             "bSearchable": true,
@@ -684,7 +693,6 @@ function updateTable(obj) {
 
     var amount = 0, total = 0, priceWithDiscount = 0, paidAmount = 0, getTax = 0; amountFooter = 0; totalFooter = 0, totalDiscountAmount = 0;
     var totalPriceWithDiscount = 0, totalPaidAmount = 0, totalPaidAmountFooter = 0, totalGetTax = 0, rowNo = 0, accClbUid, totalCount = 0; totalInvoiceDiscount = 0;
-
     table.clear().draw();
 
     var footer = document.getElementsByTagName("tfoot");
@@ -871,20 +879,84 @@ function updateInvoiceTable(obj) {
         };
         setCookie("invoice", invoice);
 
-        checkStatus(obj[0].status.statusSubmit, obj[0].status.statusPay)
+        checkStatus(obj[0].status)
 
     });
 }
 
 
+$("#tempInvoice").on('click', function (evt) {
 
-function checkStatus(statusSubmit, statusPay) {
+    swal({
+        title: 'این فاکتور به  فاکتور موقت تبدیل خواهشد است!',
+        text: "آیا مطمئن هستید که میخواهید ادامه دهید؟",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'ادامه',
+        cancelButtonText: 'لغو',
+        padding: '2em',
+    }).then(function (result) {
+
+        if (result.value) {
+
+            $("#type").val("09004CE6-3DAC-4EEB-AFE9-E1E7DDD8AD28");
+            $.ajax({
+
+                url: '/Invoice/Pre-Invoice' ,
+                data: new FormData(document.forms.submitForm),
+                contentType: false,
+                processData: false,
+                type: 'POST',
+                headers: {
+                    RequestVerificationToken:
+                        $('input:hidden[name="__RequestVerificationToken"]').val()
+                },
+                beforeSend: function () {
+                    showLoader()
+                },
+
+                success: function (result) {
+
+                    if (result.isSucceeded) {
+                        checkStatus(result.data)
+                        swal(
+                            'موفق!',
+                            result.message,
+                            'success'
+                        );
+                    }
+                    else {
+                        swal(
+                            'خطا!',
+                            result.message,
+                            'error'
+                        )
+                    }
+                }
+                ,
+                error: function (error) {
+
+                    alert(error);
+                }
+                ,
+                complete: function () {
+                    hideLoader()
+                }
+            })
+
+        }
+    })
+})
+
+
+
+function checkStatus(status) {
 
     $("#invoiceStatus").removeClass("d-none");
     $("#invoicePayStatus").removeClass("d-none");
 
-    $("#invoiceStatusText").text(statusSubmit);
-    $("#invoicePayStatusText").text(statusPay);
-    if (statusPay == "تسویه نشده")
+    $("#invoiceStatusText").text(status.statusSubmit);
+    $("#invoicePayStatusText").text(status.statusPay);
+    if (status.statusPay == "تسویه نشده")
         document.querySelectorAll(".invoicePay").forEach(x => x.classList.remove("d-none"));
 }

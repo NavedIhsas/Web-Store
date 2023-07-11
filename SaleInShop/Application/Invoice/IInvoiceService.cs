@@ -23,7 +23,7 @@ namespace Application.Invoice
     {
         ResultDto<List<ProductSessionList>> ProductToList(Guid id);
         ResultDto<List<ProductSessionList>> RemoveFromProductList(Guid id);
-        ResultDto<InvoiceStatus> Create();
+        ResultDto<InvoiceStatus> Create(Guid type);
         JsonResult GetInvoiceList(JqueryDatatableParam param);
         ResultDto<List<InvoiceDetailsDto>> InvoiceDetails(Guid invoiceId);
         ResultDto<List<ProductListDot>> ChangeAccountClub(int priceLevel);
@@ -134,7 +134,7 @@ namespace Application.Invoice
         }
 
 
-        public ResultDto<InvoiceStatus> Create()
+        public ResultDto<InvoiceStatus> Create(Guid type)
         {
             var result = new ResultDto<InvoiceStatus>();
 
@@ -143,14 +143,14 @@ namespace Application.Invoice
             var invoice = _authHelper.GetCookie("invoice");
             var invoiceDetails = _authHelper.GetCookie("productList");
             var single = JsonConvert.DeserializeObject<CreateInvoice>(invoice);
-            Domain.ShopModels.Invoice map;
             try
             {
-                map = _mapper.Map<Domain.ShopModels.Invoice>(single);
+                var map = _mapper.Map<Domain.ShopModels.Invoice>(single);
                 var shareDis = _authHelper.GetTaxBeforeDiscount();
                 if (shareDis == 1)
                     map.InvShareDiscount = true;
                 map.AccClbUid = account.AccClbUid;
+                map.SalCatUid = type;
                 _context.Invoices.Add(map);
                 _context.SaveChanges();
 
@@ -191,8 +191,7 @@ namespace Application.Invoice
 
         public JsonResult GetInvoiceList(JqueryDatatableParam param)
         {
-
-            var list = _context.Invoices.Include(x => x.AccClbU).AsNoTracking();
+            var list = _context.Invoices.Where(x=>x.SalCatUid==param.Type).Include(x => x.AccClbU).AsNoTracking();
 
             if (!string.IsNullOrEmpty(param.SSearch))
             {
@@ -314,12 +313,12 @@ namespace Application.Invoice
 
         private static double CalculateDiscount(double invDetDiscount, double? invDetShareDiscountPer)
         {
-            double result = 0;
+            double? result = 0;
 
-            result = (double)(invDetDiscount + invDetShareDiscountPer);
+            result = invDetDiscount + invDetShareDiscountPer;
             if (result > 100)
                 result = 100;
-            return result;
+            return result??0;
         }
 
         public ResultDto<List<ProductListDot>> ChangeAccountClub(int priceLevel)

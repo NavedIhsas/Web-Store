@@ -367,8 +367,17 @@ namespace Application.Product
         {
             var result = new ResultDto<JsonResult>();
             var cookie = _authHelper.GetCookie("AccountClubList");
-            var account = JsonConvert.DeserializeObject<AccountClubDto>(cookie);
-         
+            var account = new AccountClubDto();
+            try
+            {
+                 account = JsonConvert.DeserializeObject<AccountClubDto>(cookie);
+
+            }
+            catch (Exception e)
+            {
+
+                throw new Exception("");
+            }
             if (account == null)
             {
                 _logger.LogError($"An error occurred while retrieving data from cookie (AccountClubList) ");

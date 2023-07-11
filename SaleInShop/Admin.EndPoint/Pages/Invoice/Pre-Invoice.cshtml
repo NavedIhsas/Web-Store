@@ -8,10 +8,11 @@
 
 <style>
     /* Style the tab */
-  
+
     td.bg-aliceblue {
-        background-color: aliceblue ;
+        background-color: aliceblue;
     }
+
     .verticalLine {
         float: right;
         border-left: 1px solid darkgrey;
@@ -81,8 +82,6 @@
 
     .product-content {
     }
-    
-
 </style>
 
 
@@ -103,7 +102,7 @@
                             <button class="tablinks" onclick="openCity(event, 'Paris')">منوی نمایشی</button>
                             <button class="tablinks" onclick="openCity(event, 'Tokyo')">میز</button>
                             <button class="tablinks" onclick="openCity(event, 'Tokyo')">پکیج</button>
-                            <button class="tablinks" onclick="openCity(event, 'Tokyo')">فاکتور موقت</button>
+                            <button class="tablinks" onclick="invoiceTempList()">فاکتور موقت</button>
                         </div>
                     </ul>
                     <form method="post" id="createForm" name="submitForm">
@@ -136,6 +135,10 @@
                                         </div>
                                     </div>
                                     <hr />
+                                    
+                                    <div class="container  text-center">
+                                        <p><strong class="font-wight-bold">نوع فاکتور: <span id="invoiceType">فاکتور موقت</span></strong></p>
+                                    </div>
 
                                     <div class="row" id="productName"></div>
 
@@ -174,8 +177,7 @@
                                                 </div>
                                             </div>
                                         </div>
-
-
+                                        
                                         <div class="card" id="cardPrint">
                                             <div class="card-header d-none" id="accClubDetails">
                                                 <div class="row">
@@ -206,7 +208,7 @@
                                             </div>
                                         </div>
 
-
+                                        <input type="hidden" value="" name="type" id="type" />
                                         <div class="col-md-12 col-sm-12 col-xs-12 table-responsive" id="productList">
                                             <table id="property-dataTable" class="Current-color table table-striped table-bordered property-dataTable">
                                                 <thead>
@@ -232,7 +234,6 @@
 
 
                                             <div id="total" class="row d-none">
-                                              
                                             </div>
 
                                         </div>
@@ -241,7 +242,7 @@
                                         <button type="submit" class="btn btn-dark btn-sm btn-rounded pull-left invoicePay d-none">تسویه کارتخوان</button>
                                         <button type="submit" class="btn btn-warning btn-sm btn-rounded pull-left d-none invoicePay">سایر روش های تسویه</button>
                                         <button type="submit" class="btn btn-primary btn-sm btn-rounded pull-left d-none invoicePay">تسویه نقدی</button>
-                                        <button type="submit" class="btn btn-info btn-sm btn-rounded pull-left">فاکتور موقت</button>
+                                        <button type="button" class="btn btn-info btn-sm btn-rounded pull-left" id="tempInvoice">فاکتور موقت</button>
                                         <button id="submitPrint" type="button" class="btn btn-success btn-sm btn-rounded">تایید و چاپ</button>
                                     </div>
                                 </div>
