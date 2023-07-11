@@ -281,7 +281,7 @@ namespace Application.Product
             var product = _shopContext.Products
                 .Select(x => new { x.PrdUid, x.PrdDiscountType, x.PrdDiscount, x.PrdPercentDiscount, x.PrdPricePerUnit1, x.PrdPricePerUnit2, x.PrdPricePerUnit3, x.PrdPricePerUnit4, x.PrdPricePerUnit5, })
                 .AsNoTracking().SingleOrDefault(x => x.PrdUid == productId);
-           
+
             decimal discount = 0;
             if (product == null) return discount;
             var productDiscount = product.PrdDiscount;
@@ -308,7 +308,7 @@ namespace Application.Product
 
             return discount;
         }
-        
+
         public decimal? GetPrice(Guid? productId, int priceLevel)
         {
             var product = _shopContext.Products
@@ -317,7 +317,7 @@ namespace Application.Product
 
             if (product == null)
                 return null;
-           
+
             decimal? price = null;
             price = priceLevel switch
             {
@@ -349,12 +349,12 @@ namespace Application.Product
                     discount = this.CalculateAcClubDiscount(accountClubId, priceLevel);
                     break;
                 case InvoiceDetDiscountStatus.Both:
-                {
-                    var productDiscount = this.CalculateProductDiscount(productId, priceLevel);
-                    var accClubType = this.CalculateAcClubDiscount(accountClubId, priceLevel);
-                    discount = productDiscount + accClubType;
-                    break;
-                }
+                    {
+                        var productDiscount = this.CalculateProductDiscount(productId, priceLevel);
+                        var accClubType = this.CalculateAcClubDiscount(accountClubId, priceLevel);
+                        discount = productDiscount + accClubType;
+                        break;
+                    }
                 case null:
                     break;
                 default:
@@ -368,7 +368,7 @@ namespace Application.Product
             var result = new ResultDto<JsonResult>();
             var cookie = _authHelper.GetCookie("AccountClubList");
             var account = JsonConvert.DeserializeObject<AccountClubDto>(cookie);
-
+         
             if (account == null)
             {
                 _logger.LogError($"An error occurred while retrieving data from cookie (AccountClubList) ");
@@ -390,11 +390,11 @@ namespace Application.Product
                 PrdLevelId = x.PrdLvlName,
                 PrdPricePerUnit1 = x.PrdPricePerUnit1 ?? 0,
                 PrdLvlName = x.PrdLvlName,
-                PriceLevel = account.AccTypePriceLevel?? 0,
-                AccClubTypeId = account.AccClbTypUid??Guid.Empty,
-                InvoiceDiscount = account.InvoiceDiscount??0,
+                PriceLevel = account.AccTypePriceLevel ?? 0,
+                AccClubTypeId = account.AccClbTypUid ?? Guid.Empty,
+                InvoiceDiscount = account.InvoiceDiscount ?? 0,
                 DiscountPercent = Convert.ToDecimal(account.AccClubDiscount),
-                TaxValue = x.TaxValue??0 + x.TaxTaxesValue??0
+                TaxValue = x.TaxValue ?? 0 + x.TaxTaxesValue ?? 0
             });
 
             if (!string.IsNullOrEmpty(param.SSearch))
@@ -439,22 +439,43 @@ namespace Application.Product
             else displayResult = list;
             var totalRecords = list.Count();
 
-            
+
             var result1 = (new
             {
                 param.SEcho,
                 iTotalRecords = totalRecords,
                 iTotalDisplayRecords = totalRecords,
-                
                 aaData = displayResult.ToList()
             });
+
+            var shareDiscount = _authHelper.GetTaxBeforeDiscount();
             foreach (var dto in result1.aaData)
             {
+
                 dto.DiscountPercent = this.CalculateDiscount(dto.PrdUid, dto.AccClubTypeId, dto.PriceLevel);
-                dto.Price=this.GetPrice(dto.PrdUid, dto.PriceLevel);
-               // dto.InvoiceDiscount = dto.InvoiceDiscount;
+
+                if (shareDiscount == 1)
+                {
+                    dto.DiscountSaveToDb = dto.DiscountPercent;
+                    dto.DiscountPercent += Convert.ToDecimal(dto.InvoiceDiscount);
+                    dto.InvoiceDiscountPercent = dto.InvoiceDiscount;
+                    dto.InvoiceDiscount=0;
+                    if (dto.DiscountPercent > 100)
+                    {
+                        dto.DiscountPercent = 100;
+                        dto.TaxValue = 0;
+                        dto.TotalPaidAmount = 0;
+                        dto.InvoiceDiscount = 0;
+                    }
+
+
+                }
+
+               
+                dto.Price = this.GetPrice(dto.PrdUid, dto.PriceLevel);
+                // dto.InvoiceDiscount = dto.InvoiceDiscount;
             }
-            var  jsonRe =new JsonResult(result1, new JsonSerializerOptions { PropertyNamingPolicy = null });
+            var jsonRe = new JsonResult(result1, new JsonSerializerOptions { PropertyNamingPolicy = null });
             return result.Succeeded(jsonRe);
 
         }
@@ -670,19 +691,19 @@ namespace Application.Product
                 _shopContext.Products.Update(productMap).Property(x => x.PrdUniqid).IsModified = false;
                 _shopContext.SaveChanges();
 
-                if(command.Files.Any())
+                if (command.Files.Any())
                     this.UpdatePictures(product.PrdUid, command.Files);
-                
-              
-                    this.UpdateProperties(product.PrdUid);
+
+
+                this.UpdateProperties(product.PrdUid);
                 transaction.Commit();
                 return result.Succeeded();
             }
             catch (Exception exception)
             {
                 transaction.Rollback();
-                _logger.LogError($"حین ویرایش محصول خطای زیر رخ داده است {exception}"); 
-                return result.Failed( $"حین ویرایش محصول خطای زیر رخ داده است ");
+                _logger.LogError($"حین ویرایش محصول خطای زیر رخ داده است {exception}");
+                return result.Failed($"حین ویرایش محصول خطای زیر رخ داده است ");
             }
         }
 

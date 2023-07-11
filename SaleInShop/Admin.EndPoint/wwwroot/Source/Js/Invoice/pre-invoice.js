@@ -63,10 +63,7 @@ $("#submitPrint").on('click', function () {
                 success: function (result) {
 
                     if (result.isSucceeded) {
-
-                        
                         checkStatus(result.data.statusSubmit, result.data.statusPay)
-                  
                         swal(
                             'موفق!',
                             result.message,
@@ -196,7 +193,8 @@ function getProduct(evt, cityName) {
     }
 
     function generateButton(data) {
-        return ` <a onClick="addProductToList('${data.PrdUid}','${data.PrdName}','${data.Price}','${data.DiscountPercent}','${data.TaxValue}','${data.InvoiceDiscount}')" type="button" >
+
+        return ` <a onClick="addProductToList('${data.PrdUid}','${data.PrdName}','${data.Price}','${data.DiscountPercent}','${data.TaxValue}','${data.InvoiceDiscount}','${data.InvoiceDiscountPercent}','${data.DiscountSaveToDb}')" type="button" >
         <svg style="color:green" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
     </a>
     `
@@ -216,7 +214,7 @@ function openDetails(evt, name, accclubType) {
         },
 
         success: function (result) {
-            
+
             result.forEach(x => {
                 const list = `
 
@@ -311,12 +309,12 @@ function applyTotal(totalProductCount, totalFooter, totalDiscountAmount, totalIn
         `).removeClass("d-none");
 }
 
-function addProductToList(id, name, price, discount, tax, invoiceDiscount, value = 1) {
-    
+function addProductToList(id, name, price, discount, tax, invoiceDiscount, invoiceDiscountPercent, discountSaveToDb, value = 1, changeUser = false) {
+
     var discountAmount = parseFloat((discount * price) / 100);
     var getTax = parseFloat(calculateTax(tax, price));
     var priceWithDiscount = Math.abs(parseFloat(((discount) * price) / 100) - price);
-    var paidAmount = Math.abs(parseFloat(priceWithDiscount - getTax));
+    var paidAmount = Math.abs(parseFloat(priceWithDiscount + getTax));
     var account = getCookie(AccountClubCookie);
     if (account == "") {
         notify("top center", "لطفا ابتدا مشتری را انتخاب کنید", "error");
@@ -338,6 +336,8 @@ function addProductToList(id, name, price, discount, tax, invoiceDiscount, value
         discountAmount: discountAmount,
         paidAmount: paidAmount,
         tax: tax,
+        invoiceDiscountPercent: invoiceDiscountPercent,
+        discountSaveToDb: discountSaveToDb,
         des: "",
     };
 
@@ -352,7 +352,7 @@ function addProductToList(id, name, price, discount, tax, invoiceDiscount, value
     else {
         var parse = JSON.parse(cookie);
         const found = parse.find(element => element.productId === id);
-        if (found !== undefined) {
+        if (found !== undefined && changeUser == false) {
 
             found.value = found.value + 1;
             found.total = found.value * price;
@@ -362,16 +362,18 @@ function addProductToList(id, name, price, discount, tax, invoiceDiscount, value
 
             found.tax = parseFloat(calculateTax(found.taxPercent, found.total));
             found.paidAmount = Math.abs(parseFloat(priceWithDiscount + found.tax));
-            debugger
+
             obj = parse.filter(element => element.productId !== id);
             obj.push(found);
             setCookie(ProductListCookie, obj);
         }
         else {
 
-            var cookie = getCookie(ProductListCookie);
-            parse.push(product);
+            if (!changeUser)
+                parse.push(product);
+
             obj.push.apply(obj, parse);
+
             //obj.push(parse);
             setCookie(ProductListCookie, obj);
         }
@@ -494,7 +496,7 @@ function bindDatatable() {
                     "searchable": false,
                     "orderable": false,
                     render: function (data, row, full) {
-                        
+
                         return generateButton(data);
                     },
                 }
@@ -503,7 +505,7 @@ function bindDatatable() {
         });
 
     function generateButton(data) {
-        
+
         return `<center><a onClick="addAccountClub('${data.AccClbUid}','${data.AccClbTypUid}','${data.AccClbName ?? ""}','${data.AccClubDiscount}','${data.AccClubType ?? ""}','${data.AccClbMobile ?? ""}','${data.AccClbAddress ?? ""}','${data.AccClbCode ?? ""}','${data.AccTypePriceLevel}','${data.InvoiceDiscount}')" class="btn btn-warning btn-rounded btn-sm">انتخاب </a>&nbsp; `
     };
 
@@ -539,8 +541,8 @@ function addAccountClub(id, accTypeId, name, discount, type, mobile, address, co
                 if (result.isSucceeded) {
                     setCookie(ProductListCookie, result.data);
                     result.data.forEach(x => {
-                        
-                        addProductToList(x.productId, x.name, x.price, x.discount, x.tax, x.invoiceDiscount, x.value);
+
+                        addProductToList(x.productId, x.name, x.price, x.discount, x.tax, x.invoiceDiscount, x.invoiceDiscountPercent, x.discountSaveToDb, x.value, true,);
                     })
 
                 }
@@ -578,7 +580,6 @@ function getAccountClub() {
 function InvoiceList() {
     bindInvoiceDatatable();
     $("#invoiceList").modal('show');
-
 }
 
 
@@ -659,6 +660,7 @@ function invoiceDetails(invoiceId) {
         success: function (result) {
             if (result.isSucceeded) {
                 setCookie(ProductListCookie, result.data);
+                debugger
                 updateInvoiceTable(result.data);
 
                 var account = result.data[0];
@@ -681,7 +683,7 @@ function invoiceDetails(invoiceId) {
 function updateTable(obj) {
 
     var amount = 0, total = 0, priceWithDiscount = 0, paidAmount = 0, getTax = 0; amountFooter = 0; totalFooter = 0, totalDiscountAmount = 0;
-    var totalPriceWithDiscount = 0, totalPaidAmount = 0, totalGetTax = 0, rowNo = 0, accClbUid, totalCount = 0; totalInvoiceDiscount = 0;
+    var totalPriceWithDiscount = 0, totalPaidAmount = 0, totalPaidAmountFooter = 0, totalGetTax = 0, rowNo = 0, accClbUid, totalCount = 0; totalInvoiceDiscount = 0;
 
     table.clear().draw();
 
@@ -691,6 +693,8 @@ function updateTable(obj) {
 
     obj.forEach(x => {
 
+
+
         amount = parseFloat(x.price);
         total = parseFloat(x.total);
         totalInvoiceDiscount = x.invoiceDiscount;
@@ -699,13 +703,14 @@ function updateTable(obj) {
         totalCount += parseFloat(x.value);
 
         priceWithDiscount = Math.abs(parseFloat(((parseFloat(x.discount) * total) / 100) - total));
+
         discountAmount = parseFloat((parseFloat(x.discount) * total) / 100);
         getTax = calculateTax(x.taxPercent, total);
         paidAmount = Math.abs(parseFloat(priceWithDiscount + getTax));
-
         totalDiscountAmount += discountAmount;
         totalPriceWithDiscount += priceWithDiscount;
         totalPaidAmount += paidAmount;
+        totalPaidAmountFooter += paidAmount;
         totalGetTax += getTax;
         const result =
             `
@@ -715,12 +720,14 @@ function updateTable(obj) {
         <td>${x.value ?? ""}</td>
         <td>${parseFloat(x.price).toLocaleString()}</td>
         <td>${parseFloat(x.total).toLocaleString()}</td>
-        <td>${x.discount}</td>
+   
+        <td>${x.discountSaveToDb}</td>
         <td>${priceWithDiscount.toLocaleString()}</td>
         <td>${getTax.toLocaleString()}</td>
         <td>${paidAmount.toLocaleString()}</td>
 
-        <td></td>
+        <td>${x.invoiceDiscountPercent}</td>
+        <td>${x.discount}</td>
         <td> <a type="button" class="" onclick="(ProuctListDes('${x.productId}'))">...</a></td>
         <td>
 
@@ -741,7 +748,7 @@ function updateTable(obj) {
         if (footer.length !== 0)
             footer[0].parentNode.removeChild(footer[0]);
 
-        $(".property-dataTable").append($('<tfoot />').append($("<tr> <td>مجموع:</td> <td></td><td>" + totalCount + "</td> <td>" + parseFloat(amountFooter).toLocaleString() + "</td> <td>" + parseFloat(totalFooter).toLocaleString() + "</td><td></td> <td>" + Math.abs(totalPriceWithDiscount).toLocaleString() + "</td> <td>" + Math.abs(totalGetTax).toLocaleString() + "</td> <td>" + Math.abs(totalPaidAmount).toLocaleString() + "</td> <tr>").clone()));
+        $(".property-dataTable").append($('<tfoot />').append($("<tr> <td>مجموع:</td> <td></td><td>" + totalCount + "</td> <td>" + parseFloat(amountFooter).toLocaleString() + "</td> <td>" + parseFloat(totalFooter).toLocaleString() + "</td><td></td> <td>" + Math.abs(totalPriceWithDiscount).toLocaleString() + "</td> <td>" + Math.abs(totalGetTax).toLocaleString() + "</td> <td>" + Math.abs(totalPaidAmountFooter).toLocaleString() + "</td> <tr>").clone()));
 
         totalInvoiceDiscount = ConvertPercentToAmount(totalPaidAmount, totalInvoiceDiscount);
 
@@ -757,6 +764,7 @@ function updateTable(obj) {
             // accUid: accClbUid,
             amount: amount,
             total: total,
+            discountSaveToDb: x.discountSaveToDb,
             priceWithDiscount: priceWithDiscount,
             paidAmount: paidAmount,
             tax: getTax,
@@ -788,10 +796,10 @@ function updateInvoiceTable(obj) {
         footer[0].parentNode.removeChild(footer[0]);
 
     obj.forEach(x => {
-        
+
         amount = parseFloat(x.price);
         total = parseFloat(x.total);
-        
+
         totalInvoiceDiscount = x.totalInvoiceDiscount;
         amountFooter += parseFloat(x.price);
         totalFooter += parseFloat(x.total);
@@ -806,6 +814,7 @@ function updateInvoiceTable(obj) {
         totalPriceWithDiscount += priceWithDiscount;
         totalPaidAmount = x.totalPaidAmount;
         totalGetTax == getTax;
+        debugger
         const result =
             `
     <tr>
@@ -814,11 +823,12 @@ function updateInvoiceTable(obj) {
         <td>${x.value ?? ""}</td>
         <td>${parseFloat(x.price).toLocaleString()}</td>
         <td>${parseFloat(x.total).toLocaleString()}</td>
-        <td>${x.discount}</td>
+        <td>${x.discountSaveToDb}</td>
         <td>${priceWithDiscount.toLocaleString()}</td>
         <td>${getTax.toLocaleString()}</td>
         <td>${paidAmount.toLocaleString()}</td>
-
+         <td>${x.invoiceDiscountPercent}</td>
+        <td>${x.discount}</td>
         <td></td>
         <td> <a type="button" class="" onclick="(ProuctListDes('${x.id}'))">...</a></td>
         <td>
@@ -846,7 +856,7 @@ function updateInvoiceTable(obj) {
         //totalPaidAmount -= totalInvoiceDiscount;
         //totalPaidAmount = Math.abs(totalPaidAmount);
 
-        
+
         applyTotal(totalCount, totalFooter, totalDiscountAmount, totalInvoiceDiscount, x.invTotalTax, x.totalPaidAmount)
         var invoice =
         {
@@ -860,7 +870,7 @@ function updateInvoiceTable(obj) {
             totalGetTax: x.invTotalTax,
         };
         setCookie("invoice", invoice);
-        
+
         checkStatus(obj[0].status.statusSubmit, obj[0].status.statusPay)
 
     });

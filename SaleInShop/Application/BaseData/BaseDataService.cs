@@ -725,6 +725,7 @@ namespace Application.BaseData
                     {
                         clubTypeDto.AccClubType = accType.AccClbTypName;
                         clubTypeDto.AccClubDiscount = accType.AccClbTypDetDiscount ?? 0;
+                        
                     }
 
                 }

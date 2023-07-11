@@ -13,6 +13,7 @@ public interface IAuthHelper
     void ConfigureSettingTable();
     List<BusinessUnit> SelectBranch();
     Guid? SetBranch(string branchId);
+    int GetTaxBeforeDiscount();
     bool ServerConnect();
     bool BaseServerConnect();
 
@@ -113,6 +114,11 @@ public class AuthHelper : IAuthHelper
         }
     }
 
+
+    public int GetTaxBeforeDiscount()
+    {
+        return Convert.ToInt32(_context.Settings.FirstOrDefault(x => x.SetKey == "TAX_BEFORE_DISCOUNT")?.SetValue);
+    }
     public List<BusinessUnit> SelectBranch()
     {
         return _saleInContext.BusinessUnits.Where(x => x.BusUnitStatus != false).AsNoTracking().ToList();

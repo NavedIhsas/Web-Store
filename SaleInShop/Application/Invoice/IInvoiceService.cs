@@ -104,7 +104,7 @@ namespace Application.Invoice
                 dto.StatusSubmit = "در انتظار تایید";
 
             if (status.InvStatusControl == false)
-                dto.StatusPay = "پرداخت شده";
+                dto.StatusPay = "تسویه نشده";
 
             else if (status is { InvStatusControl: null or false })
                 dto.StatusPay = "پرداخت نشده";
@@ -147,10 +147,12 @@ namespace Application.Invoice
             try
             {
                 map = _mapper.Map<Domain.ShopModels.Invoice>(single);
+                var shareDis = _authHelper.GetTaxBeforeDiscount();
+                if (shareDis == 1)
+                    map.InvShareDiscount = true;
                 map.AccClbUid = account.AccClbUid;
                 _context.Invoices.Add(map);
                 _context.SaveChanges();
-
 
                 var details = JsonConvert.DeserializeObject<List<InvoiceDetailsDto>>(invoiceDetails);
 
@@ -167,9 +169,10 @@ namespace Application.Invoice
                         InvDetTax = detail.Tax,
                         InvDetTotalAmount = detail.Total,
                         InvDetDescribtion = detail.Des,
-                        InvDetPercentDiscount = Convert.ToInt64(detail.Discount),
+                        InvDetPercentDiscount = Convert.ToInt64(detail.DiscountSaveToDb),
                         InvDetTaxValue = Convert.ToDouble(detail.Tax),
                         InvDetPayment = detail.PaidAmount,
+                        InvDetShareDiscountPer = detail.InvoiceDiscountPercent,
                     };
                     _context.InvoiceDetails.Add(addNews);
                     _context.SaveChanges();
@@ -269,6 +272,7 @@ namespace Application.Invoice
         {
             var dto = new ResultDto<List<InvoiceDetailsDto>>();
             var status = this.GetStatus(invoiceId);
+           
             var result = _context.InvoiceDetails
                 .Where(x => x.InvUid == invoiceId)
                 .Include(x => x.PrdU)
@@ -280,7 +284,7 @@ namespace Application.Invoice
                 ProductId = x.PrdUid ?? Guid.Empty,
                 Name = x.PrdU.PrdName,
                 Price = x.InvDetPricePerUnit ?? 0,
-                Discount = x.InvDetPercentDiscount ?? 0,
+                Discount = CalculateDiscount(x.InvDetPercentDiscount??0  , x.InvDetShareDiscountPer ),
                 Total = x.InvDetTotalAmount ?? 0,
                 Value = x.InvDetQuantity ?? 0,
                 DiscountAmount = x.InvDetDiscount ?? 0,
@@ -299,11 +303,23 @@ namespace Application.Invoice
                 TotalInvoiceDiscount = x.InvU.InvDiscount2,
                 TotalDiscountAmount = x.InvU.InvDetTotalDiscount,
                 TotalPaidAmount = x.InvU.InvExtendedAmount,
+                DiscountSaveToDb =Convert.ToDecimal(x.InvDetPercentDiscount ?? 0),
+                InvShareDiscount = x.InvU.InvShareDiscount ?? false,
+                InvoiceDiscountPercent= x.InvDetShareDiscountPer ?? 0,
                 Status = status
             }).AsNoTracking().ToList();
 
-
             return dto.Succeeded(result);
+        }
+
+        private static double CalculateDiscount(double invDetDiscount, double? invDetShareDiscountPer)
+        {
+            double result = 0;
+
+            result = (double)(invDetDiscount + invDetShareDiscountPer);
+            if (result > 100)
+                result = 100;
+            return result;
         }
 
         public ResultDto<List<ProductListDot>> ChangeAccountClub(int priceLevel)
@@ -321,11 +337,34 @@ namespace Application.Invoice
                 return result.Failed("خطا در دریافت اطلاعات، لطفا با پشتیبانی تماس بگرید");
             }
 
-
+            var shareDiscount = _authHelper.GetTaxBeforeDiscount();
             foreach (var dto in products)
             {
                 dto.DiscountPercent = _productService.CalculateDiscount(dto.ProductId, account.AccClbTypUid, priceLevel);
                 dto.Price = _productService.GetPrice(dto.ProductId, priceLevel);
+                if (shareDiscount == 1)
+                {
+                    dto.DiscountSaveToDb = dto.DiscountPercent;
+                    dto.DiscountPercent += dto.DiscountPercent;
+                    dto.InvoiceDiscountPercent = dto.InvoiceDiscount;
+                    dto.InvoiceDiscount = 0;
+                 
+                    if (dto.DiscountPercent > 100)
+                    {
+                        dto.DiscountPercent = 100;
+                        dto.TaxPercent = "0";
+                        dto.Tax = 0;
+                        dto.Total = 0;
+                    }
+                }
+                else
+                {
+                    dto.DiscountSaveToDb = dto.DiscountPercent;
+                    dto.DiscountPercent = dto.DiscountPercent;
+                    dto.InvoiceDiscountPercent = dto.InvoiceDiscount;
+                    dto.InvoiceDiscount = 0;
+                }
+               
             }
 
             return result.Succeeded(products.ToList());
@@ -368,6 +407,9 @@ public class ProductListDot
     public int Tax { get; set; }
     public string Des { get; set; }
     public decimal DiscountPercent { get; set; }
+    public double InvoiceDiscount { get; set; }
+    public double InvoiceDiscountPercent { get; set; }
+    public decimal DiscountSaveToDb { get; set; }
 }
 
 public class InvoiceDetailsDto
@@ -395,7 +437,10 @@ public class InvoiceDetailsDto
     public decimal? TotalDiscountAmount { get; set; }
     public decimal? TotalPaidAmount { get; set; }
     public decimal? InvTotalTax { get; set; }
+    public bool InvShareDiscount { get; set; }
     public InvoiceStatus Status { get; set; }
+    public decimal DiscountSaveToDb { get; set; }
+    public double? InvoiceDiscountPercent { get; set; }
 }
 
 
@@ -419,8 +464,11 @@ public class InvoiceDto
 }
 public class CreateInvoice
 {
+
     public CreateInvoice()
     {
+
+
         Id = Guid.NewGuid();
         Date = DateTime.Now;
         var branch = 3001;
