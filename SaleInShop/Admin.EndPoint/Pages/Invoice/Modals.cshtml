@@ -1,4 +1,73 @@
-﻿<div class="modal fade" id="productListDes" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+﻿
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<style>
+    .card {
+        background-color: #fff;
+        border-radius: 10px;
+        border: none;
+        position: relative;
+    }
+
+    .l-bg-cherry {
+        background: linear-gradient(to right, #912, #f09) !important;
+        color: #fff;
+    }
+
+    .l-bg-blue-dark {
+        background: linear-gradient(to right, #373b44, #4286f4) !important;
+        color: #fff;
+    }
+
+    .l-bg-green-dark {
+        background: linear-gradient(to right, #0a504a, #38ef7d) !important;
+        color: #fff;
+    }
+
+    .l-bg-orange-dark {
+        background: linear-gradient(to right, #a86008, #ffba56) !important;
+        color: #fff;
+    }
+
+    .card .card-statistic-3 .card-icon-large .fas, .card .card-statistic-3 .card-icon-large .far, .card .card-statistic-3 .card-icon-large .fab, .card .card-statistic-3 .card-icon-large .fal {
+        font-size: 110px;
+    }
+
+    .card .card-statistic-3 .card-icon {
+        text-align: center;
+        line-height: 50px;
+        margin-left: 15px;
+        color: #000;
+        position: absolute;
+        right: -5px;
+        top: 20px;
+        opacity: 0.1;
+    }
+
+    .l-bg-cyan {
+        background: linear-gradient(135deg, #289cf5, #84c0ec) !important;
+        color: #fff;
+    }
+
+    .l-bg-green {
+        background: linear-gradient(135deg, #23bdb8 0%, #43e794 100%) !important;
+        color: #fff;
+    }
+
+    .l-bg-orange {
+        background: linear-gradient(to right, #f9900e, #ffba56) !important;
+        color: #fff;
+    }
+
+    .l-bg-cyan {
+        background: linear-gradient(135deg, #289cf5, #84c0ec) !important;
+        color: #fff;
+    }
+</style>
+
+
+
+
+<div class="modal fade" id="productListDes" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -55,30 +124,30 @@
                             <div class="table-responsive mb-4 mt-4">
                                 <table id="dataTable_2" class="table table-hover table-bordered cell-border row-border" style="width:100%">
                                     <thead>
-                                    <tr>
-                                        <th>نام</th>
-                                        <th>کد</th>
-                                        <th>تاریخ تولد</th>
-                                        <th>نوع مشترک</th>
-                                        <th>نوع اشتراک</th>
-                                        <th>تخفیف</th>
-                                        <th>رتبه مشترک</th>
-                                        <th>موبایل</th>
-                                        <th>جنسیت</th>
-                                        <th>عملیات</th>
-                                    </tr>
+                                        <tr>
+                                            <th>نام</th>
+                                            <th>کد</th>
+                                            <th>تاریخ تولد</th>
+                                            <th>نوع مشترک</th>
+                                            <th>نوع اشتراک</th>
+                                            <th>تخفیف</th>
+                                            <th>رتبه مشترک</th>
+                                            <th>موبایل</th>
+                                            <th>جنسیت</th>
+                                            <th>عملیات</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
                                     </tbody>
                                 </table>
-                                
+
                                 <div class="modal-footer pull-left">
                                     <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> بستن</button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                   
+
                 </div>
             </div>
 
@@ -108,15 +177,14 @@
                                     <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
                                         <table id="dataTable_1" class="text-center Current-color table table-striped table-bordered">
                                             <thead>
-                                            <tr>
-                                                <th>نام کالا</th>
-                                                <th>گروه کالا</th>
-                                                <th>قیمت کالا</th>
-                                                <th>افزودن</th>
-                                            </tr>
+                                                <tr>
+                                                    <th>نام کالا</th>
+                                                    <th>گروه کالا</th>
+                                                    <th>قیمت کالا</th>
+                                                    <th>افزودن</th>
+                                                </tr>
                                             </thead>
                                             <tbody>
-                                                           
                                             </tbody>
                                         </table>
                                     </div>
@@ -125,7 +193,7 @@
 
                         </div>
                     </div>
-                   
+
                 </div>
             </div>
 
@@ -151,21 +219,21 @@
                 <div class="row layout-top-spacing" id="">
                     <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
                         <div class="widget-content  br-6">
-                            
+
                             <div class="col-md-12 col-sm-12 col-xs-12 table-responsive" id="productList">
                                 <div class="card-title ">
                                     @*    <span> وضعیت فرم: <strong class="text-danger mt-5">تایید نشده</strong></span>*@
                                 </div>
                                 <table id="invoice-dataTable" class="Current-color table table-striped table-bordered">
                                     <thead>
-                                    <tr>
-                                        <th>تاریخ</th>
-                                        <th>شماره فاکتور</th>
-                                        <th>مشتری</th>
-                                        <th>کد مشترک</th>
-                                        <th>مبلغ فاکتور</th>
-                                        <th>عملیات</th>
-                                    </tr>
+                                        <tr>
+                                            <th>تاریخ</th>
+                                            <th>شماره فاکتور</th>
+                                            <th>مشتری</th>
+                                            <th>کد مشترک</th>
+                                            <th>مبلغ فاکتور</th>
+                                            <th>عملیات</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
                                     </tbody>
@@ -174,7 +242,7 @@
 
                         </div>
                     </div>
-                   
+
                 </div>
             </div>
 
@@ -233,6 +301,136 @@
 
 
 
+<div class="modal fade" id="otherPaymentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h5 class="modal-title text-center">روش های پرداخت </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <div class="form-inline row">
+                                <label>شماره پرداخت:</label>
+                                <input type="text" value="1300" class="form-control text-dark ml-2" readonly />
+                                <label>نام مشترک:</label>
+                                <input type="text" value="نان سجاد" class="form-control ml-2" readonly />
+                                <label>تاریخ:</label>
+                                <input type="text" value="1402" class="form-control ml-2" readonly />
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row layout-top-spacing" id="">
+                    <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
+                        <div class="widget-content  br-6">
+
+
+
+                            <div class="col-md-10 ">
+                                <div class="row ">
+                                    <div class="col-xl-3 col-lg-6">
+                                        <div class="card l-bg-cherry" style="with:100px !important">
+                                            <div class="card-statistic-3 p-4">
+                                                <div class="card-icon card-icon-large"><i class="fas fa-shopping-cart"></i></div>
+                                                <div class="mb-4">
+                                                    <h5 class="card-title mb-0">پرداخت نقدی</h5>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-3 col-lg-6">
+                                        <div class="card l-bg-blue-dark " style="with:100px !important">
+                                            <div class="card-statistic-3 p-4">
+                                                <div class="card-icon card-icon-large"><i class="fas fa-users"></i></div>
+                                                <div class="mb-4">
+                                                    <h5 class="card-title mb-0">پرداخت با کارتخوان</h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-3 col-lg-6">
+                                        <div class="card l-bg-green-dark" style="with:100px !important">
+                                            <div class="card-statistic-3 p-4">
+                                                <div class="card-icon card-icon-large"><i class="fas fa-ticket-alt"></i></div>
+                                                <div class="mb-4">
+                                                    <h5 class="card-title mb-0">باشگاه</h5>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-3 col-lg-6">
+                                        <div class="card l-bg-orange-dark" style="with:100px !important">
+                                            <div class="card-statistic-3 p-4">
+                                                <div class="card-icon card-icon-large"><i class="fas fa-dollar-sign"></i></div>
+                                                <div class="mb-4">
+                                                    <h5 class="card-title mb-0">اعتباری</h5>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <div class="col-md-12 col-sm-12 col-xs-12 table-responsive" id="">
+                                <div class="card-title ">
+                                    @*    <span> وضعیت فرم: <strong class="text-danger mt-5">تایید نشده</strong></span>*@
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="form-inline row p-4">
+                        <label class="text-dark">مبلغ:</label>
+                        <input id="amount" type="text" value="1402" class="form-control text-dark ml-2" />
+
+                        <label class="text-dark">بانک:</label>
+                        <select id="bank" type="text" value="1300" class="form-control text-dark ml-2">
+                            <option>-انتخاب کنید-</option>
+                            <option>بانک پارسیان</option>
+                            <option>بانک آینده</option>
+                        </select>
+                        <button id="cardReader" type="button" class="btn btn-info btn-sm">کارتخوان</button>
+                    </div>
+
+
+                    <div class="col-md-12 col-sm-12 col-xs-12 table-responsive" id="">
+                        <table id="dataTable-pay" class="Current-color table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>شرح</th>
+                                   
+                                    <th>مبلغ </th>
+                                    <th>نوع پرداخت</th>
+                                    <th>عملیات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
 
 
 
@@ -241,7 +439,10 @@
 
 
 
-                         
+
+
+
+
 
 
 

@@ -635,114 +635,122 @@ namespace Application.BaseData
         public JsonResult GetAllAccountClub(JqueryDatatableParam param)
         {
 
-            var list = _shopContext.AccountClubs.Include(x => x.AccClbTypU).AsNoTracking();
-
-            if (!string.IsNullOrEmpty(param.SSearch))
+            try
             {
-                list = list.Where(x =>
-                    x.AccClbName.ToLower().Contains(param.SSearch.ToLower())
-                    || x.AccClbCode.ToLower().Contains(param.SSearch.ToLower())
-                    || x.AccClbMobile.ToLower().Contains(param.SSearch.ToLower()));
-            }
+                var list = _shopContext.AccountClubs.Include(x => x.AccClbTypU).AsNoTracking();
 
-            var sortColumnIndex = Convert.ToInt32(_contextAccessor.HttpContext.Request.Query["iSortCol_0"]);
-            var sortDirection = _contextAccessor.HttpContext.Request.Query["sSortDir_0"];
+                if (!string.IsNullOrEmpty(param.SSearch))
+                {
+                    list = list.Where(x =>
+                        x.AccClbName.ToLower().Contains(param.SSearch.ToLower())
+                        || x.AccClbCode.ToLower().Contains(param.SSearch.ToLower())
+                        || x.AccClbMobile.ToLower().Contains(param.SSearch.ToLower()));
+                }
 
-            switch (sortColumnIndex)
-            {
-                case 0:
-                    list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbName) : list.OrderByDescending(c => c.AccClbName);
-                    break;
-                case 1:
-                    list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbCode) : list.OrderByDescending(c => c.AccClbCode);
-                    break;
-                case 2:
-                    list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbBrithday) : list.OrderByDescending(c => c.AccClbBrithday);
-                    break;
-                case 5:
-                    list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbMobile) : list.OrderByDescending(c => c.AccClbMobile);
-                    break;
+                var sortColumnIndex = Convert.ToInt32(_contextAccessor.HttpContext.Request.Query["iSortCol_0"]);
+                var sortDirection = _contextAccessor.HttpContext.Request.Query["sSortDir_0"];
+
+                switch (sortColumnIndex)
+                {
+                    case 0:
+                        list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbName) : list.OrderByDescending(c => c.AccClbName);
+                        break;
+                    case 1:
+                        list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbCode) : list.OrderByDescending(c => c.AccClbCode);
+                        break;
+                    case 2:
+                        list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbBrithday) : list.OrderByDescending(c => c.AccClbBrithday);
+                        break;
+                    case 5:
+                        list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbMobile) : list.OrderByDescending(c => c.AccClbMobile);
+                        break;
 
 
-                default:
+                    default:
                     {
-                        string OrderingFunction(Domain.ShopModels.AccountClub e) => sortColumnIndex == 0 ? e.AccClbName : "";
-                        IOrderedEnumerable<Domain.ShopModels.AccountClub> rr = null;
+                        string OrderingFunction(AccountClub e) => sortColumnIndex == 0 ? e.AccClbName : "";
+                        IOrderedEnumerable<AccountClub> rr = null;
 
                         rr = sortDirection == "asc"
-                            ? list.AsEnumerable().OrderBy((Func<Domain.ShopModels.AccountClub, string>)OrderingFunction)
-                            : list.AsEnumerable().OrderByDescending((Func<Domain.ShopModels.AccountClub, string>)OrderingFunction);
+                            ? list.AsEnumerable().OrderBy((Func<AccountClub, string>)OrderingFunction)
+                            : list.AsEnumerable().OrderByDescending((Func<AccountClub, string>)OrderingFunction);
 
                         list = rr.AsQueryable();
                         break;
                     }
-            }
+                }
 
-            IQueryable<AccountClub> displayResult;
-            if (param.IDisplayLength != 0)
-                displayResult = list.Skip(param.IDisplayStart)
-                .Take(param.IDisplayLength);
-            else displayResult = list;
-            var totalRecords = list.Count();
-            List<AccountClubDto> map;
-            try
-            {
-                map = _mapper.Map<List<AccountClubDto>>(displayResult);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-
-
-            foreach (var clubTypeDto in map)
-            {
-                clubTypeDto.AccClbSexText = clubTypeDto.AccClbSex switch
+                IQueryable<AccountClub> displayResult;
+                if (param.IDisplayLength != 0)
+                    displayResult = list.Skip(param.IDisplayStart)
+                        .Take(param.IDisplayLength);
+                else displayResult = list;
+                var totalRecords = list.Count();
+                List<AccountClubDto> map;
+                try
                 {
-                    1 => "زن",
-                    0 => "مرد",
-                    _ => clubTypeDto.AccClbSexText
-                };
+                    map = _mapper.Map<List<AccountClubDto>>(displayResult);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
+
+
+                foreach (var clubTypeDto in map)
+                {
+                    clubTypeDto.AccClbSexText = clubTypeDto.AccClbSex switch
+                    {
+                        1 => "زن",
+                        0 => "مرد",
+                        _ => clubTypeDto.AccClbSexText
+                    };
 
                
-                clubTypeDto.AccTypePriceLevelText = clubTypeDto.AccTypePriceLevel switch
-                {
-                    null => string.Empty,
-                    0 => "صفر",
-                    1 => "سطح 1",
-                    2 => "سطح 2",
-                    3 => "سطح 3",
-                    4 => "سطح 4",
-                    5 => "سطح 5",
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-
-                if (clubTypeDto.AccClbTypUid != null)
-                {
-                    var accType = _shopContext.AccountClubTypes.Find(clubTypeDto.AccClbTypUid);
-                    if (accType != null)
+                    clubTypeDto.AccTypePriceLevelText = clubTypeDto.AccTypePriceLevel switch
                     {
-                        clubTypeDto.AccClubType = accType.AccClbTypName;
-                        clubTypeDto.AccClubDiscount = accType.AccClbTypDetDiscount ?? 0;
+                        null => string.Empty,
+                        0 => "صفر",
+                        1 => "سطح 1",
+                        2 => "سطح 2",
+                        3 => "سطح 3",
+                        4 => "سطح 4",
+                        5 => "سطح 5",
+                        _ => "",
+                    };
+
+                    if (clubTypeDto.AccClbTypUid != null)
+                    {
+                        var accType = _shopContext.AccountClubTypes.Find(clubTypeDto.AccClbTypUid);
+                        if (accType != null)
+                        {
+                            clubTypeDto.AccClubType = accType.AccClbTypName;
+                            clubTypeDto.AccClubDiscount = accType.AccClbTypDetDiscount ?? 0;
                         
+                        }
+
                     }
+
+                    if (clubTypeDto.AccRateUid != null)
+                        clubTypeDto.AccRatioText = _shopContext.AccountRatings.Find(clubTypeDto.AccRateUid)?.AccRateName;
 
                 }
 
-                if (clubTypeDto.AccRateUid != null)
-                    clubTypeDto.AccRatioText = _shopContext.AccountRatings.Find(clubTypeDto.AccRateUid)?.AccRateName;
-
+                var result = (new
+                {
+                    param.SEcho,
+                    iTotalRecords = totalRecords,
+                    iTotalDisplayRecords = totalRecords,
+                    aaData = map
+                });
+                return new JsonResult(result, new JsonSerializerOptions { PropertyNamingPolicy = null });
             }
-
-            var result = (new
+            catch (Exception e)
             {
-                param.SEcho,
-                iTotalRecords = totalRecords,
-                iTotalDisplayRecords = totalRecords,
-                aaData = map
-            });
-            return new JsonResult(result, new JsonSerializerOptions { PropertyNamingPolicy = null });
+                _logger.LogError($"An error {e}");
+                throw new Exception("");
+            }
         }
 
         public JsonResult GetAllAccountClubProduct(JqueryDatatableParam param, Guid productId)

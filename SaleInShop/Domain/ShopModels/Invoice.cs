@@ -110,6 +110,7 @@ public partial class Invoice
     public int? InvPaymentStatus { get; set; }
 
     public int? InvSection { get; set; }
+    public string ApplicationType { get; set; }
 
     public string InvDueTime { get; set; }
 

@@ -22,7 +22,7 @@ namespace Application.Invoice
     public interface IInvoiceService
     {
         ResultDto<List<ProductSessionList>> ProductToList(Guid id);
-        ResultDto<List<ProductSessionList>> RemoveFromProductList(Guid id);
+        ResultDto RemoveFromProductList(Guid id);
         ResultDto<InvoiceStatus> Create(Guid type);
         JsonResult GetInvoiceList(JqueryDatatableParam param);
         ResultDto<List<InvoiceDetailsDto>> InvoiceDetails(Guid invoiceId);
@@ -95,7 +95,7 @@ namespace Application.Invoice
             if (status == null) return null;
             var dto = new InvoiceStatus
             {
-                Id = invoiceId
+                Id = invoiceId,
             };
             if (status is { InvStep: null or 0 })
                 dto.StatusSubmit = "ثبت اولیه";
@@ -109,28 +109,29 @@ namespace Application.Invoice
             else if (status is { InvStatusControl: null or false })
                 dto.StatusPay = "پرداخت نشده";
 
+            dto.InvoiceNumber = status.InvNumber;
+            dto.InvoiceType = _context.SalesCategories.Find(status.SalCatUid)?.SalCatName;
             return dto;
 
         }
 
-        public ResultDto<List<ProductSessionList>> RemoveFromProductList(Guid id)
+        public ResultDto RemoveFromProductList(Guid id)
         {
-            var result = new ResultDto<List<ProductSessionList>>();
-
-
-            var list = _contextAccessor.HttpContext!.Session.GetJson<List<ProductSessionList>>(SessionName.ProductList) ??
-                       new List<ProductSessionList>();
-
-            var product = list.SingleOrDefault(x => x.Id == id);
-            if (product == null)
+            var result = new ResultDto();
+            try
             {
-                _logger.LogError($"product not found on session with Id {id}");
-                return result.Failed("محصول از لیست حذف نشد");
+                var invoice = _context.InvoiceDetails.Find(id);
+                if (invoice == null)
+                    return result.Failed("هنگام حذف محصول خطای رخ داد");
+                _context.InvoiceDetails.Remove(invoice);
+                _context.SaveChanges();
             }
-
-            list.Remove(product);
-            _contextAccessor.HttpContext.Session.SetJson(SessionName.ProductList, list);
-            return result.Succeeded(list);
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            return result.Succeeded();
         }
 
 
@@ -191,7 +192,7 @@ namespace Application.Invoice
 
         public JsonResult GetInvoiceList(JqueryDatatableParam param)
         {
-            var list = _context.Invoices.Where(x=>x.SalCatUid==param.Type).Include(x => x.AccClbU).AsNoTracking();
+            var list = _context.Invoices.Where(x => x.SalCatUid == param.Type).Include(x => x.AccClbU).AsNoTracking();
 
             if (!string.IsNullOrEmpty(param.SSearch))
             {
@@ -271,19 +272,21 @@ namespace Application.Invoice
         {
             var dto = new ResultDto<List<InvoiceDetailsDto>>();
             var status = this.GetStatus(invoiceId);
-           
+
             var result = _context.InvoiceDetails
                 .Where(x => x.InvUid == invoiceId)
                 .Include(x => x.PrdU)
                 .Include(x => x.InvU)
                 .ThenInclude(x => x.AccClbU)
                 .ThenInclude(x => x.AccClbTypU).
+
             Select(x => new InvoiceDetailsDto
             {
                 ProductId = x.PrdUid ?? Guid.Empty,
+                InvoiceDetailsId = x.InvDetUid,
                 Name = x.PrdU.PrdName,
                 Price = x.InvDetPricePerUnit ?? 0,
-                Discount = CalculateDiscount(x.InvDetPercentDiscount??0  , x.InvDetShareDiscountPer ),
+                Discount = CalculateDiscount(x.InvDetPercentDiscount ?? 0, x.InvDetShareDiscountPer),
                 Total = x.InvDetTotalAmount ?? 0,
                 Value = x.InvDetQuantity ?? 0,
                 DiscountAmount = x.InvDetDiscount ?? 0,
@@ -294,6 +297,7 @@ namespace Application.Invoice
                 AccountCode = x.InvU.AccClbU.AccClbCode,
                 Mobile = x.InvU.AccClbU.AccClbMobile,
                 AccountType = x.InvU.AccClbU.AccClbTypU.AccClbTypName,
+                AccountTypeId = x.InvU.AccClbU.AccClbTypUid ?? Guid.Empty,
                 Address = x.InvU.AccClbU.AccClbAddress,
                 AccountDiscount = x.InvU.AccClbU.AccClbTypU.AccClbTypDiscountType ?? 0,
                 PriceLevel = x.InvU.AccClbU.AccClbTypU.AccClbTypDefaultPriceInvoice ?? 0,
@@ -302,9 +306,9 @@ namespace Application.Invoice
                 TotalInvoiceDiscount = x.InvU.InvDiscount2,
                 TotalDiscountAmount = x.InvU.InvDetTotalDiscount,
                 TotalPaidAmount = x.InvU.InvExtendedAmount,
-                DiscountSaveToDb =Convert.ToDecimal(x.InvDetPercentDiscount ?? 0),
+                DiscountSaveToDb = Convert.ToDecimal(x.InvDetPercentDiscount ?? 0),
                 InvShareDiscount = x.InvU.InvShareDiscount ?? false,
-                InvoiceDiscountPercent= x.InvDetShareDiscountPer ?? 0,
+                InvoiceDiscountPercent = x.InvDetShareDiscountPer ?? 0,
                 Status = status
             }).AsNoTracking().ToList();
 
@@ -318,7 +322,7 @@ namespace Application.Invoice
             result = invDetDiscount + invDetShareDiscountPer;
             if (result > 100)
                 result = 100;
-            return result??0;
+            return result ?? 0;
         }
 
         public ResultDto<List<ProductListDot>> ChangeAccountClub(int priceLevel)
@@ -347,7 +351,7 @@ namespace Application.Invoice
                     dto.DiscountPercent += dto.DiscountPercent;
                     dto.InvoiceDiscountPercent = dto.InvoiceDiscount;
                     dto.InvoiceDiscount = 0;
-                 
+
                     if (dto.DiscountPercent > 100)
                     {
                         dto.DiscountPercent = 100;
@@ -363,7 +367,7 @@ namespace Application.Invoice
                     dto.InvoiceDiscountPercent = dto.InvoiceDiscount;
                     dto.InvoiceDiscount = 0;
                 }
-               
+
             }
 
             return result.Succeeded(products.ToList());
@@ -381,7 +385,8 @@ public class InvoiceStatus
     public Guid Id { get; set; }
     public string StatusPay { get; set; }
     public string StatusSubmit { get; set; }
-
+    public string InvoiceNumber { get; set; }
+    public string InvoiceType { get; set; }
 }
 
 public class ProductSessionList
@@ -415,6 +420,7 @@ public class InvoiceDetailsDto
 {
     public Guid ProductId { get; set; }
     public Guid AccountId { get; set; }
+    public Guid InvoiceDetailsId { get; set; }
     public string Name { get; set; }
     public decimal Price { get; set; }
     public double Discount { get; set; }
@@ -429,6 +435,7 @@ public class InvoiceDetailsDto
     public string AccountCode { get; set; }
     public string Address { get; set; }
     public string AccountType { get; set; }
+    public Guid AccountTypeId { get; set; }
     public int PriceLevel { get; set; }
     public int AccountDiscount { get; set; }
     public double? InvoiceDiscount { get; set; }
@@ -494,6 +501,7 @@ public class CreateInvoice
     public bool InvStatusControl { get; set; }
     public decimal InvStep { get; set; }
     public double? InvoiceDiscountPercent { get; set; }
+    public int ApplicationType { get; set; }
     public decimal? TotalInvoiceDiscount { get; set; }
     public decimal? TotalDiscountAmount { get; set; }
 
@@ -529,6 +537,7 @@ public class InvoiceMapping : Profile
             .ForMember(x => x.InvDiscount2, opt => opt.MapFrom(x => x.TotalInvoiceDiscount))
             .ForMember(x => x.InvPercentDiscount, opt => opt.MapFrom(x => x.InvoiceDiscountPercent))
             .ForMember(x => x.InvDetTotalDiscount, opt => opt.MapFrom(x => x.TotalDiscountAmount))
+            .ForMember(x => x.ApplicationType, opt => opt.MapFrom(x => x.ApplicationType == ApplicationType.Web))
             .ForMember(x => x.InvUid, opt => opt.MapFrom(x => x.Id));
 
 

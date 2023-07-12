@@ -107,6 +107,7 @@
                     </ul>
                     <form method="post" id="createForm" name="submitForm">
                         <div class="tab-content" id="justifyTabContent">
+                            <button type="button" class="btn btn-info" id="otherPayment">مدال تست </button>
                             <div class="tab-pane fade show active" id="justify-home" role="tabpanel" aria-labelledby="justify-home-tab">
                                 <div class="row" id="cancel-row">
 
@@ -121,12 +122,12 @@
                                             <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
                                                 <table id="dataTable_3" class="text-center Current-color table table-striped table-bordered">
                                                     <thead>
-                                                        <tr>
-                                                            <th>نام کالا</th>
-                                                            <th>گروه کالا</th>
-                                                            <th>قیمت کالا</th>
-                                                            <th>افزودن</th>
-                                                        </tr>
+                                                    <tr>
+                                                        <th>نام کالا</th>
+                                                        <th>گروه کالا</th>
+                                                        <th>قیمت کالا</th>
+                                                        <th>افزودن</th>
+                                                    </tr>
                                                     </thead>
                                                     <tbody>
                                                     </tbody>
@@ -134,10 +135,10 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <hr />
-                                    
-                                    <div class="container  text-center">
-                                        <p><strong class="font-wight-bold">نوع فاکتور: <span id="invoiceType">فاکتور موقت</span></strong></p>
+                                    <hr/>
+
+                                    <div class="container  text-center d-none" id="invoiceType">
+                                        <p><strong class="font-wight-bold">نوع فاکتور: <span id="invoiceTypeText"></span></strong></p>
                                     </div>
 
                                     <div class="row" id="productName"></div>
@@ -149,20 +150,20 @@
                                             <div class="card-body pb-0">
                                                 <div class="row pb-3 pl-3">
                                                     <div>
-                                                        <input type="button" id="addAccountClub" class="btn btn-success btn-sm btn-rounded" value="انتخاب مشتری" />
+                                                        <input type="button" id="addAccountClub" class="btn btn-success btn-sm btn-rounded" value="انتخاب مشتری"/>
                                                     </div>
                                                     <div>
-                                                        <input onclick="InvoiceList()" type="button" id="" class="btn btn-warning btn-sm btn-rounded" value="فاکتور های ثبت شده" />
+                                                        <input onclick="InvoiceList()" type="button" id="" class="btn btn-warning btn-sm btn-rounded" value="فاکتور های ثبت شده"/>
                                                     </div>
 
                                                 </div>
                                                 <div class="row">
 
                                                     <div class=" col-md-2">
-                                                        <input id="" style="height:30px !Important" class="flatpickr datePicker flatpickr-input active form-control form-control-sm" />
+                                                        <input id="" style="height:30px !Important" class="flatpickr datePicker flatpickr-input active form-control form-control-sm"/>
                                                     </div>
                                                     <div class="form-group col-md-2 ">
-                                                        <input type="text" class="form-control form-control-sm" style="height:30px !Important" placeholder="شماره فاکتور">
+                                                        <input type="text" id="invoiceNumber" class="form-control form-control-sm" style="height:30px !Important" placeholder="شماره فاکتور">
                                                     </div>
 
                                                     <div class="form-group col-md-3 ">
@@ -177,7 +178,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                         <div class="card" id="cardPrint">
                                             <div class="card-header d-none" id="accClubDetails">
                                                 <div class="row">
@@ -208,25 +209,25 @@
                                             </div>
                                         </div>
 
-                                        <input type="hidden" value="" name="type" id="type" />
+                                        <input type="hidden" value="" name="type" id="type"/>
                                         <div class="col-md-12 col-sm-12 col-xs-12 table-responsive" id="productList">
                                             <table id="property-dataTable" class="Current-color table table-striped table-bordered property-dataTable">
                                                 <thead>
-                                                    <tr>
-                                                        <th>#</th>
-                                                        <th>نام کالا</th>
-                                                        <th>تعداد</th>
-                                                        <th>قیمت</th>
-                                                        <th>قیمت کل</th>
-                                                        <th>تخفیف (درصد)</th>
-                                                        <th>مبلغ پس از تخفیف</th>
-                                                        <th>مالیات</th>
-                                                        <th>مبلغ نهایی</th>
-                                                        <th>تسهیم</th>
-                                                        <th>تخفیف با تسهیم</th>
-                                                        <th>توضیح</th>
-                                                        <th>عملیات</th>
-                                                    </tr>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>نام کالا</th>
+                                                    <th>تعداد</th>
+                                                    <th>قیمت</th>
+                                                    <th>قیمت کل</th>
+                                                    <th>تخفیف (درصد)</th>
+                                                    <th>مبلغ پس از تخفیف</th>
+                                                    <th>مالیات</th>
+                                                    <th>مبلغ نهایی</th>
+                                                    <th>تسهیم</th>
+                                                    <th>تخفیف با تسهیم</th>
+                                                    <th>توضیح</th>
+                                                    <th>عملیات</th>
+                                                </tr>
                                                 </thead>
                                                 <tbody>
                                                 </tbody>
@@ -240,8 +241,8 @@
                                     </div>
                                     <div class="row col col-md-12" style="right:50%">
                                         <button type="submit" class="btn btn-dark btn-sm btn-rounded pull-left invoicePay d-none">تسویه کارتخوان</button>
-                                        <button type="submit" class="btn btn-warning btn-sm btn-rounded pull-left d-none invoicePay">سایر روش های تسویه</button>
-                                        <button type="submit" class="btn btn-primary btn-sm btn-rounded pull-left d-none invoicePay">تسویه نقدی</button>
+                                        <button type="button" id="cashPayment" class="btn btn-primary btn-sm btn-rounded pull-left d-none invoicePay">تسویه نقدی</button>
+                                        <button type="button" id="otherPayment" class="btn btn-warning btn-sm btn-rounded pull-left d-none invoicePay">سایر روش های تسویه</button>
                                         <button type="button" class="btn btn-info btn-sm btn-rounded pull-left" id="tempInvoice">فاکتور موقت</button>
                                         <button id="submitPrint" type="button" class="btn btn-success btn-sm btn-rounded">تایید و چاپ</button>
                                     </div>

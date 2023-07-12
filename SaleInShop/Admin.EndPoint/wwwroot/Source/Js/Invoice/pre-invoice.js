@@ -1,5 +1,7 @@
 ﻿const ProductListCookie = "productList";
 const AccountClubCookie = "AccountClubList";
+const CashPaymentCookie = "CashPayment";
+const InvoiceCookie = "Invoice";
 
 $(document).ready(function () {
     $(".datePicker").persianDatepicker({
@@ -12,6 +14,12 @@ $(document).ready(function () {
     deleteCookie(ProductListCookie);
     deleteCookie(AccountClubCookie);
     //document.getElementById("custom-menu").click();
+
+
+
+
+
+
 });
 
 
@@ -24,6 +32,14 @@ const table = $('#property-dataTable').DataTable({
 });
 
 const invoiceTable = $('.invoiceDet-dataTable').DataTable({
+    paging: false,
+    ordering: true,
+    info: false,
+    order: [[2, 'desc']],
+    searching: false,
+});
+
+const payTable = $('#dataTable-pay').DataTable({
     paging: false,
     ordering: true,
     info: false,
@@ -97,13 +113,13 @@ $("#submitPrint").on('click', function () {
 
 function getProductModal(evt, cityName) {
     var account = getCookie(AccountClubCookie);
-    debugger
+
     if (account == "") {
         notify("top center", "لطفا ابتدا مشتری را انتخاب کنید", "error");
         return false;
     }
     else {
-        
+
         getProduct(evt, cityName);
         $("#CustomMenu").modal('show');
     }
@@ -197,7 +213,7 @@ function getProduct(evt, cityName) {
 
     function generateButton(data) {
 
-        return ` <a onClick="addProductToList('${data.PrdUid}','${data.PrdName}','${data.Price}','${data.DiscountPercent}','${data.TaxValue}','${data.InvoiceDiscount}','${data.InvoiceDiscountPercent}','${data.DiscountSaveToDb}')" type="button" >
+        return ` <a onClick="addProductToList('${data.PrdUid}',' ','${data.PrdName}','${data.Price}','${data.DiscountPercent}','${data.TaxValue}','${data.InvoiceDiscount}','${data.InvoiceDiscountPercent}','${data.DiscountSaveToDb}')" type="button" >
         <svg style="color:green" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
     </a>
     `
@@ -277,10 +293,11 @@ function ConvertPercentToAmount(price, percent) {
     return result;
 }
 
-function applyTotal(totalProductCount, totalFooter, totalDiscountAmount, totalInvoiceDiscount, totalGetTax, totalPaidAmount) {
+function applyTotal(totalProductCount, totalFooter, totalDiscountAmount, totalInvoiceDiscount, totalGetTax, totalPaidAmount, remain) {
 
     $("#total").html(" ");
-
+    if (remain == undefined)
+        remain = totalPaidAmount;
     $("#total").append(`
           <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
             <table class="table table-bordered">
@@ -288,9 +305,7 @@ function applyTotal(totalProductCount, totalFooter, totalDiscountAmount, totalIn
                      <tr class="">
                          <td class="font-weight-bold text-dark">تجمیع: </td>
                    
-                         <td class="bg-aliceblue text-dark">تعداد کالا ها</td>
-                         <td> <strong class="text-dark">${totalProductCount.toLocaleString()} </strong></td>
-                   
+                        
                          <td class="bg-aliceblue text-dark">قیمت کل</td>
                          <td> <strong class="text-dark">${totalFooter.toLocaleString()}</strong></td>
                    
@@ -305,6 +320,9 @@ function applyTotal(totalProductCount, totalFooter, totalDiscountAmount, totalIn
                    
                          <td class="bg-aliceblue text-dark">قابل پرداخت</td>
                          <td> <strong class="text-success">${totalPaidAmount.toLocaleString()}</strong></td>
+
+                           <td class="bg-aliceblue text-dark">مانده</td>
+                         <td> <strong class="text-success">${remain.toLocaleString()}</strong></td>
                      </tr>
                   </tbody>
               </table>
@@ -312,7 +330,7 @@ function applyTotal(totalProductCount, totalFooter, totalDiscountAmount, totalIn
         `).removeClass("d-none");
 }
 
-function addProductToList(id, name, price, discount, tax, invoiceDiscount, invoiceDiscountPercent, discountSaveToDb, value = 1, changeUser = false) {
+function addProductToList(id, invoiceDetailsId, name, price, discount, tax, invoiceDiscount, invoiceDiscountPercent, discountSaveToDb, value = 1, changeUser = false) {
 
     var discountAmount = parseFloat((discount * price) / 100);
     var getTax = parseFloat(calculateTax(tax, price));
@@ -341,6 +359,7 @@ function addProductToList(id, name, price, discount, tax, invoiceDiscount, invoi
         tax: tax,
         invoiceDiscountPercent: invoiceDiscountPercent,
         discountSaveToDb: discountSaveToDb,
+        invoiceDetailsId: invoiceDetailsId,
         des: "",
     };
 
@@ -386,15 +405,39 @@ function addProductToList(id, name, price, discount, tax, invoiceDiscount, invoi
 }
 
 
-function removeProductList(id) {
+function removeProductList(id, invoiceDetailsId) {
 
-    var parse = JSON.parse(getCookie(ProductListCookie));
-    const found = parse.find(element => element.productId === id);
-    if (found !== undefined) {
-        parse = parse.filter(element => element.productId !== id);
-        setCookie(ProductListCookie, parse);
-        updateTable(parse);
-    }
+    swal({
+        title: "این محصول از لیست حذف خواهد شد",
+        text: "آیا مطمئن هستید که میخواهید ادامه دهید؟",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'ادامه',
+        cancelButtonText: 'لغو',
+        padding: '2em',
+    }).then(function (result) {
+
+        if (result.value) {
+
+            $.ajax({
+                url: "?handler=RemoveFromProductList&id=" + invoiceDetailsId,
+                type: "get",
+                success: function (result) {
+                    if (result.isSucceeded)
+                        notify("top center", result.message, "success")
+                }
+            })
+
+            var parse = JSON.parse(getCookie(ProductListCookie));
+            const found = parse.find(element => element.productId === id);
+            if (found !== undefined) {
+                parse = parse.filter(element => element.productId !== id);
+                setCookie(ProductListCookie, parse);
+                updateTable(parse);
+            }
+
+        }
+    })
 }
 
 function addDesToPrdList() {
@@ -499,7 +542,6 @@ function bindDatatable() {
                     "searchable": false,
                     "orderable": false,
                     render: function (data, row, full) {
-
                         return generateButton(data);
                     },
                 }
@@ -511,9 +553,8 @@ function bindDatatable() {
 
         return `<center><a onClick="addAccountClub('${data.AccClbUid}','${data.AccClbTypUid}','${data.AccClbName ?? ""}','${data.AccClubDiscount}','${data.AccClubType ?? ""}','${data.AccClbMobile ?? ""}','${data.AccClbAddress ?? ""}','${data.AccClbCode ?? ""}','${data.AccTypePriceLevel}','${data.InvoiceDiscount}')" class="btn btn-warning btn-rounded btn-sm">انتخاب </a>&nbsp; `
     };
-
 }
-function addAccountClub(id, accTypeId, name, discount, type, mobile, address, code, accTypePriceLevel, invoiceDiscount) {
+function addAccountClub(id, accTypeId, name, discount, type, mobile, address, code, accTypePriceLevel, invoiceDiscount, invoiceDetailsId) {
 
     deleteCookie(AccountClubCookie);
 
@@ -527,7 +568,8 @@ function addAccountClub(id, accTypeId, name, discount, type, mobile, address, co
         address: address,
         code: code,
         invoiceDiscount: invoiceDiscount,
-        accTypePriceLevel: accTypePriceLevel
+        accTypePriceLevel: accTypePriceLevel,
+        invoiceDetailsId: invoiceDetailsId,
     };
 
     var cookie = getCookie(ProductListCookie);
@@ -545,7 +587,7 @@ function addAccountClub(id, accTypeId, name, discount, type, mobile, address, co
                     setCookie(ProductListCookie, result.data);
                     result.data.forEach(x => {
 
-                        addProductToList(x.productId, x.name, x.price, x.discount, x.tax, x.invoiceDiscount, x.invoiceDiscountPercent, x.discountSaveToDb, x.value, true,);
+                        addProductToList(x.productId, invoiceDetailsId, x.name, x.price, x.discount, x.tax, x.invoiceDiscount, x.invoiceDiscountPercent, x.discountSaveToDb, x.value, true,);
                     })
 
                 }
@@ -586,18 +628,18 @@ function InvoiceList() {
 }
 
 function invoiceTempList() {
-    bindInvoiceDatatable("09004CE6-3DAC-4EEB-AFE9-E1E7DDD8AD28","invoiceTemp-dataTable");
+    bindInvoiceDatatable("09004CE6-3DAC-4EEB-AFE9-E1E7DDD8AD28", "invoiceTemp-dataTable");
     $("#invoiceTempList").modal('show');
 
 
 }
 
-function bindInvoiceDatatable(type,dataTableId) {
-    debugger
+function bindInvoiceDatatable(type, dataTableId) {
+
     reinitialise(dataTableId);
-    dataTable = $('#'+ dataTableId)
+    dataTable = $('#' + dataTableId)
         .DataTable({
-            "sAjaxSource": "/Invoice/Pre-Invoice?handler=InvoiceList&type="+type,
+            "sAjaxSource": "/Invoice/Pre-Invoice?handler=InvoiceList&type=" + type,
             "bServerSide": true,
             "bProcessing": true,
             "bSearchable": true,
@@ -669,11 +711,11 @@ function invoiceDetails(invoiceId) {
         success: function (result) {
             if (result.isSucceeded) {
                 setCookie(ProductListCookie, result.data);
-                debugger
+
                 updateInvoiceTable(result.data);
 
                 var account = result.data[0];
-                addAccountClub(account.accountId, account.accountName ?? "", account.accountDiscount, account.accountType ?? "", account.mobile ?? "", account.address ?? "", account.accountCode ?? "", account.priceLevel, account.invoiceDiscount);
+                addAccountClub(account.accountId, account.accountTypeId, account.accountName ?? "", account.accountDiscount, account.accountType ?? "", account.mobile ?? "", account.address ?? "", account.accountCode ?? "", account.priceLevel, account.invoiceDiscount, account.invoiceDetailsId);
 
                 $("#invoiceList").modal('hide');
             } else {
@@ -688,7 +730,11 @@ function invoiceDetails(invoiceId) {
 
     })
 }
-
+//// Activate an inline edit on click of a table cell
+//table.on('click', 'tbody td:not(:first-child)', function (e) {
+//    
+//    editor.inline(this);
+//});
 function updateTable(obj) {
 
     var amount = 0, total = 0, priceWithDiscount = 0, paidAmount = 0, getTax = 0; amountFooter = 0; totalFooter = 0, totalDiscountAmount = 0;
@@ -700,9 +746,6 @@ function updateTable(obj) {
         footer[0].parentNode.removeChild(footer[0]);
 
     obj.forEach(x => {
-
-
-
         amount = parseFloat(x.price);
         total = parseFloat(x.total);
         totalInvoiceDiscount = x.invoiceDiscount;
@@ -739,7 +782,7 @@ function updateTable(obj) {
         <td> <a type="button" class="" onclick="(ProuctListDes('${x.productId}'))">...</a></td>
         <td>
 
-            <a class="" onClick="removeProductList('${x.productId}')" title="حذف">
+            <a class="" onClick="removeProductList('${x.productId}','${x.invoiceDetailsId}')" title="حذف">
                 <svg style="color:#e7515a" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2">
                     <polyline points="3 6 5 6 21 6"></polyline>
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -750,6 +793,7 @@ function updateTable(obj) {
         </td>
     </tr>
     `
+
         table.row.add($(result)).draw();
 
         var footer = document.getElementsByTagName("tfoot");
@@ -782,9 +826,12 @@ function updateTable(obj) {
             totalDiscountAmount: totalDiscountAmount,
             InvoiceDiscountPercent: InvoiceDiscountPercent,
             totalInvoiceDiscount: totalInvoiceDiscount,
+            totalCount: totalCount,
+            totalFooter: totalFooter,
+
         };
 
-        setCookie("invoice", invoice);
+        setCookie(InvoiceCookie, invoice);
 
     });
     var rows = table.rows().any();
@@ -822,7 +869,7 @@ function updateInvoiceTable(obj) {
         totalPriceWithDiscount += priceWithDiscount;
         totalPaidAmount = x.totalPaidAmount;
         totalGetTax == getTax;
-        debugger
+
         const result =
             `
     <tr>
@@ -841,7 +888,7 @@ function updateInvoiceTable(obj) {
         <td> <a type="button" class="" onclick="(ProuctListDes('${x.id}'))">...</a></td>
         <td>
 
-            <a class="" onClick="removeProductList('${x.id}')" title="حذف">
+            <a class="" onClick="removeProductList('${x.id}','${x.invoiceDetailsId}')" title="حذف">
                 <svg style="color:#e7515a" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2">
                     <polyline points="3 6 5 6 21 6"></polyline>
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -852,6 +899,7 @@ function updateInvoiceTable(obj) {
         </td>
     </tr>
     `
+
         table.row.add($(result)).draw();
 
         var footer = document.getElementsByTagName("tfoot");
@@ -876,8 +924,12 @@ function updateInvoiceTable(obj) {
             totalPriceWithDiscount: Math.abs(totalPriceWithDiscount),
             totalPaidAmount: x.totalPaidAmount,
             totalGetTax: x.invTotalTax,
+            totalCount: totalCount,
+            totalFooter: totalFooter,
+            totalDiscountAmount: totalDiscountAmount,
+            totalInvoiceDiscount: totalInvoiceDiscount,
         };
-        setCookie("invoice", invoice);
+        setCookie(InvoiceCookie, invoice);
 
         checkStatus(obj[0].status)
 
@@ -902,7 +954,7 @@ $("#tempInvoice").on('click', function (evt) {
             $("#type").val("09004CE6-3DAC-4EEB-AFE9-E1E7DDD8AD28");
             $.ajax({
 
-                url: '/Invoice/Pre-Invoice' ,
+                url: '/Invoice/Pre-Invoice',
                 data: new FormData(document.forms.submitForm),
                 contentType: false,
                 processData: false,
@@ -954,9 +1006,67 @@ function checkStatus(status) {
 
     $("#invoiceStatus").removeClass("d-none");
     $("#invoicePayStatus").removeClass("d-none");
+    $("#invoiceType").removeClass("d-none");
 
     $("#invoiceStatusText").text(status.statusSubmit);
     $("#invoicePayStatusText").text(status.statusPay);
+    $("#invoiceTypeText").text(status.invoiceType);
+    $("#invoiceNumber").val(status.invoiceNumber);
+
     if (status.statusPay == "تسویه نشده")
         document.querySelectorAll(".invoicePay").forEach(x => x.classList.remove("d-none"));
+}
+
+
+// payment
+$("#cashPayment").on('click', function (evt) {
+    //evt.preventdefault();
+
+    var invoice = getParseCookie(InvoiceCookie);
+    setCookie(CashPaymentCookie, invoice);
+    applyTotal(invoice.totalCount, invoice.totalFooter, invoice.totalDiscountAmount, invoice.totalInvoiceDiscount, invoice.totalGetTax, invoice.totalPaidAmount, 0)
+    notify("top center", "تسویه انجام شد، برای ادامه فاکتور را ثبت کنید", "success")
+})
+
+
+$("#otherPayment").on('click', function (evnt) {
+
+    $("#otherPaymentModal").modal('show');
+})
+
+$("#cardReader").on('click', function (evnt) {
+    debugger
+    var des = "";
+    var amount = $("#amount").val();
+    var type = 2;
+    var bank = $("#bank").val();
+  //  reinitialise("dataTable-pay")
+
+    payTable.clear().draw();
+    var des = "";
+    var result = ` <tr>
+   
+        <td>${des}</td>
+         <td>${amount ?? ""}</td>
+        <td>${type}</td>
+        <td>
+
+            <a class="" title="حذف">
+                <svg style="color:#e7515a" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+            </a>
+        </td>
+    </tr>
+    `
+
+    payTable.row.add($(result)).draw();
+})
+function calculatePay(amount, type, bank, trackingCode) {
+
+    
+
 }

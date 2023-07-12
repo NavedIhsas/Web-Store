@@ -31,6 +31,11 @@ public static class InvoiceDetDiscountStatus
     public const int Both = 2;
 }
 
+public static class ApplicationType
+{
+    public const int Web = 1;
+}
+
 public static class ConstantParameter
 {
 
