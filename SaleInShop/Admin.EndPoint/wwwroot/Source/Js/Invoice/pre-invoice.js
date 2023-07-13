@@ -2,7 +2,7 @@
 const AccountClubCookie = "AccountClubList";
 const CashPaymentCookie = "CashPayment";
 const InvoiceCookie = "Invoice";
-
+const OtherPayCookie = "OtherPay";
 $(document).ready(function () {
     $(".datePicker").persianDatepicker({
         initialValueType: 'persian',
@@ -13,13 +13,8 @@ $(document).ready(function () {
     deleteAllCookies();
     deleteCookie(ProductListCookie);
     deleteCookie(AccountClubCookie);
+    deleteCookie(OtherPayCookie);
     //document.getElementById("custom-menu").click();
-
-
-
-
-
-
 });
 
 
@@ -321,7 +316,7 @@ function applyTotal(totalProductCount, totalFooter, totalDiscountAmount, totalIn
                          <td class="bg-aliceblue text-dark">قابل پرداخت</td>
                          <td> <strong class="text-success">${totalPaidAmount.toLocaleString()}</strong></td>
 
-                           <td class="bg-aliceblue text-dark">مانده</td>
+                           <td class="bg-aliceblue text-dark">مانده پرداختی</td>
                          <td> <strong class="text-success">${remain.toLocaleString()}</strong></td>
                      </tr>
                   </tbody>
@@ -1019,10 +1014,53 @@ function checkStatus(status) {
 
 
 // payment
+
+
+
+
+function applyOtherPayTotal(totalPaidAmount, remain) {
+
+    $("#otherPaytotal").html(" ");
+    if (remain == undefined)
+        remain = totalPaidAmount;
+    $("#otherPaytotal").append(`
+          <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
+            <table class="table table-bordered">
+             <tbody>
+                     <tr class="">
+                         <td class="font-weight-bold text-dark">تجمیع: </td>
+                   
+                           <td class="bg-aliceblue text-dark">مانده فاکتور</td>
+                         <td> <strong class="text-success">${remain.toLocaleString()}</strong></td>
+                       
+                         <td class="bg-aliceblue text-dark">جمع کل دریافتی</td>
+                         <td> <strong class="text-success">${totalPaidAmount.toLocaleString()}</strong></td>
+
+                     </tr>
+                  </tbody>
+              </table>
+            </div>
+        `).removeClass("d-none");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 $("#cashPayment").on('click', function (evt) {
     //evt.preventdefault();
-
+    debugger
     var invoice = getParseCookie(InvoiceCookie);
+    var account = getParseCookie(AccountClubCookie);
+    $("#AccountClubName").val(account.accClbName);
     setCookie(CashPaymentCookie, invoice);
     applyTotal(invoice.totalCount, invoice.totalFooter, invoice.totalDiscountAmount, invoice.totalInvoiceDiscount, invoice.totalGetTax, invoice.totalPaidAmount, 0)
     notify("top center", "تسویه انجام شد، برای ادامه فاکتور را ثبت کنید", "success")
@@ -1030,27 +1068,60 @@ $("#cashPayment").on('click', function (evt) {
 
 
 $("#otherPayment").on('click', function (evnt) {
-
     $("#otherPaymentModal").modal('show');
+    var invoice = getParseCookie(InvoiceCookie);
+    var paidAmount = invoice.totalPaidAmount;
+    $("#amount").val(paidAmount)
+    applyOtherPayTotal(0, paidAmount);
 })
 
 $("#cardReader").on('click', function (evnt) {
     debugger
+    var rowNo = 0;
     var des = "";
     var amount = $("#amount").val();
+    var invoice = getParseCookie(InvoiceCookie);
+    var paidAmount = invoice.totalPaidAmount;
+
+    var remain = paidAmount - amount;
+    if (remain < 0) {
+        notify("top center", "مبلغ وارد شده بیش از مبلغ از دریافتی است");
+        return false;
+    }
+
     var type = 2;
     var bank = $("#bank").val();
-  //  reinitialise("dataTable-pay")
+
+
+    var obj = [];
+    var otherPay = {
+        totalPaidAmount: applyOtherPayTotal,
+        bank: bank,
+        remain: remain,
+        des: des,
+        type: type,
+    };
+
+    var cookie = getCookie(OtherPayCookie);
+    if (cookie === "")
+        obj.push(otherPay);
+    else
+        obj.push.apply(obj, otherPay);
+
+    setCookie(OtherPayCookie, obj);
+
+    //TODo connect to ReaderCard
 
     payTable.clear().draw();
-    var des = "";
-    var result = ` <tr>
-   
-        <td>${des}</td>
-         <td>${amount ?? ""}</td>
-        <td>${type}</td>
-        <td>
 
+    obj.forEach(x => {
+        var result = ` <tr>
+   
+        <td>${rowNo += 1}</td>
+        <td>${x.des}</td>
+         <td>${x.amount ?? ""}</td>
+        <td>${x.type}</td>
+        <td>
             <a class="" title="حذف">
                 <svg style="color:#e7515a" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1062,11 +1133,12 @@ $("#cardReader").on('click', function (evnt) {
         </td>
     </tr>
     `
-
-    payTable.row.add($(result)).draw();
+        payTable.row.add($(result)).draw();
+    })
+    applyOtherPayTotal(amount, remain);
 })
 function calculatePay(amount, type, bank, trackingCode) {
 
-    
+
 
 }

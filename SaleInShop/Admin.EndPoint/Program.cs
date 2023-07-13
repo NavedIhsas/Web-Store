@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Connections;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using SaleInWeb;
+using SaleInWeb.Middleware;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -123,6 +124,7 @@ try
         app.UseHsts();
     }
 
+    //app.UseRemoveCookie();
     app.UseSession();
     app.UseHttpsRedirection();
     app.UseStaticFiles();

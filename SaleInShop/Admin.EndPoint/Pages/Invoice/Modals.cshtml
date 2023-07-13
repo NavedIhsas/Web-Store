@@ -1,4 +1,6 @@
-﻿
+﻿@using Application.Common
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
 <style>
     .card {
@@ -321,9 +323,9 @@
                                 <label>شماره پرداخت:</label>
                                 <input type="text" value="1300" class="form-control text-dark ml-2" readonly />
                                 <label>نام مشترک:</label>
-                                <input type="text" value="نان سجاد" class="form-control ml-2" readonly />
+                                <input id="AccountClubName" type="text" value="" class="form-control ml-2" readonly />
                                 <label>تاریخ:</label>
-                                <input type="text" value="1402" class="form-control ml-2" readonly />
+                                <input type="text" value="@DateTime.Now.ToFarsi()" class="form-control ml-2" readonly />
 
                             </div>
                         </div>
@@ -396,7 +398,7 @@
                     </div>
                     <div class="form-inline row p-4">
                         <label class="text-dark">مبلغ:</label>
-                        <input id="amount" type="text" value="1402" class="form-control text-dark ml-2" />
+                        <input id="amount" type="text" value="" class="form-control text-dark ml-2" />
 
                         <label class="text-dark">بانک:</label>
                         <select id="bank" type="text" value="1300" class="form-control text-dark ml-2">
@@ -411,17 +413,19 @@
                     <div class="col-md-12 col-sm-12 col-xs-12 table-responsive" id="">
                         <table id="dataTable-pay" class="Current-color table table-striped table-bordered">
                             <thead>
-                                <tr>
-                                    <th>شرح</th>
-                                   
-                                    <th>مبلغ </th>
-                                    <th>نوع پرداخت</th>
-                                    <th>عملیات</th>
-                                </tr>
+                            <tr>
+                                <th>ردیف</th>
+                                <th>شرح</th>
+                                <th>مبلغ </th>
+                                <th>نوع پرداخت</th>
+                                <th>عملیات</th>
+                            </tr>
                             </thead>
                             <tbody>
                             </tbody>
                         </table>
+                        
+                        <div id="otherPaytotal" class="row d-none"></div>
                     </div>
 
 
