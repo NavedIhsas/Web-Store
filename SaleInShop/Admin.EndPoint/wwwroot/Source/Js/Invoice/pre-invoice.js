@@ -1011,8 +1011,6 @@ function checkStatus(status) {
     if (status.statusPay == "تسویه نشده")
         document.querySelectorAll(".invoicePay").forEach(x => x.classList.remove("d-none"));
 }
-
-
 // payment
 
 
@@ -1181,8 +1179,14 @@ $("#cardReader").on('click', function (evnt) {
     })
     applyOtherPayTotal(amount, remain);
 })
-function calculatePay(amount, type, bank, trackingCode) {
 
 
-
-}
+$("#finallyPayment").on("click", function (evt) {
+    $.ajax({
+        url: "?handler=finallyPayment",
+        type: "get",
+        success: function (result) {
+            debugger
+        }
+    })
+})

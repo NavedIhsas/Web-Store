@@ -66,13 +66,19 @@ namespace SaleInWeb.Pages.Invoice
         }
         public IActionResult OnGetGeneratePaymentNumber()
         {
-            return new JsonResult(_invoiceService.FinallyPayment());
+            return new JsonResult(_invoiceService.FinallyPaymentList());
         }
 
         public JsonResult OnGetPose(int bankType)
         {
             var result = _invoiceService.GetBankPose(bankType).ToList();
             return new JsonResult(result);
+        }
+
+
+        public IActionResult OnGetFinallyPayment()
+        {
+            _invoiceService.FinallyPaymentList();
         }
     }
 }

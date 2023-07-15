@@ -30,7 +30,8 @@ namespace Application.Invoice
         int GenerateSheetNumber();
         ICollection<SelectListBankPose> GetBankPose(int bankType);
         List<SelectListBankPose> SelectListBank();
-        FinallyPaymentDto FinallyPayment();
+        FinallyPaymentDto FinallyPaymentList();
+        ResultDto FinallyPayment();
     }
 
     public class InvoiceService : IInvoiceService
@@ -364,7 +365,7 @@ namespace Application.Invoice
             }).ToList();
         }
 
-        public FinallyPaymentDto FinallyPayment()
+        public FinallyPaymentDto FinallyPaymentList()
         {
             var result = new FinallyPaymentDto()
             {
@@ -372,6 +373,11 @@ namespace Application.Invoice
                 GenerateNumber = this.GenerateSheetNumber(),
             };
             return result;
+        }
+
+          public ResultDto FinallyPayment()
+        {
+           
         }
 
 
