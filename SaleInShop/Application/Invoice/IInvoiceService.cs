@@ -27,6 +27,10 @@ namespace Application.Invoice
         JsonResult GetInvoiceList(JqueryDatatableParam param);
         ResultDto<List<InvoiceDetailsDto>> InvoiceDetails(Guid invoiceId);
         ResultDto<List<ProductListDot>> ChangeAccountClub(int priceLevel);
+        int GenerateSheetNumber();
+        ICollection<SelectListBankPose> GetBankPose(int bankType);
+        List<SelectListBankPose> SelectListBank();
+        FinallyPaymentDto FinallyPayment();
     }
 
     public class InvoiceService : IInvoiceService
@@ -325,6 +329,52 @@ namespace Application.Invoice
             return result ?? 0;
         }
 
+
+        public int GenerateSheetNumber()
+        {
+            var workYears = _context.WorkYears.FirstOrDefault()?.WyYear;
+
+            var number = _context.PaymentRecieptSheets.Where(x => x.PayRciptSheetDate.Value.Year == workYears)
+                .OrderByDescending(x => x.PayRciptSheetNumber).LastOrDefault()?.PayRciptSheetNumber + 1;
+
+            return int.Parse(number ?? string.Empty);
+        }
+
+        public ICollection<SelectListBankPose> GetBankPose(int bankType)
+        {
+
+            var bank = _context.Banks.Include(x => x.BankPoses).SingleOrDefault(x => x.Type == bankType);
+            if (bank == null) return new List<SelectListBankPose>();
+            var pose = bank.BankPoses.Select(x => new SelectListBankPose()
+            {
+                Id = x.Id,
+                Name = x.Name
+            }).ToList();
+
+            return pose;
+        }
+
+        public List<SelectListBankPose> SelectListBank()
+        {
+           return _context.Banks.Select(x=>new SelectListBankPose()
+            {
+                Type = x.Type,
+                Name = x.BankName
+                            
+            }).ToList();
+        }
+
+        public FinallyPaymentDto FinallyPayment()
+        {
+            var result = new FinallyPaymentDto()
+            {
+                BankList = this.SelectListBank(),
+                GenerateNumber = this.GenerateSheetNumber(),
+            };
+            return result;
+        }
+
+
         public ResultDto<List<ProductListDot>> ChangeAccountClub(int priceLevel)
         {
             var result = new ResultDto<List<ProductListDot>>();
@@ -380,6 +430,13 @@ namespace Application.Invoice
 }
 
 
+
+public class SelectListBankPose
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; }
+    public int Type { get; set; }
+}
 public class InvoiceStatus
 {
     public Guid Id { get; set; }
@@ -466,6 +523,15 @@ public class InvoiceDto
     /// Account Club Code
     /// </summary>
     public string Code { get; set; }
+
+}
+
+
+
+public class FinallyPaymentDto
+{
+    public List<SelectListBankPose> BankList { get; set; }
+    public int GenerateNumber { get; set; }
 
 }
 public class CreateInvoice

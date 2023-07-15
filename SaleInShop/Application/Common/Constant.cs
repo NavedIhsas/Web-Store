@@ -31,6 +31,18 @@ public static class InvoiceDetDiscountStatus
     public const int Both = 2;
 }
 
+
+public static class Bank
+{
+    public const int Mellat = 1;
+    public const int Melli = 2;
+    public const int Parsian = 3;
+    public const int samankish = 4;
+    public const int IranKish = 5;
+    public const int EghtesadNovin = 6;
+    public const int Ayandeh = 7;
+}
+
 public static class ApplicationType
 {
     public const int Web = 1;

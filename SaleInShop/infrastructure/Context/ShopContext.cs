@@ -46,7 +46,9 @@ public partial class ShopContext : DbContext, IShopContext
 
     public virtual DbSet<AtelierCategory> AtelierCategories { get; set; }
 
-    public virtual DbSet<Bank> Banks { get; set; }
+    public virtual DbSet<Domain.ShopModels.Bank> Banks { get; set; }
+
+    public virtual DbSet<BankPose> BankPoses { get; set; }
 
     public virtual DbSet<Barcode> Barcodes { get; set; }
 
@@ -245,7 +247,6 @@ public partial class ShopContext : DbContext, IShopContext
     public virtual DbSet<WorkStation> WorkStations { get; set; }
 
     public virtual DbSet<WorkYear> WorkYears { get; set; }
-
 
     public override int SaveChanges()
     {
@@ -1172,7 +1173,7 @@ public partial class ShopContext : DbContext, IShopContext
                 .HasColumnName("SYS_USR_MODIFIEDON");
         });
 
-        modelBuilder.Entity<Bank>(entity =>
+        modelBuilder.Entity<Domain.ShopModels.Bank>(entity =>
         {
             entity.HasKey(e => e.BankUid);
 
@@ -1201,6 +1202,22 @@ public partial class ShopContext : DbContext, IShopContext
             entity.Property(e => e.SysUsrModifiedon)
                 .HasColumnType("datetime")
                 .HasColumnName("SYS_USR_MODIFIEDON");
+        });
+
+        modelBuilder.Entity<BankPose>(entity =>
+        {
+            entity.ToTable("BankPose");
+
+            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Ip).HasMaxLength(50);
+            entity.Property(e => e.Name).HasMaxLength(128);
+            entity.Property(e => e.Port).HasMaxLength(128);
+            entity.Property(e => e.Serial).HasMaxLength(128);
+
+            entity.HasOne(d => d.Bank).WithMany(p => p.BankPoses)
+                .HasForeignKey(d => d.BankId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_BankPose_Bank");
         });
 
         modelBuilder.Entity<Barcode>(entity =>
@@ -2042,7 +2059,6 @@ public partial class ShopContext : DbContext, IShopContext
 
             entity.HasOne(d => d.CntFrCreatedbyNavigation).WithMany(p => p.ContractCntFrCreatedbyNavigations)
                 .HasForeignKey(d => d.CntFrCreatedby)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Contract_SystemUsers_Create");
 
             entity.HasOne(d => d.CntFrModifiedbyNavigation).WithMany(p => p.ContractCntFrModifiedbyNavigations)

@@ -13,11 +13,11 @@ public partial class Contract
 
     public DateTime CntEndDate { get; set; }
 
-    public Guid CntFrCreatedby { get; set; }
+    public Guid? CntFrCreatedby { get; set; }
 
     public Guid? CntFrModifiedby { get; set; }
 
-    public DateTime CntCreateon { get; set; }
+    public DateTime? CntCreateon { get; set; }
 
     public DateTime? CntModifiedon { get; set; }
 

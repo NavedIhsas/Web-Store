@@ -1,4 +1,7 @@
-﻿namespace Domain.ShopModels;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Domain.ShopModels;
 
 public partial class AccountClubType
 {

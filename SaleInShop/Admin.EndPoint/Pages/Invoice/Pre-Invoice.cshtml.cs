@@ -27,9 +27,11 @@ namespace SaleInWeb.Pages.Invoice
         }
         public List<ProductCategory.ProductLevelDto> Categories;
         public List<ProductDto> Products;
+        public List<SelectListBankPose> Bank;
         public void OnGet()
         {
             Categories = _category.GetLevelList();
+            Bank = _invoiceService.SelectListBank();
         }
 
         public IActionResult OnPost(Guid type)
@@ -61,6 +63,16 @@ namespace SaleInWeb.Pages.Invoice
         public IActionResult OnGetChangeAccountClub(int priceLevel)
         {
             return new JsonResult(_invoiceService.ChangeAccountClub(priceLevel));
+        }
+        public IActionResult OnGetGeneratePaymentNumber()
+        {
+            return new JsonResult(_invoiceService.FinallyPayment());
+        }
+
+        public JsonResult OnGetPose(int bankType)
+        {
+            var result = _invoiceService.GetBankPose(bankType).ToList();
+            return new JsonResult(result);
         }
     }
 }

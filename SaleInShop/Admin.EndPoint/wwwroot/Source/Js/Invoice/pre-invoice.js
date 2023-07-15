@@ -1045,41 +1045,82 @@ function applyOtherPayTotal(totalPaidAmount, remain) {
 
 
 
-
-
-
-
-
-
-
-
-
-
 $("#cashPayment").on('click', function (evt) {
     //evt.preventdefault();
-    debugger
+   
     var invoice = getParseCookie(InvoiceCookie);
     var account = getParseCookie(AccountClubCookie);
-    $("#AccountClubName").val(account.accClbName);
+    $("#AccountClubNamePay").val(account.accClbName);
     setCookie(CashPaymentCookie, invoice);
     applyTotal(invoice.totalCount, invoice.totalFooter, invoice.totalDiscountAmount, invoice.totalInvoiceDiscount, invoice.totalGetTax, invoice.totalPaidAmount, 0)
     notify("top center", "تسویه انجام شد، برای ادامه فاکتور را ثبت کنید", "success")
 })
 
 
+var invoiceNumber = 0;
 $("#otherPayment").on('click', function (evnt) {
+
+    $.ajax({
+        url: "?handler=GeneratePaymentNumber",
+        type: "get",
+        success: function (result) {
+            debugger
+            invoiceNumber = result.generateNumber;
+            var invoice = getParseCookie(InvoiceCookie);
+            var account = getParseCookie(AccountClubCookie);
+            var paidAmount = invoice.totalPaidAmount;
+            $("#invoiceNumberPay").text(invoiceNumber);
+            $("#AccountClubNamePay").text(account.accClbName);
+            $("#amountPay").val(paidAmount)
+            applyOtherPayTotal(0, paidAmount);
+            result.bankList.forEach(x => {
+
+                var list = `
+                    <option value="${x.type}">${x.name}</option>
+                `
+                $("#bank").append(list);
+            })
+        }
+    })
     $("#otherPaymentModal").modal('show');
-    var invoice = getParseCookie(InvoiceCookie);
-    var paidAmount = invoice.totalPaidAmount;
-    $("#amount").val(paidAmount)
-    applyOtherPayTotal(0, paidAmount);
+
+  
+})
+
+$("#bank").on("change", function (evt) {
+    debugger
+    var type = $("#bank").val();
+    $.ajax({
+        url: "?handler=pose&bankType=" + type,
+        type: "Get",
+        success: function (result) {
+            debugger
+            $("#pose").empty();
+            result.forEach(x => {
+                const list = `
+                    <option value="${x.id}">${x.name}</option>
+                `
+                $("#pose").append(list)
+            })
+        }
+    })
 })
 
 $("#cardReader").on('click', function (evnt) {
     debugger
+
+  
+    var bank = $("#bank").val();
+    var bankName = $("#bank option:selected").text();
+    var amount = $("#amountPay").val();
+    var pose = $("#pose").val();
+    if (bank == "0" || amount == "" || pose == "0" || pose==null) {
+
+        notify("top center", "اطلاعات را به درستی وارد کنید", "error");
+        return false;
+    }
     var rowNo = 0;
-    var des = "";
-    var amount = $("#amount").val();
+    var des = `بابت برگه دریافت وجه شماره ${invoiceNumber} و  ${bankName} بصورت کارت - کارت خوان`;
     var invoice = getParseCookie(InvoiceCookie);
     var paidAmount = invoice.totalPaidAmount;
 
@@ -1090,7 +1131,6 @@ $("#cardReader").on('click', function (evnt) {
     }
 
     var type = 2;
-    var bank = $("#bank").val();
 
 
     var obj = [];
@@ -1100,13 +1140,17 @@ $("#cardReader").on('click', function (evnt) {
         remain: remain,
         des: des,
         type: type,
+        amount: amount
     };
-
+    debugger
     var cookie = getCookie(OtherPayCookie);
     if (cookie === "")
         obj.push(otherPay);
     else
-        obj.push.apply(obj, otherPay);
+        obj.push.apply(otherPay,obj);
+
+    if (obj.length == 0 && otherPay !== "")
+        obj.push(otherPay);
 
     setCookie(OtherPayCookie, obj);
 

@@ -121,12 +121,12 @@
                                             <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
                                                 <table id="dataTable_3" class="text-center Current-color table table-striped table-bordered">
                                                     <thead>
-                                                    <tr>
-                                                        <th>نام کالا</th>
-                                                        <th>گروه کالا</th>
-                                                        <th>قیمت کالا</th>
-                                                        <th>افزودن</th>
-                                                    </tr>
+                                                        <tr>
+                                                            <th>نام کالا</th>
+                                                            <th>گروه کالا</th>
+                                                            <th>قیمت کالا</th>
+                                                            <th>افزودن</th>
+                                                        </tr>
                                                     </thead>
                                                     <tbody>
                                                     </tbody>
@@ -134,7 +134,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <hr/>
+                                    <hr />
 
                                     <div class="container  text-center d-none" id="invoiceType">
                                         <p><strong class="font-wight-bold">نوع فاکتور: <span id="invoiceTypeText"></span></strong></p>
@@ -149,17 +149,16 @@
                                             <div class="card-body pb-0">
                                                 <div class="row pb-3 pl-3">
                                                     <div>
-                                                        <input type="button" id="addAccountClub" class="btn btn-success btn-sm btn-rounded" value="انتخاب مشتری"/>
+                                                        <input type="button" id="addAccountClub" class="btn btn-success btn-sm btn-rounded" value="انتخاب مشتری" />
                                                     </div>
                                                     <div>
-                                                        <input onclick="InvoiceList()" type="button" id="" class="btn btn-warning btn-sm btn-rounded" value="فاکتور های ثبت شده"/>
+                                                        <input onclick="InvoiceList()" type="button" id="" class="btn btn-warning btn-sm btn-rounded" value="فاکتور های ثبت شده" />
                                                     </div>
 
                                                 </div>
                                                 <div class="row">
-
                                                     <div class=" col-md-2">
-                                                        <input id="" style="height:30px !Important" class="flatpickr datePicker flatpickr-input active form-control form-control-sm"/>
+                                                        <input id="" style="height:30px !Important" class="flatpickr datePicker flatpickr-input active form-control form-control-sm" />
                                                     </div>
                                                     <div class="form-group col-md-2 ">
                                                         <input type="text" id="invoiceNumber" class="form-control form-control-sm" style="height:30px !Important" placeholder="شماره فاکتور">
@@ -172,8 +171,6 @@
                                                     <div class="form-group col-md-3 ">
                                                         <p type="text" class="form-control form-control-sm d-none" style="height:30px !Important; border:none;" id="invoicePayStatus"> وضعیت پرداخت: <span id="invoicePayStatusText"></span></p>
                                                     </div>
-
-
                                                 </div>
                                             </div>
                                         </div>
@@ -208,25 +205,25 @@
                                             </div>
                                         </div>
 
-                                        <input type="hidden" value="" name="type" id="type"/>
+                                        <input type="hidden" value="" name="type" id="type" />
                                         <div class="col-md-12 col-sm-12 col-xs-12 table-responsive" id="productList">
                                             <table id="property-dataTable" class="Current-color table table-striped table-bordered property-dataTable">
                                                 <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>نام کالا</th>
-                                                    <th>تعداد</th>
-                                                    <th>قیمت</th>
-                                                    <th>قیمت کل</th>
-                                                    <th>تخفیف (درصد)</th>
-                                                    <th>مبلغ پس از تخفیف</th>
-                                                    <th>مالیات</th>
-                                                    <th>مبلغ نهایی</th>
-                                                    <th>تسهیم</th>
-                                                    <th>تخفیف با تسهیم</th>
-                                                    <th>توضیح</th>
-                                                    <th>عملیات</th>
-                                                </tr>
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>نام کالا</th>
+                                                        <th>تعداد</th>
+                                                        <th>قیمت</th>
+                                                        <th>قیمت کل</th>
+                                                        <th>تخفیف (درصد)</th>
+                                                        <th>مبلغ پس از تخفیف</th>
+                                                        <th>مالیات</th>
+                                                        <th>مبلغ نهایی</th>
+                                                        <th>تسهیم</th>
+                                                        <th>تخفیف با تسهیم</th>
+                                                        <th>توضیح</th>
+                                                        <th>عملیات</th>
+                                                    </tr>
                                                 </thead>
                                                 <tbody>
                                                 </tbody>
@@ -263,11 +260,14 @@
 
 
 
-<partial name="Modals" />
+<partial name="Modals" model="@Model.Bank" />
 
 @section Scripts
     {
 
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
     <script src="~/assets/js/datepicker/persian-datepicker.min.js"></script>
     <script src="~/assets/js/datepicker/persian-date.min.js"></script>
 

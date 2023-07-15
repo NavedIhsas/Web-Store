@@ -27,5 +27,9 @@ public partial class Bank
 
     public bool? BankActive { get; set; }
 
+    public int Type { get; set; }
+
+    public virtual ICollection<BankPose> BankPoses { get; set; } = new List<BankPose>();
+
     public virtual ICollection<ChequSheet> ChequSheets { get; set; } = new List<ChequSheet>();
 }

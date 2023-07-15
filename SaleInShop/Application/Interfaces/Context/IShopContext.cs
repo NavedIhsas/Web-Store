@@ -36,6 +36,8 @@ public interface IShopContext
 
     public  DbSet<Bank> Banks { get; set; }
 
+    public  DbSet<BankPose> BankPoses { get; set; }
+
     public  DbSet<Barcode> Barcodes { get; set; }
 
     public  DbSet<BusinessUnit> BusinessUnits { get; set; }
@@ -233,7 +235,7 @@ public interface IShopContext
     public  DbSet<WorkStation> WorkStations { get; set; }
 
     public  DbSet<WorkYear> WorkYears { get; set; }
- 
+
     int SaveChanges(bool acceptAllChangesOnSuccess);
     int SaveChanges();
     public DatabaseFacade Database { get; }

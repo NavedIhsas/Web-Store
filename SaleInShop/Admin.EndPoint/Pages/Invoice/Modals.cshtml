@@ -1,5 +1,6 @@
 ﻿@using Application.Common
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@model List<SelectListBankPose>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
 <style>
@@ -302,7 +303,6 @@
 </div>
 
 
-
 <div class="modal fade" id="otherPaymentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
@@ -315,104 +315,50 @@
                     </svg>
                 </button>
             </div>
-            <div class="modal-body">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <div class="form-inline row">
-                                <label>شماره پرداخت:</label>
-                                <input type="text" value="1300" class="form-control text-dark ml-2" readonly />
-                                <label>نام مشترک:</label>
-                                <input id="AccountClubName" type="text" value="" class="form-control ml-2" readonly />
-                                <label>تاریخ:</label>
-                                <input type="text" value="@DateTime.Now.ToFarsi()" class="form-control ml-2" readonly />
+            <div class="row">
 
-                            </div>
+                <div class="form-group col-md-3 ">
+                    <p type="text" class="form-control form-control-sm " style="height:30px !Important; border:none;" id="">شناسه پرداخت: <span id="invoiceNumberPay"></span></p>
+                </div>
+                <div class="form-group col-md-3 ">
+                    <p type="text" class="form-control form-control-sm " style="height:30px !Important; border:none;" id=""> نام مشترک: <span id="AccountClubNamePay"></span></p>
+                </div>
+
+                <div class="form-group col-md-3 ">
+                    <p type="text" class="form-control form-control-sm " style="height:30px !Important; border:none;" id=""> تاریخ: <span id="">@DateTime.Now.ToFarsi()</span></p>
+                </div>
+            </div>
+            <div class="row layout-top-spacing" id="">
+                <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
+                    <div class="widget-content  br-6">
+                        <div class="row col col-md-12">
+                            <button type="submit" class="btn btn-success btn-sm btn-rounded pull-left invoicePay d-none">پرداخت نقدی</button>
+                            <button type="button" id="cashPayment" class="btn btn-primary btn-sm btn-rounded pull-left d-none invoicePay">پرداخت با کارتخوان</button>
+                            <button type="button" id="otherPayment" class="btn btn-warning btn-sm btn-rounded pull-left d-none invoicePay">باشگاه</button>
+                            <button type="button" class="btn btn-info btn-sm btn-rounded pull-left" id="tempInvoice">اعتباری</button>
                         </div>
                     </div>
                 </div>
-                <div class="row layout-top-spacing" id="">
-                    <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
-                        <div class="widget-content  br-6">
-
-
-
-                            <div class="col-md-10 ">
-                                <div class="row ">
-                                    <div class="col-xl-3 col-lg-6">
-                                        <div class="card l-bg-cherry" style="with:100px !important">
-                                            <div class="card-statistic-3 p-4">
-                                                <div class="card-icon card-icon-large"><i class="fas fa-shopping-cart"></i></div>
-                                                <div class="mb-4">
-                                                    <h5 class="card-title mb-0">پرداخت نقدی</h5>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-3 col-lg-6">
-                                        <div class="card l-bg-blue-dark " style="with:100px !important">
-                                            <div class="card-statistic-3 p-4">
-                                                <div class="card-icon card-icon-large"><i class="fas fa-users"></i></div>
-                                                <div class="mb-4">
-                                                    <h5 class="card-title mb-0">پرداخت با کارتخوان</h5>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-3 col-lg-6">
-                                        <div class="card l-bg-green-dark" style="with:100px !important">
-                                            <div class="card-statistic-3 p-4">
-                                                <div class="card-icon card-icon-large"><i class="fas fa-ticket-alt"></i></div>
-                                                <div class="mb-4">
-                                                    <h5 class="card-title mb-0">باشگاه</h5>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-3 col-lg-6">
-                                        <div class="card l-bg-orange-dark" style="with:100px !important">
-                                            <div class="card-statistic-3 p-4">
-                                                <div class="card-icon card-icon-large"><i class="fas fa-dollar-sign"></i></div>
-                                                <div class="mb-4">
-                                                    <h5 class="card-title mb-0">اعتباری</h5>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-
-
-                            <div class="col-md-12 col-sm-12 col-xs-12 table-responsive" id="">
-                                <div class="card-title ">
-                                    @*    <span> وضعیت فرم: <strong class="text-danger mt-5">تایید نشده</strong></span>*@
-                                </div>
-
-                            </div>
-
-                        </div>
-                    </div>
+                
                     <div class="form-inline row p-4">
                         <label class="text-dark">مبلغ:</label>
-                        <input id="amount" type="text" value="" class="form-control text-dark ml-2" />
-
+                        <input id="amountPay" type="text" value="" class="form-control text-dark ml-2" required />
                         <label class="text-dark">بانک:</label>
-                        <select id="bank" type="text" value="1300" class="form-control text-dark ml-2">
-                            <option>-انتخاب کنید-</option>
-                            <option>بانک پارسیان</option>
-                            <option>بانک آینده</option>
+                    <select id="bank" type="text" class="form-control text-dark ml-2" required>
+                            <option value="0">-انتخاب کنید-</option>
+                    </select>
+
+                        <label class="text-dark">پوز:</label>
+                        <select id="pose" type="text" class="form-control text-dark ml-2" required>
+                            <option value="0">-انتخاب کنید-</option>
                         </select>
                         <button id="cardReader" type="button" class="btn btn-info btn-sm">کارتخوان</button>
                     </div>
+               
 
-
-                    <div class="col-md-12 col-sm-12 col-xs-12 table-responsive" id="">
-                        <table id="dataTable-pay" class="Current-color table table-striped table-bordered">
-                            <thead>
+                <div class="col-md-12 col-sm-12 col-xs-12 table-responsive" id="">
+                    <table id="dataTable-pay" class="Current-color table table-striped table-bordered">
+                        <thead>
                             <tr>
                                 <th>ردیف</th>
                                 <th>شرح</th>
@@ -420,18 +366,23 @@
                                 <th>نوع پرداخت</th>
                                 <th>عملیات</th>
                             </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                        
-                        <div id="otherPaytotal" class="row d-none"></div>
-                    </div>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
 
-
+                    <div id="otherPaytotal" class="row d-none"></div>
                 </div>
-            </div>
+                <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
+                    <div class="widget-content  br-6">
+                        <div class="row col col-md-12">
+                           
+                            <button type="button" class="btn btn-info btn-sm btn-rounded pull-left" id="">تایید و پرداخت</button>
+                        </div>
+                    </div>
+                </div>
 
+            </div>
         </div>
     </div>
 </div>
