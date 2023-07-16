@@ -11,14 +11,14 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace SaleInWeb.Pages.Invoice
 {
     
-    public class PreInvoiceModel : PageModel
+    public class InvoiceModel : PageModel
     {
         private readonly IProductCategory _category;
         private readonly IInvoiceService _invoiceService;
         private readonly IProductService _product;
         private readonly IAuthHelper _authHelper;
         public string Message = "";
-        public PreInvoiceModel(IProductCategory category, IInvoiceService invoiceService, IProductService product, IAuthHelper authHelper)
+        public InvoiceModel(IProductCategory category, IInvoiceService invoiceService, IProductService product, IAuthHelper authHelper)
         {
             _category = category;
             _invoiceService = invoiceService;
@@ -51,7 +51,7 @@ namespace SaleInWeb.Pages.Invoice
             }
         }
 
-          public JsonResult OnGetPreInvoiceData(JqueryDatatableParam param)
+        public JsonResult OnGetPreInvoiceData(JqueryDatatableParam param)
         {
             var result = _product.GetAllProductForPreInvoice(param);
             if (result.IsSucceeded)

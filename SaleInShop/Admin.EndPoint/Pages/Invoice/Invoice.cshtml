@@ -1,10 +1,9 @@
 ﻿@page
-@model SaleInWeb.Pages.Invoice.PreInvoiceModel
+@model SaleInWeb.Pages.Invoice.InvoiceModel
 @Html.AntiForgeryToken()
 @{
     ViewData["Title"] = "پیش فاکتور";
 }
-
 
 <style>
     /* Style the tab */
@@ -12,8 +11,6 @@
     td.bg-aliceblue {
         background-color: aliceblue;
     }
-    
-
 
     .verticalLine {
         float: right;
@@ -84,13 +81,6 @@
 
     .product-content {
     }
-    
-    .card{
-        background-color: lightgray !important;
-    }
-    .bg-lightgray{
-        background-color: lightgray !important;
-        }
 </style>
 
 
@@ -103,14 +93,14 @@
     <div class="layout-px-spacing">
         <div class="row">
             <div id="tabsAlignments" class="col-lg-12 col-12 layout-spacing">
-                <div class="widget-content widget-content-area justify-tab" style="background-color:lightgray !Important">
+                <div class="widget-content widget-content-area justify-tab">
 
                     <ul class="nav nav-tabs  mb-3 mt-3 nav-fill" id="justifyTab" role="tablist">
                         <div class="tab">
-                            <button id="custom-menu" class="tablinks" onclick="getProductModal(event, 'CustomMenu')">منوی سفارشی</button>
+                            <button id="custom-menu" class="tablinks" onclick="getProductModal(event, 'CustomMenu','invoice')">منوی سفارشی</button>
                             <button class="tablinks" onclick="openCity(event, 'Paris')">منوی نمایشی</button>
-                            <button class="tablinks" onclick="openCity(event, 'Tokyo')">میز</button>
-                            <button class="tablinks" onclick="openCity(event, 'Tokyo')">پکیج</button>
+                            <button class="tablinks" onclick="PreInvoiceList()">پیش فاکتور</button>
+                            <button class="tablinks" onclick="getProductModal(event, 'CustomMenu','pre')"> انتخاب از پیش فاکتور</button>
                             <button class="tablinks" onclick="invoiceTempList()">فاکتور موقت</button>
                         </div>
                     </ul>
@@ -154,7 +144,7 @@
 
                                     <div class="col-xl-12 col-lg-12 col-sm-12">
 
-                                        <div class="card" id="cardPrint_1" style="background-color:unset !Important">
+                                        <div class="card" id="cardPrint_1">
                                             <div class="card-body pb-0">
                                                 <div class="row pb-3 pl-3">
                                                     <div>
@@ -167,18 +157,18 @@
                                                 </div>
                                                 <div class="row">
                                                     <div class=" col-md-2">
-                                                        <input id="" style="height:30px !Important" class="flatpickr datePicker flatpickr-input active form-control form-control-sm bg-lightgray" />
+                                                        <input id="" style="height:30px !Important" class="flatpickr datePicker flatpickr-input active form-control form-control-sm" />
                                                     </div>
                                                     <div class="form-group col-md-2 ">
-                                                        <input type="text" id="invoiceNumber" class="form-control form-control-sm bg-lightgray" style="height:30px !Important" placeholder="شماره فاکتور">
+                                                        <input type="text" id="invoiceNumber" class="form-control form-control-sm" style="height:30px !Important" placeholder="شماره فاکتور">
                                                     </div>
 
                                                     <div class="form-group col-md-3 ">
-                                                        <p type="text" class="form-control form-control-sm d-none bg-lightgray" style="height:30px !Important; border:none;" id="invoiceStatus"> وضعیت فاکتور: <span id="invoiceStatusText"></span></p>
+                                                        <p type="text" class="form-control form-control-sm d-none" style="height:30px !Important; border:none;" id="invoiceStatus"> وضعیت فاکتور: <span id="invoiceStatusText"></span></p>
                                                     </div>
 
                                                     <div class="form-group col-md-3 ">
-                                                        <p type="text" class="form-control form-control-sm d-none bg-lightgray" style="height:30px !Important; border:none;" id="invoicePayStatus"> وضعیت پرداخت: <span id="invoicePayStatusText"></span></p>
+                                                        <p type="text" class="form-control form-control-sm d-none" style="height:30px !Important; border:none;" id="invoicePayStatus"> وضعیت پرداخت: <span id="invoicePayStatusText"></span></p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -279,5 +269,5 @@
     }
     <script src="~/assets/js/datepicker/persian-datepicker.min.js"></script>
     <script src="~/assets/js/datepicker/persian-date.min.js"></script>
-    <script src="~/source/js/invoice/pre-invoice.js"></script>
+    <script src="~/source/js/invoice/invoice.js"></script>
 }

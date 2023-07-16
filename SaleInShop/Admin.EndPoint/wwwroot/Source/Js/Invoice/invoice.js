@@ -57,11 +57,11 @@ $("#submitPrint").on('click', function () {
     }).then(function (result) {
 
         if (result.value) {
-            $("#type").val("8A57453B-15BF-43FD-8151-26C367572516");
+            $("#type").val("790C91B5-FACE-4CD4-AD8A-2A49ECA3A68B");
 
             $.ajax({
 
-                url: '/Invoice/Pre-Invoice',
+                url: '/Invoice/Invoice',
                 data: new FormData(document.forms.submitForm),
                 contentType: false,
                 processData: false,
@@ -108,7 +108,8 @@ $("#submitPrint").on('click', function () {
 })
 
 
-function getProductModal(evt, cityName) {
+function getProductModal(evt, cityName, invoiceType) {
+    debugger
     var account = getCookie(AccountClubCookie);
 
     if (account == "") {
@@ -117,14 +118,20 @@ function getProductModal(evt, cityName) {
     }
     else {
 
-        getProduct(evt, cityName);
+        if (invoiceType == "pre") {
+            getPreInvoiceProduct(evt, cityName)
+        } else {
+
+            getProduct(evt, cityName);
+          
+        }
         $("#CustomMenu").modal('show');
     }
 }
 
 
 function getProduct(evt, cityName) {
-    debugger
+
     var account = getCookie(AccountClubCookie);
     if (account == "") {
         notify("top center", "لطفا ابتدا مشتری را انتخاب کنید", "error");
@@ -205,7 +212,101 @@ function getProduct(evt, cityName) {
 
 
     } catch (e) {
-        alert(e)
+
+    }
+
+    function generateButton(data) {
+
+        return ` <a onClick="addProductToList('${data.PrdUid}',' ','${data.PrdName}','${data.Price}','${data.DiscountPercent}','${data.TaxValue}','${data.InvoiceDiscount}','${data.InvoiceDiscountPercent}','${data.DiscountSaveToDb}')" type="button" >
+        <svg style="color:green" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+    </a>
+    `
+    };
+
+}
+function getPreInvoiceProduct(evt, cityName) {
+
+    var account = getCookie(AccountClubCookie);
+    if (account == "") {
+        notify("top center", "لطفا ابتدا مشتری را انتخاب کنید", "error");
+        return false;
+    }
+
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(cityName).style.display = "block";
+    evt.currentTarget.className += " active";
+
+
+    try {
+
+        reinitialise("dataTable_1");
+        datatable = $('#dataTable_1')
+            .DataTable({
+                "sAjaxSource": "?handler=preInvoiceData",
+                "bServerSide": true,
+                "bProcessing": true,
+                "bSearchable": true,
+                "order": [[1, 'asc']],
+
+                "language": {
+                    "oPaginate": { "sPrevious": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>', "sNext": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>' },
+                    "sInfo": "صفحه _PAGE_ از _PAGES_",
+                    "sSearch": '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
+                    "sSearchPlaceholder": "جستجو کنید...",
+                    "sLengthMenu": "نتایج :  _MENU_",
+                },
+                "columns": [
+                    {
+                        "data": "PrdName",
+                        "autoWidth": true,
+                        "searchable": true,
+
+                    },
+                    {
+                        "data": "PrdLvlName",
+                        "autoWidth": true,
+                        "searchable": true
+                    },
+
+                    {
+                        "data": "Price",
+                        "autoWidth": true,
+                        "searchable": true,
+                        render: function (data, row, full) {
+
+                            if (data == null)
+                                return "تعریف نشده";
+                            return data;
+                        },
+                    },
+
+
+                    {
+                        data: null,
+                        "autoWidth": true,
+                        "searchable": false,
+                        "orderable": false,
+                        render: function (data, row, full) {
+                            if (full.Price == null)
+                                return "ابتدا قیمت را در این سطح تعریف کنید";
+                            return generateButton(data);
+                        },
+                    }
+
+                ]
+            });
+
+
+    } catch (e) {
+
     }
 
     function generateButton(data) {
@@ -303,22 +404,22 @@ function applyTotal(totalProductCount, totalFooter, totalDiscountAmount, totalIn
                          <td class="font-weight-bold text-dark">تجمیع: </td>
                    
                         
-                         <td class="bg-lightgray text-dark">قیمت کل</td>
+                         <td class="bg-aliceblue text-dark">قیمت کل</td>
                          <td> <strong class="text-dark">${totalFooter.toLocaleString()}</strong></td>
                    
-                         <td class="bg-lightgray text-dark">تخفیف ردیف</td>
+                         <td class="bg-aliceblue text-dark">تخفیف ردیف</td>
                          <td> <strong class=" text-danger">${totalDiscountAmount.toLocaleString()}</strong></td>
                    
-                         <td class="bg-lightgray text-dark">تخفیف فاکتور</td>
+                         <td class="bg-aliceblue text-dark">تخفیف فاکتور</td>
                          <td> <strong class="text-danger ">${totalInvoiceDiscount.toLocaleString()}</strong></td>
                    
-                         <td class="bg-lightgray text-dark">مالیات</td>
+                         <td class="bg-aliceblue text-dark">مالیات</td>
                          <td> <strong class="text-info">${totalGetTax.toLocaleString()}</strong></td>
                    
-                         <td class="bg-lightgray text-dark">قابل پرداخت</td>
+                         <td class="bg-aliceblue text-dark">قابل پرداخت</td>
                          <td> <strong class="text-success">${totalPaidAmount.toLocaleString()}</strong></td>
 
-                           <td class="bg-lightgray text-dark">مانده پرداختی</td>
+                           <td class="bg-aliceblue text-dark">مانده پرداختی</td>
                          <td> <strong class="text-success">${remain.toLocaleString()}</strong></td>
                      </tr>
                   </tbody>
@@ -553,10 +654,9 @@ function bindDatatable() {
     };
 }
 function addAccountClub(id, accTypeId, name, discount, type, mobile, address, code, accTypePriceLevel, invoiceDiscount, invoiceDetailsId) {
-    debugger
-    
+
     deleteCookie(AccountClubCookie);
- 
+
     var accound = {
         accClbUid: id,
         accClbTypUid: accTypeId,
@@ -620,7 +720,10 @@ function getAccountClub() {
 // invlice list from dataBase
 
 
-
+function PreInvoiceList() {
+    bindInvoiceDatatable("8A57453B-15BF-43FD-8151-26C367572516", "Preinvoice-dataTable");
+    $("#PreinvoiceList").modal('show');
+}
 function InvoiceList() {
     bindInvoiceDatatable("790C91B5-FACE-4CD4-AD8A-2A49ECA3A68B", "invoice-dataTable");
     $("#invoiceList").modal('show');
@@ -629,8 +732,6 @@ function InvoiceList() {
 function invoiceTempList() {
     bindInvoiceDatatable("09004CE6-3DAC-4EEB-AFE9-E1E7DDD8AD28", "invoiceTemp-dataTable");
     $("#invoiceTempList").modal('show');
-
-
 }
 
 function bindInvoiceDatatable(type, dataTableId) {
@@ -638,7 +739,7 @@ function bindInvoiceDatatable(type, dataTableId) {
     reinitialise(dataTableId);
     dataTable = $('#' + dataTableId)
         .DataTable({
-            "sAjaxSource": "/Invoice/Pre-Invoice?handler=InvoiceList&type=" + type,
+            "sAjaxSource": "/Invoice/Invoice?handler=InvoiceList&type=" + type,
             "bServerSide": true,
             "bProcessing": true,
             "bSearchable": true,
@@ -685,15 +786,20 @@ function bindInvoiceDatatable(type, dataTableId) {
                     "autoWidth": true,
                     "searchable": false,
                     render: function (data, row, full) {
-                        return generateRemoveButton(data);
+
+                        return generateRemoveButton(data, dataTableId);
                     },
                 }
 
             ]
         });
 
-    function generateRemoveButton(data) {
-        return `<center><a class="btn btn-danger btn-rounded btn-sm">حذف</a>&nbsp;<a  onclick="invoiceDetails('${data.Id}')" class="btn btn-success btn-rounded btn-sm">انتخاب</a>&nbsp; `
+    function generateRemoveButton(data,id) {
+        if (id !="Preinvoice-dataTable")
+            return `<center><a class="btn btn-danger btn-rounded btn-sm">حذف</a>&nbsp;<a  onclick="invoiceDetails('${data.Id}')" class="btn btn-success btn-rounded btn-sm">انتخاب</a>&nbsp; `
+        else
+            return `<a  onclick="invoiceDetails('${data.Id}')" class="btn btn-success btn-rounded btn-sm">انتخاب</a>&nbsp; `
+
     };
 
 }
@@ -717,7 +823,7 @@ function invoiceDetails(invoiceId) {
                 manualInvoice = {
                   invoiceId:account.invoiceId,
                 }
-                addAccountClub(account.accountId, account.accountTypeId, account.accountName ?? "", account.accountDiscount, account.accountType ?? "", account.mobile ?? "", account.address ?? "", account.accountCode ?? "", account.priceLevel, account.invoiceDiscount, account.invoiceDetailsId );
+                addAccountClub(account.accountId, account.accountTypeId, account.accountName ?? "", account.accountDiscount, account.accountType ?? "", account.mobile ?? "", account.address ?? "", account.accountCode ?? "", account.priceLevel, account.invoiceDiscount, account.invoiceDetailsId);
 
                 $("#invoiceList").modal('hide');
             } else {
@@ -955,10 +1061,10 @@ $("#tempInvoice").on('click', function (evnt) {
 
         if (result.value) {
 
-            $("#type").val("8A57453B-15BF-43FD-8151-26C367572516");
+            $("#type").val("09004CE6-3DAC-4EEB-AFE9-E1E7DDD8AD28");
             $.ajax({
 
-                url: '/Invoice/Pre-Invoice',
+                url: '/Invoice/Invoice',
                 data: new FormData(document.forms.submitForm),
                 contentType: false,
                 processData: false,
@@ -1019,6 +1125,7 @@ function checkStatus(status) {
 
     if (status.statusPay == "تسویه نشده")
         document.querySelectorAll(".invoicePay").forEach(x => x.classList.remove("d-none"));
+
     var invoice = getParseCookie(InvoiceCookie);
     invoice.invoiceId = status.id,
         setCookie(InvoiceCookie, invoice);
@@ -1306,7 +1413,7 @@ $("#finallyPayment").on("click", function (evt) {
                     'فاکتور با موفقیت ثبت شد',
                     'success'
                 ).then(function () {
-                    window.location.href = "/Invoice/Pre-Invoice";
+                    window.location.href = "/Invoice/Invoice";
                 });
                
               

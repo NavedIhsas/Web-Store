@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Net.Http;
+using System.Text.Json;
 using Application.BaseData;
 using Application.BaseData.Dto;
 using Application.Common;
@@ -16,6 +17,8 @@ using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
+using PaymentRecieptDetail = Domain.ShopModels.PaymentRecieptDetail;
+using PaymentRecieptSheet = Domain.ShopModels.PaymentRecieptSheet;
 
 namespace Application.Invoice
 {
@@ -31,7 +34,7 @@ namespace Application.Invoice
         ICollection<SelectListBankPose> GetBankPose(int bankType);
         List<SelectListBankPose> SelectListBank();
         FinallyPaymentDto FinallyPaymentList();
-        ResultDto FinallyPayment();
+        ResultDto FinallyPayment(FinallyPaidDto data);
     }
 
     public class InvoiceService : IInvoiceService
@@ -146,9 +149,10 @@ namespace Application.Invoice
 
             var cookie = _authHelper.GetCookie("AccountClubList");
             var account = JsonConvert.DeserializeObject<AccountClubDto>(cookie);
-            var invoice = _authHelper.GetCookie("invoice");
+            var invoice = _authHelper.GetCookie("Invoice");
             var invoiceDetails = _authHelper.GetCookie("productList");
             var single = JsonConvert.DeserializeObject<CreateInvoice>(invoice);
+            using var scop = _context.Database.BeginTransaction();
             try
             {
                 var map = _mapper.Map<Domain.ShopModels.Invoice>(single);
@@ -185,11 +189,14 @@ namespace Application.Invoice
                 }
 
                 var status = this.GetStatus(map.InvUid, map);
+                scop.Commit();
+
                 return result.Succeeded(status);
 
             }
             catch (Exception e)
             {
+                scop.Rollback();
                 _logger.LogError($"An error occurred while creating the invoice {e}");
                 return result.Failed("هنگام ثبت اطلاعات خطای رخ داد.");
             }
@@ -288,7 +295,7 @@ namespace Application.Invoice
             Select(x => new InvoiceDetailsDto
             {
                 ProductId = x.PrdUid ?? Guid.Empty,
-                InvoiceDetailsId = x.InvDetUid,
+                InvoiceDetailsId = x.InvDetUid.ToString(),
                 Name = x.PrdU.PrdName,
                 Price = x.InvDetPricePerUnit ?? 0,
                 Discount = CalculateDiscount(x.InvDetPercentDiscount ?? 0, x.InvDetShareDiscountPer),
@@ -311,6 +318,7 @@ namespace Application.Invoice
                 TotalInvoiceDiscount = x.InvU.InvDiscount2,
                 TotalDiscountAmount = x.InvU.InvDetTotalDiscount,
                 TotalPaidAmount = x.InvU.InvExtendedAmount,
+                InvoiceId = x.InvU.InvUid,
                 DiscountSaveToDb = Convert.ToDecimal(x.InvDetPercentDiscount ?? 0),
                 InvShareDiscount = x.InvU.InvShareDiscount ?? false,
                 InvoiceDiscountPercent = x.InvDetShareDiscountPer ?? 0,
@@ -357,11 +365,11 @@ namespace Application.Invoice
 
         public List<SelectListBankPose> SelectListBank()
         {
-           return _context.Banks.Select(x=>new SelectListBankPose()
+            return _context.Banks.Select(x => new SelectListBankPose()
             {
                 Type = x.Type,
                 Name = x.BankName
-                            
+
             }).ToList();
         }
 
@@ -375,11 +383,78 @@ namespace Application.Invoice
             return result;
         }
 
-          public ResultDto FinallyPayment()
+        public ResultDto FinallyPayment(FinallyPaidDto data)
         {
+            var result = new ResultDto();
+
+            var cookie = _authHelper.GetCookie("AccountClubList");
            
+            var jsonInvoice = _authHelper.GetCookie("Invoice");
+            var otherPay = _authHelper.GetCookie("OtherPay");
+            using var transaction = _context.Database.BeginTransaction();
+            try
+            {
+                var invoice = JsonConvert.DeserializeObject<CreateInvoice>(jsonInvoice);
+                var other = JsonConvert.DeserializeObject<List<OtherPay>>(otherPay);
+                var account = JsonConvert.DeserializeObject<AccountClubDto>(cookie);
+                var addNew = new PaymentRecieptSheet
+                {
+                    PayRciptSheetUid = Guid.NewGuid(),
+                    InvUid = invoice.InvoiceId,
+                    PayRciptSheetNumber = data.NumberSheet,
+                    PayRciptSheetTotalAmount = int.Parse(data.FinallyPay.Replace(",", "")),
+                    PayRciptSheetDate = DateTime.Now,
+                    AccClbUid = account.AccClbUid,
+                };
+                _context.PaymentRecieptSheets.Add(addNew);
+                _context.SaveChanges();
+                foreach (var pay in other)
+                {
+
+                    var bankId = _context.Banks.SingleOrDefault(x => x.Type == pay.Bank)?.BankUid;
+
+                    var details = new PaymentRecieptDetail
+                    {
+                        PayRciptDetUid = Guid.NewGuid(),
+                        PayRciptSheetUid = addNew.PayRciptSheetUid,
+                        //AccUid = null,
+                        PayRciptDetTotalAmount = Convert.ToDecimal(pay.Amount.Replace(",", "")),
+                        PayRciptDetDraft = null,
+                        PayRciptDetDescribtion = pay.Des,
+                        PayRciptDetStatus = true, //Todo check 
+                        BankUid = bankId,
+                        PayRciptDetType = pay.Type,
+                    };
+                    _context.PaymentRecieptDetails.Add(details);
+                    _context.SaveChanges();
+                }
+
+                this.DeleteAllInvoiceCookie();
+                return result.Succeeded();
+            }
+            catch (Exception e)
+            {
+                transaction.Rollback();
+                _logger.LogError($"An Error while submit payment sheet and payment Details {e}");
+               return result.Failed("خطای سمت سرور پیش آمده ، لطفا با پشتیبانی تماس بگیرید");
+            }
         }
 
+        private void DeleteAllInvoiceCookie()
+        {
+            var path = _contextAccessor.HttpContext?.Request.Path;
+            if (path != "/Invoice/Pre-Invoice") return;
+
+            _contextAccessor.HttpContext.Request.Headers.TryGetValue("Cookie", out var values);
+            var cookies = values.ToString().Split(';').ToList();
+            var result = cookies.Select(c => new {
+                Key = c.Split('=')[0].Trim(),
+                Value = c.Split('=')[1].Trim()
+            }).ToList();
+
+            foreach (var cookie in from cookie in result let dotNetCookie = cookie.Key.Contains("AspNetCore") where !dotNetCookie select cookie)
+                _contextAccessor.HttpContext?.Response.Cookies.Delete(cookie.Key);
+        }
 
         public ResultDto<List<ProductListDot>> ChangeAccountClub(int priceLevel)
         {
@@ -407,6 +482,7 @@ namespace Application.Invoice
                     dto.DiscountPercent += dto.DiscountPercent;
                     dto.InvoiceDiscountPercent = dto.InvoiceDiscount;
                     dto.InvoiceDiscount = 0;
+
 
                     if (dto.DiscountPercent > 100)
                     {
@@ -436,6 +512,12 @@ namespace Application.Invoice
 }
 
 
+public class FinallyPaidDto
+{
+    public string FinallyPay { get; set; }
+    public string FinallyRemain { get; set; }
+    public string NumberSheet { get; set; }
+}
 
 public class SelectListBankPose
 {
@@ -481,9 +563,13 @@ public class ProductListDot
 
 public class InvoiceDetailsDto
 {
+    public InvoiceDetailsDto()
+    {
+        InvoiceId ??= Guid.Empty;
+    }
     public Guid ProductId { get; set; }
     public Guid AccountId { get; set; }
-    public Guid InvoiceDetailsId { get; set; }
+    public string InvoiceDetailsId { get; set; }
     public string Name { get; set; }
     public decimal Price { get; set; }
     public double Discount { get; set; }
@@ -510,6 +596,7 @@ public class InvoiceDetailsDto
     public InvoiceStatus Status { get; set; }
     public decimal DiscountSaveToDb { get; set; }
     public double? InvoiceDiscountPercent { get; set; }
+    public Guid? InvoiceId { get; set; }
 }
 
 
@@ -556,8 +643,9 @@ public class CreateInvoice
         InvStatusControl = false;
         InvStep = 0;//ثبت اولیه
     }
-
+    public Guid? SalCatUid { get; set; }
     public Guid Id { get; set; }
+    public Guid InvoiceId { get; set; }
     public decimal Amount { get; set; }
     public decimal Total { get; set; }
     public decimal PriceWithDiscount { get; set; }
@@ -579,6 +667,15 @@ public class CreateInvoice
 
 }
 
+
+public class OtherPay
+{
+    public int Bank { get; set; }
+    public int Remain { get; set; }
+    public string Des { get; set; }
+    public int Type { get; set; }
+    public string Amount { get; set; }
+}
 public class InvoiceMapping : Profile
 {
     public InvoiceMapping()
