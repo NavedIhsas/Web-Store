@@ -12,7 +12,12 @@ using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System.Globalization;
 using Microsoft.EntityFrameworkCore.Query.Internal;
+using Microsoft.Extensions.DependencyInjection;
+using Domain.SaleInModels;
+using Domain.StoredProcedure;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Application.Product
 {
@@ -372,7 +377,7 @@ namespace Application.Product
             AccountClubDto account;
             try
             {
-                 account = JsonConvert.DeserializeObject<AccountClubDto>(cookie);
+                account = JsonConvert.DeserializeObject<AccountClubDto>(cookie);
             }
             catch (Exception e)
             {
@@ -469,7 +474,7 @@ namespace Application.Product
                     dto.DiscountSaveToDb = dto.DiscountPercent;
                     dto.DiscountPercent += Convert.ToDecimal(dto.InvoiceDiscount);
                     dto.InvoiceDiscountPercent = dto.InvoiceDiscount;
-                    dto.InvoiceDiscount=0;
+                    dto.InvoiceDiscount = 0;
                     if (dto.DiscountPercent > 100)
                     {
                         dto.DiscountPercent = 100;
@@ -481,7 +486,7 @@ namespace Application.Product
 
                 }
 
-               
+
                 dto.Price = this.GetPrice(dto.PrdUid, dto.PriceLevel);
                 // dto.InvoiceDiscount = dto.InvoiceDiscount;
             }
@@ -489,62 +494,62 @@ namespace Application.Product
             return result.Succeeded(jsonRe);
 
         }
-         public ResultDto<JsonResult> GetAllProductForPreInvoice(JqueryDatatableParam param)
+        public ResultDto<JsonResult> GetAllProductForPreInvoice(JqueryDatatableParam param)
         {
             var result = new ResultDto<JsonResult>();
-            var list =new List<ProductDto.ProductDto>();
-            var cookie = _authHelper.GetCookie("AccountClubList");
 
+            var cookie = _authHelper.GetCookie("AccountClubList");
+            List<SpPreInvoiceList> preInvoice ;
+
+           
             AccountClubDto account;
             try
             {
-                 account = JsonConvert.DeserializeObject<AccountClubDto>(cookie);
+
+                account = JsonConvert.DeserializeObject<AccountClubDto>(cookie);
+                if (account == null)
+                {
+                    _logger.LogError($"An error occurred while retrieving data from cookie (AccountClubList) ");
+                    return result.Failed("خطا در دریافت اطلاعات، لطفا با پشتیبانی تماس بگرید");
+                }
+
+                preInvoice = _shopContext.SpPreInvoiceLists.FromSqlInterpolated(
+                    $"exec [dbo].[SpPreInvoiceList] {account.AccClbUid},'790C91B5-FACE-4CD4-AD8A-2A49ECA3A68B','8A57453B-15BF-43FD-8151-26C367572516'").ToList();
+
             }
             catch (Exception e)
             {
 
                 throw new Exception("");
             }
-            if (account == null)
-            {
-                _logger.LogError($"An error occurred while retrieving data from cookie (AccountClubList) ");
-                return result.Failed("خطا در دریافت اطلاعات، لطفا با پشتیبانی تماس بگرید");
-            }
-
-            var invoices = _shopContext.Invoices.Include(x=>x.InvoiceDetails).Where(x => x.AccClbUid == account.AccClbUid).ToList();
-            foreach (var invoice in from invoice in invoices from details in invoice.InvoiceDetails select details)
-            {
-                var res = _shopContext.Products.Where(x => x.PrdUid == invoice.PrdUid).Include(x => x.PrdLvlUid3Navigation).Include(x => x.TaxU).AsNoTracking().Select(x => new
-                {
-                    x.PrdUid,
-                    x.PrdName,
-                    x.PrdPricePerUnit1,
-                    x.PrdLvlUid3Navigation.PrdLvlName,
-                    x.TaxU.TaxValue,
-                    x.TaxU.TaxTaxesValue
-                }).Select(x => new ProductDto.ProductDto
-                {
-                    PrdUid = x.PrdUid,
-                    PrdName = x.PrdName,
-                    PrdLevelId = x.PrdLvlName,
-                    PrdPricePerUnit1 = x.PrdPricePerUnit1 ?? 0,
-                    PrdLvlName = x.PrdLvlName,
-                    PriceLevel = account.AccTypePriceLevel ?? 0,
-                    AccClubTypeId = account.AccClbTypUid ?? Guid.Empty,
-                    InvoiceDiscount = account.InvoiceDiscount ?? 0,
-                    DiscountPercent = Convert.ToDecimal(account.AccClubDiscount),
-                    TaxValue = x.TaxValue ?? 0 + x.TaxTaxesValue ?? 0
-                }).ToList();
-                list.AddRange(res);
-            }
            
+
+           
+            
+            var list= preInvoice.Select(x => new ProductDto.ProductDto()
+            {
+                Quantity = x.Quantity,
+                PrdUid = x.ProductId,
+                PrdName = x.ProductName,
+                PrdLvlName = x.PrdLvlName,
+                Remain=x.RemainAmount,
+                PrdLevelId = x.ProductLevelId.ToString(),
+                PrdPricePerUnit1 = x.Price1 ?? 0,
+                InvoiceDetailsId = x.InvDetailsId,
+                PriceLevel = account.AccTypePriceLevel ?? 0,
+                AccClubTypeId = account.AccClbTypUid ?? Guid.Empty,
+                InvoiceDiscount = account.InvoiceDiscount ?? 0,
+                DiscountPercent = Convert.ToDecimal(account.AccClubDiscount),
+                TaxValue = x.TaxValue ?? 0 + x.TaxTaxesValues ?? 0
+            }).ToList();
+         
 
             if (!string.IsNullOrEmpty(param.SSearch))
             {
                 list = list.Where(x => x.PrdName.ToLower().Contains(param.SSearch.ToLower())
                 || x.PrdName.Contains(param.SSearch.ToLower())
                 || x.PrdLvlName.Contains(param.SSearch.ToLower())
-                || x.PrdPricePerUnit1.ToString().Contains(param.SSearch)).ToList();
+                || x.PrdPricePerUnit1.ToString(CultureInfo.InvariantCulture).Contains(param.SSearch)).ToList();
             }
 
             var sortColumnIndex = Convert.ToInt32(_contextAccessor.HttpContext.Request.Query["iSortCol_0"]);
@@ -576,8 +581,8 @@ namespace Application.Product
 
             List<ProductDto.ProductDto> displayResult;
             if (param.IDisplayLength != 0)
-               displayResult =list.Skip(param.IDisplayStart)
-                    .Take(param.IDisplayLength).ToList();
+                displayResult = list.Skip(param.IDisplayStart)
+                     .Take(param.IDisplayLength).ToList();
             else displayResult = list;
             var totalRecords = list.Count();
 
@@ -601,7 +606,7 @@ namespace Application.Product
                     dto.DiscountSaveToDb = dto.DiscountPercent;
                     dto.DiscountPercent += Convert.ToDecimal(dto.InvoiceDiscount);
                     dto.InvoiceDiscountPercent = dto.InvoiceDiscount;
-                    dto.InvoiceDiscount=0;
+                    dto.InvoiceDiscount = 0;
                     if (dto.DiscountPercent > 100)
                     {
                         dto.DiscountPercent = 100;
@@ -613,7 +618,7 @@ namespace Application.Product
 
                 }
 
-               
+
                 dto.Price = this.GetPrice(dto.PrdUid, dto.PriceLevel);
                 // dto.InvoiceDiscount = dto.InvoiceDiscount;
             }

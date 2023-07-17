@@ -19,6 +19,8 @@ Log.Information("شروع راه اندازی");
 try
 {
     var builder = WebApplication.CreateBuilder(args);
+    var env = builder.Environment;
+
     builder.Host.UseSerilog().ConfigureLogging(logging =>
     {
         logging.ClearProviders();
@@ -124,6 +126,7 @@ try
         app.UseHsts();
     }
 
+ 
     //app.UseRemoveCookie();
     app.UseSession();
     app.UseHttpsRedirection();

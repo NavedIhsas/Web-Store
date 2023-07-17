@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Doc", "Doc", "{6A6C7835-1AF
 		Commit.js = Commit.js
 		Dynamics.txt = Dynamics.txt
 		Notes.txt = Notes.txt
+		QueryNote.txt = QueryNote.txt
 		\\192.168.20.11\SoftwareProductUnit\Hasanabadi\SaleIn.txt = \\192.168.20.11\SoftwareProductUnit\Hasanabadi\SaleIn.txt
 		Shygun.txt = Shygun.txt
 	EndProjectSection

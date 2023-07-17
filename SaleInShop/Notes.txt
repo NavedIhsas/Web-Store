@@ -1,3 +1,5 @@
+    public DbSet<SpPreInvoiceList> SpPreInvoiceLists { get; set; }
+
    public override int SaveChanges()
     {
         var modifiedEntries = ChangeTracker.Entries().Where(x => x.State == EntityState.Modified || x.State == EntityState.Deleted || x.State == EntityState.Added);

@@ -1,4 +1,5 @@
 ﻿using Domain.ShopModels;
+using Domain.StoredProcedure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -239,4 +240,5 @@ public interface IShopContext
     int SaveChanges(bool acceptAllChangesOnSuccess);
     int SaveChanges();
     public DatabaseFacade Database { get; }
+    public DbSet<SpPreInvoiceList> SpPreInvoiceLists { get; set; }
 }

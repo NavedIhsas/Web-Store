@@ -1,0 +1,2 @@
+SELECT * FROM sys.dm_exec_describe_first_result_set  
+('dbo.PreInvoiceList', NULL, 0) ; 

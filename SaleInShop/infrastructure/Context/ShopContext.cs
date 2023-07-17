@@ -1,6 +1,7 @@
 ﻿using Application.Common;
 using Application.Interfaces.Context;
 using Domain.ShopModels;
+using Domain.StoredProcedure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
@@ -247,6 +248,7 @@ public partial class ShopContext : DbContext, IShopContext
     public virtual DbSet<WorkStation> WorkStations { get; set; }
 
     public virtual DbSet<WorkYear> WorkYears { get; set; }
+    public DbSet<SpPreInvoiceList> SpPreInvoiceLists { get; set; }
 
     public override int SaveChanges()
     {
