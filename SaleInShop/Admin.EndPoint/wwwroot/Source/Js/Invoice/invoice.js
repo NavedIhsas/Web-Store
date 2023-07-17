@@ -314,7 +314,6 @@ function getPreInvoiceProduct(evt, cityName) {
                             return generateButton(data);
                         },
                     }
-
                 ]
             });
 
