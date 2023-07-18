@@ -44,6 +44,8 @@ const payTable = $('#dataTable-pay').DataTable({
     searching: false,
 });
 
+
+
 $("#submitPrint").on('click', function () {
 
     swal({
@@ -96,8 +98,8 @@ $("#submitPrint").on('click', function () {
                 error: function (error) {
 
                     alert(error);
-                }
-                ,
+                },
+
                 complete: function () {
                     hideLoader()
                 }
@@ -109,7 +111,7 @@ $("#submitPrint").on('click', function () {
 
 
 function getProductModal(evt, cityName, invoiceType) {
-    debugger
+
     var account = getCookie(AccountClubCookie);
 
     if (account == "") {
@@ -265,6 +267,10 @@ function getPreInvoiceProduct(evt, cityName) {
                     "sSearchPlaceholder": "جستجو کنید...",
                     "sLengthMenu": "نتایج :  _MENU_",
                 },
+                initComplete: function () {
+
+                },
+
                 "columns": [
                     {
                         "data": "PrdName",
@@ -280,22 +286,31 @@ function getPreInvoiceProduct(evt, cityName) {
 
                     {
                         "data": "Quantity",
+                        "autoWidth": false,
+                        "searchable": true,
+                        "width": "70px",
+                        render: function (data, show, full, row) {
+
+                            return dataTableInputValue(data, row.row, row.col, full);
+                        },
+                    },
+                    {
+                        "data": "SumQuantityUse",
                         "autoWidth": true,
                         "searchable": true
                     },
-
                     {
                         "data": "Remain",
                         "autoWidth": true,
                         "searchable": true
                     },
+                   
 
                     {
                         "data": "Price",
                         "autoWidth": true,
                         "searchable": true,
                         render: function (data, row, full) {
-
                             if (data == null)
                                 return "تعریف نشده";
                             return data;
@@ -322,9 +337,13 @@ function getPreInvoiceProduct(evt, cityName) {
 
     }
 
+    function dataTableInputValue(data, row, col, full) {
+      
+        return ` <input style="border:none;" type="number" id="quantity" onkeydown="updateValue(${data},'${row}','${col}','${full.Price}','${full.Remain}')" class="form-control basic" value="${data}"/>
+    `
+    }
+
     function generateButton(data) {
-        debugger
-        data.Quantity -= 1;
         return ` <a onClick="addPreInvoiceProductToList('${data.PrdUid}',' ','${data.PrdName}','${data.Price}','${data.DiscountPercent}','${data.TaxValue}','${data.InvoiceDiscount}','${data.InvoiceDiscountPercent}','${data.DiscountSaveToDb}')" type="button" >
         <svg style="color:green" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
     </a>
@@ -333,6 +352,32 @@ function getPreInvoiceProduct(evt, cityName) {
 
 }
 
+
+function updateValue(value, row, col, price, remain) {
+    debugger
+
+    var quantity = parseInt(event.target.value);
+    if (quantity == 0)
+        return false;
+    remain -= quantity;
+    quantityUse = value - remain;
+    if (quantityUse > parseInt(value)) {
+        notify("top center", "مقدار وارد شده بیتر از مقدار باقی مانده است", "error");
+        return false;
+    }
+    //var celldata = datatable.cell(row, col).data();
+    //var rr = datatable.cell(row, col).data(celldata);
+
+    var rowdata = datatable.row(row).data();
+
+    rowdata.Remain = remain;
+    rowdata.Quantity = remain;
+    rowdata.SumQuantityUse = quantityUse;
+    datatable.row(row).data(rowdata);
+
+   
+
+}
 function openDetails(evt, name, accclubType) {
 
     var i, tabcontent, tablinks;
@@ -444,6 +489,7 @@ function applyTotal(totalProductCount, totalFooter, totalDiscountAmount, totalIn
 
 function addPreInvoiceProductToList(id, invoiceDetailsId, name, price, discount, tax, invoiceDiscount, invoiceDiscountPercent, discountSaveToDb, value = 1, changeUser = false) {
 
+    value -= 1;
     var discountAmount = parseFloat((discount * price) / 100);
     var getTax = parseFloat(calculateTax(tax, price));
     var priceWithDiscount = Math.abs(parseFloat(((discount) * price) / 100) - price);
@@ -899,9 +945,9 @@ function invoiceDetails(invoiceId) {
         success: function (result) {
             if (result.isSucceeded) {
                 setCookie(ProductListCookie, result.data);
-                debugger
+
                 updateInvoiceTable(result.data);
-                debugger
+
                 var account = result.data[0];
                 manualInvoice = {
                     invoiceId: account.invoiceId,
@@ -927,7 +973,7 @@ function invoiceDetails(invoiceId) {
 //    editor.inline(this);
 //});
 function updateTable(obj) {
-    debugger
+
     var r = manualInvoice.invoiceId;;
     var amount = 0, total = 0, priceWithDiscount = 0, paidAmount = 0, getTax = 0; amountFooter = 0; totalFooter = 0, totalDiscountAmount = 0;
     var totalPriceWithDiscount = 0, totalPaidAmount = 0, totalPaidAmountFooter = 0, totalGetTax = 0, rowNo = 0, accClbUid, totalCount = 0; totalInvoiceDiscount = 0;
@@ -1023,7 +1069,7 @@ function updateTable(obj) {
             totalFooter: totalFooter,
 
         };
-        debugger
+
         setCookie(InvoiceCookie, invoice);
 
     });
@@ -1043,7 +1089,7 @@ function updateInvoiceTable(obj) {
         footer[0].parentNode.removeChild(footer[0]);
 
     obj.forEach(x => {
-        debugger
+
         amount = parseFloat(x.price);
         total = parseFloat(x.total);
 
@@ -1264,7 +1310,7 @@ $("#otherPayment").on('click', function (evnt) {
         url: "?handler=GeneratePaymentNumber",
         type: "get",
         success: function (result) {
-            debugger
+
             invoiceNumber = result.generateNumber;
             var invoice = getParseCookie(InvoiceCookie);
             var account = getParseCookie(AccountClubCookie);
@@ -1286,13 +1332,13 @@ $("#otherPayment").on('click', function (evnt) {
 })
 
 $("#bank").on("change", function (evt) {
-    debugger
+
     var type = $("#bank").val();
     $.ajax({
         url: "?handler=pose&bankType=" + type,
         type: "Get",
         success: function (result) {
-            debugger
+
             $("#pose").empty();
             result.forEach(x => {
                 const list = `
@@ -1322,7 +1368,7 @@ $("#manualPayment").on('click', function (evnt) {
     var remain = 0;
     if (cookie != "") {
         var p = getParseCookie(OtherPayCookie);
-        debugger
+
         p.forEach(x => {
 
             paidAmount += x.amount;
@@ -1343,7 +1389,7 @@ $("#manualPayment").on('click', function (evnt) {
         type: type,
         amount: amount
     };
-    debugger
+
     var cookie = getCookie(OtherPayCookie);
     if (cookie === "")
         obj.push(otherPay);
@@ -1385,7 +1431,7 @@ $("#manualPayment").on('click', function (evnt) {
 })
 $("#cardReader").on('click', function (evnt) {
     evnt.preventDefault();
-    debugger
+
     var cookie = getCookie(OtherPayCookie);
     var bank = $("#bank").val();
     var bankName = $("#bank option:selected").text();
@@ -1405,7 +1451,7 @@ $("#cardReader").on('click', function (evnt) {
     if (cookie != "") {
         var p = getParseCookie(OtherPayCookie);
         p.forEach(x => {
-            debugger
+
             paidAmount += x.amount;
         });
     }
@@ -1428,7 +1474,7 @@ $("#cardReader").on('click', function (evnt) {
         type: type,
         amount: amount
     };
-    debugger
+
     var cookie = getCookie(OtherPayCookie);
     if (cookie === "")
         obj.push(otherPay);
@@ -1471,7 +1517,7 @@ $("#cardReader").on('click', function (evnt) {
 
 $("#finallyPayment").on("click", function (evt) {
     evt.preventDefault();
-    debugger
+
     var rows = payTable.rows().any();
     if (!rows) {
         notify("top center", "لطفا یکی از روش های پرداختی رو انتخاب کنید");
@@ -1480,7 +1526,7 @@ $("#finallyPayment").on("click", function (evt) {
     var numberSheet = $("#invoiceNumberPay").text();
     var finallyPay = $("#finallyTotalPay").text();
     var finallyRemain = $("#finallyRamin").text();
-    debugger
+
     var data = { "finallyPay": finallyPay, "finallyRemain": finallyRemain, "numberSheet": numberSheet };
 
     $.ajax({

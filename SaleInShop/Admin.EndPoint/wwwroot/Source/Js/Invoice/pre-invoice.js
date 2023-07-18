@@ -585,10 +585,8 @@ function addAccountClub(id, accTypeId, name, discount, type, mobile, address, co
                 if (result.isSucceeded) {
                     setCookie(ProductListCookie, result.data);
                     result.data.forEach(x => {
-
                         addProductToList(x.productId, invoiceDetailsId, x.name, x.price, x.discount, x.tax, x.invoiceDiscount, x.invoiceDiscountPercent, x.discountSaveToDb, x.value, true,);
                     })
-
                 }
             }
             ,
@@ -606,8 +604,6 @@ function addAccountClub(id, accTypeId, name, discount, type, mobile, address, co
 }
 
 function getAccountClub() {
-
-
     var account = getParseCookie(AccountClubCookie);
     $("#accClubDetails").removeClass("d-none");
     $("#accClubName").text('مشتری: ' + account.accClbName ?? "" + '- ' + account.code ?? "")

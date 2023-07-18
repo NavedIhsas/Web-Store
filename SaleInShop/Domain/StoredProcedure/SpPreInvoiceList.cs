@@ -10,8 +10,9 @@ namespace Domain.StoredProcedure
         public DateTime? InvDate { get; set; }
         public Guid ProductId { get; set; }
         public string ProductName { get; set; }
-        public decimal? TotalAmount { get; set; }
-        public decimal? RemainAmount { get; set; }
+        public double? TotalAmount { get; set; }
+        public double RemainValue { get; set; }
+        public double SumQuantityUse { get; set; }
         public string PrdLvlName { get; set; }
         public decimal? Price1 { get; set; }
         public Guid ProductLevelId { get; set; }

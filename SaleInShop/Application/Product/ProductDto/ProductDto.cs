@@ -17,7 +17,7 @@ public class ProductDto
     public string TaxName { get; set; }
     public decimal? TaxValue { get; set; }
     public string PrdLvlName { get; set; }
-    public decimal? Remain { get; set; }
+    public double Remain { get; set; }
     public byte[] Image64 { get; set; }
     public string Unit1 { get; set; }
     public string Unit2 { get; set; }
@@ -31,5 +31,6 @@ public class ProductDto
     public double InvoiceDiscountPercent { get; set; }
     public bool? ShareDiscount { get; set; }
     public decimal TotalPaidAmount { get; set; }
+    public double SumQuantityUse { get; set; }
     public double? Quantity { get; set; }
 }
