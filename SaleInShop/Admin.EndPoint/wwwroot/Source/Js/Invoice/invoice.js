@@ -339,7 +339,7 @@ function getPreInvoiceProduct(evt, cityName) {
 
     function dataTableInputValue(data, row, col, full) {
       
-        return ` <input style="border:none;" type="number" id="quantity" onkeydown="updateValue(${data},'${row}','${col}','${full.Price}','${full.Remain}')" class="form-control basic" value="${data}"/>
+        return ` <input style="border:none;"  min="0" type="text" id="quantity" onkeypress="validate(event)" onInput="updateValue(${data},'${row}','${col}','${full.Price}','${full.Remain}')" onchange="updateValue(${data},'${row}','${col}','${full.Price}','${full.Remain}')" class="form-control basic" value="${data}"/>
     `
     }
 
@@ -355,13 +355,20 @@ function getPreInvoiceProduct(evt, cityName) {
 
 function updateValue(value, row, col, price, remain) {
     debugger
+   
 
     var quantity = parseInt(event.target.value);
-    if (quantity == 0)
+    if (quantity === 0 || quantity === NaN) {
         return false;
-    remain -= quantity;
-    quantityUse = value - remain;
-    if (quantityUse > parseInt(value)) {
+    }
+
+    if (value == 0)
+        return false;
+
+    remain = value - quantity;
+
+    quantityUse = quantity;
+    if (remain <0) {
         notify("top center", "مقدار وارد شده بیتر از مقدار باقی مانده است", "error");
         return false;
     }
@@ -371,12 +378,30 @@ function updateValue(value, row, col, price, remain) {
     var rowdata = datatable.row(row).data();
 
     rowdata.Remain = remain;
-    rowdata.Quantity = remain;
+   // rowdata.Quantity = quantity;
     rowdata.SumQuantityUse = quantityUse;
     datatable.row(row).data(rowdata);
 
-   
+}
 
+
+function validate(evt) {
+    debugger
+  var theEvent = evt || window.event;
+
+  // Handle paste
+  if (theEvent.type === 'paste') {
+      key = event.clipboardData.getData('text/plain');
+  } else {
+  // Handle key press
+      var key = theEvent.keyCode || theEvent.which;
+      key = String.fromCharCode(key);
+  }
+  var regex = /[0-9]|\./;
+  if( !regex.test(key) ) {
+    theEvent.returnValue = false;
+    if(theEvent.preventDefault) theEvent.preventDefault();
+  }
 }
 function openDetails(evt, name, accclubType) {
 
