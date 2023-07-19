@@ -26,7 +26,7 @@ namespace Application.Invoice
     {
         ResultDto<List<ProductSessionList>> ProductToList(Guid id);
         ResultDto RemoveFromProductList(Guid id);
-        ResultDto<InvoiceStatus> Create(Guid type);
+        ResultDto<InvoiceStatus> Create(Guid type,bool isPre);
         JsonResult GetInvoiceList(JqueryDatatableParam param);
         ResultDto<List<InvoiceDetailsDto>> InvoiceDetails(Guid invoiceId);
         ResultDto<List<ProductListDot>> ChangeAccountClub(int priceLevel);
@@ -105,6 +105,22 @@ namespace Application.Invoice
             {
                 Id = invoiceId,
             };
+
+            var amountPay = _context.PaymentRecieptSheets.SingleOrDefault(x => x.InvUid == status.InvUid)?
+                .PayRciptSheetTotalAmount;
+            if (amountPay != null)
+            {
+                var remain = Math.Round((status.InvExtendedAmount - amountPay) ?? 0, MidpointRounding.ToEven);
+                if (remain > 0)
+                {
+                    dto.IsPaid = false;
+                    dto.RemainAmount = remain;
+                }
+                else
+                    dto.IsPaid = true;
+            }
+          
+
             if (status is { InvStep: null or 0 })
                 dto.StatusSubmit = "ثبت اولیه";
 
@@ -119,6 +135,7 @@ namespace Application.Invoice
 
             dto.InvoiceNumber = status.InvNumber;
             dto.InvoiceType = _context.SalesCategories.Find(status.SalCatUid)?.SalCatName;
+            return dto;
             return dto;
 
         }
@@ -143,7 +160,7 @@ namespace Application.Invoice
         }
 
 
-        public ResultDto<InvoiceStatus> Create(Guid type)
+        public ResultDto<InvoiceStatus> Create(Guid type, bool isPre)
         {
             var result = new ResultDto<InvoiceStatus>();
 
@@ -168,9 +185,11 @@ namespace Application.Invoice
 
                 foreach (var detail in details)
                 {
+                    var invoiceDetailsId = isPre ? detail.InvoiceDetailsId : null;
                     var addNews = new Domain.ShopModels.InvoiceDetail()
                     {
                         InvDetUid = Guid.NewGuid(),
+                        InvDetParentUid = invoiceDetailsId,
                         InvUid = map.InvUid,
                         PrdUid = detail.ProductId,
                         InvDetQuantity = detail.Value,
@@ -295,7 +314,7 @@ namespace Application.Invoice
             Select(x => new InvoiceDetailsDto
             {
                 ProductId = x.PrdUid ?? Guid.Empty,
-                InvoiceDetailsId = x.InvDetUid.ToString(),
+                InvoiceDetailsId = x.InvDetUid,
                 Name = x.PrdU.PrdName,
                 Price = x.InvDetPricePerUnit ?? 0,
                 Discount = CalculateDiscount(x.InvDetPercentDiscount ?? 0, x.InvDetShareDiscountPer),
@@ -304,6 +323,7 @@ namespace Application.Invoice
                 DiscountAmount = x.InvDetDiscount ?? 0,
                 PaidAmount = x.InvDetPayment ?? 0,
                 Tax = x.InvDetTax ?? 0,
+                //PriceWidthDiscount = ((x.InvDetPercentDiscount *Convert.ToDouble(x.InvDetPriceExchange))/100 )-x.InvDetPriceExchange,
                 Des = x.InvDetDescribtion,
                 AccountName = x.InvU.AccClbU.AccClbName,
                 AccountCode = x.InvU.AccClbU.AccClbCode,
@@ -322,7 +342,8 @@ namespace Application.Invoice
                 DiscountSaveToDb = Convert.ToDecimal(x.InvDetPercentDiscount ?? 0),
                 InvShareDiscount = x.InvU.InvShareDiscount ?? false,
                 InvoiceDiscountPercent = x.InvDetShareDiscountPer ?? 0,
-                Status = status
+                Status = status,
+               
             }).AsNoTracking().ToList();
 
             return dto.Succeeded(result);
@@ -428,7 +449,7 @@ namespace Application.Invoice
                     _context.PaymentRecieptDetails.Add(details);
                     _context.SaveChanges();
                 }
-
+                transaction.Commit();
                 this.DeleteAllInvoiceCookie();
                 return result.Succeeded();
             }
@@ -478,13 +499,14 @@ namespace Application.Invoice
                 dto.Price = _productService.GetPrice(dto.ProductId, priceLevel);
                 if (shareDiscount == 1)
                 {
+                    
                     dto.DiscountSaveToDb = dto.DiscountPercent;
                     dto.DiscountPercent += dto.DiscountPercent;
                     dto.InvoiceDiscountPercent = dto.InvoiceDiscount;
                     dto.InvoiceDiscount = 0;
 
 
-                    if (dto.DiscountPercent > 100)
+                    if (dto.DiscountPercent >= 100)
                     {
                         dto.DiscountPercent = 100;
                         dto.TaxPercent = "0";
@@ -532,6 +554,8 @@ public class InvoiceStatus
     public string StatusSubmit { get; set; }
     public string InvoiceNumber { get; set; }
     public string InvoiceType { get; set; }
+    public decimal RemainAmount { get; set; }
+    public bool IsPaid { get; set; }
 }
 
 public class ProductSessionList
@@ -559,6 +583,7 @@ public class ProductListDot
     public double InvoiceDiscount { get; set; }
     public double InvoiceDiscountPercent { get; set; }
     public decimal DiscountSaveToDb { get; set; }
+    public bool InvShareDiscount { get; set; }
 }
 
 public class InvoiceDetailsDto
@@ -569,7 +594,7 @@ public class InvoiceDetailsDto
     }
     public Guid ProductId { get; set; }
     public Guid AccountId { get; set; }
-    public string InvoiceDetailsId { get; set; }
+    public Guid? InvoiceDetailsId { get; set; }
     public string Name { get; set; }
     public decimal Price { get; set; }
     public double Discount { get; set; }
@@ -578,6 +603,7 @@ public class InvoiceDetailsDto
     public decimal DiscountAmount { get; set; }
     public int PaidAmount { get; set; }
     public decimal Tax { get; set; }
+    public decimal TaxPercent { get; set; }
     public string Des { get; set; }
     public string AccountName { get; set; }
     public string Mobile { get; set; }
@@ -597,6 +623,7 @@ public class InvoiceDetailsDto
     public decimal DiscountSaveToDb { get; set; }
     public double? InvoiceDiscountPercent { get; set; }
     public Guid? InvoiceId { get; set; }
+    public decimal? PriceWidthDiscount { get; set; }
 }
 
 

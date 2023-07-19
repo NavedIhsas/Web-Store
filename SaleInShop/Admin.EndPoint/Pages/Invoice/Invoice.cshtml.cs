@@ -34,9 +34,9 @@ namespace SaleInWeb.Pages.Invoice
             Bank = _invoiceService.SelectListBank();
         }
 
-        public IActionResult OnPost(Guid type)
+        public IActionResult OnPost(Guid type, bool isPre = false)
         {
-            var result = _invoiceService.Create(type);
+            var result = _invoiceService.Create(type,isPre);
             return new JsonResult(result);
         }
         public JsonResult OnGetData(JqueryDatatableParam param)

@@ -529,13 +529,16 @@ namespace Application.Product
             var list= preInvoice.Select(x => new ProductDto.ProductDto()
             {
                 Quantity = x.Quantity,
+                Quantity2 = x.Quantity,
                 PrdUid = x.ProductId,
                 PrdName = x.ProductName,
                 PrdLvlName = x.PrdLvlName,
-                Remain=x.RemainValue,
+                RemainValue= x.RemainValue,
+                RemainAmount = x.Remain,
                 PrdLevelId = x.ProductLevelId.ToString(),
                 PrdPricePerUnit1 = x.Price1 ?? 0,
                 InvoiceDetailsId = x.InvDetailsId,
+                InvoiceId = x.InvoiceId,
                 PriceLevel = account.AccTypePriceLevel ?? 0,
                 SumQuantityUse = x.SumQuantityUse,
                 AccClubTypeId = account.AccClbTypUid ?? Guid.Empty,

@@ -6,6 +6,7 @@ public class ProductDto
     public Guid AccClubTypeId { get; set; }
     public int PriceLevel { get; set; }
     public Guid InvoiceDetailsId { get; set; }
+    public Guid InvoiceId { get; set; }
     public string PrdName { get; set; }
     public string PrdCode { get; set; }
     public string PrdLevelId { get; set; }
@@ -17,7 +18,8 @@ public class ProductDto
     public string TaxName { get; set; }
     public decimal? TaxValue { get; set; }
     public string PrdLvlName { get; set; }
-    public double Remain { get; set; }
+    public double RemainValue { get; set; }
+    public decimal RemainAmount { get; set; }
     public byte[] Image64 { get; set; }
     public string Unit1 { get; set; }
     public string Unit2 { get; set; }
@@ -33,4 +35,5 @@ public class ProductDto
     public decimal TotalPaidAmount { get; set; }
     public double SumQuantityUse { get; set; }
     public double? Quantity { get; set; }
+    public double? Quantity2 { get; set; } = 0;
 }

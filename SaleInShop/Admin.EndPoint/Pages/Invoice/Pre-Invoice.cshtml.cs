@@ -36,7 +36,7 @@ namespace SaleInWeb.Pages.Invoice
 
         public IActionResult OnPost(Guid type)
         {
-            var result = _invoiceService.Create(type);
+            var result = _invoiceService.Create(type,false);
             return new JsonResult(result);
         }
         public JsonResult OnGetData(JqueryDatatableParam param)
