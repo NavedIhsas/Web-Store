@@ -172,10 +172,17 @@ namespace Application.Invoice
             using var scop = _context.Database.BeginTransaction();
             try
             {
+
                 var map = _mapper.Map<Domain.ShopModels.Invoice>(single);
+                
+                map.InvDiscount2=single.TotalDiscountAmount;
                 var shareDis = _authHelper.GetTaxBeforeDiscount();
                 if (shareDis == 1)
+                {
+                    var discountPercent =(single.TotalDiscountAmount * 100) / single.Total;
+                    map.InvPercentDiscount = Convert.ToDouble(Math.Round(discountPercent??0,MidpointRounding.ToEven));
                     map.InvShareDiscount = true;
+                }
                 map.AccClbUid = account.AccClbUid;
                 map.SalCatUid = type;
                 _context.Invoices.Add(map);
@@ -346,6 +353,7 @@ namespace Application.Invoice
                
             }).AsNoTracking().ToList();
 
+           
             return dto.Succeeded(result);
         }
 
@@ -499,12 +507,11 @@ namespace Application.Invoice
                 dto.Price = _productService.GetPrice(dto.ProductId, priceLevel);
                 if (shareDiscount == 1)
                 {
-                    
                     dto.DiscountSaveToDb = dto.DiscountPercent;
-                    dto.DiscountPercent += dto.DiscountPercent;
+                    dto.DiscountPercent += Convert.ToDecimal(dto.InvoiceDiscountPercent);
+                    dto.InvoiceDiscount = dto.InvoiceDiscountPercent;
                     dto.InvoiceDiscountPercent = dto.InvoiceDiscount;
                     dto.InvoiceDiscount = 0;
-
 
                     if (dto.DiscountPercent >= 100)
                     {
@@ -518,8 +525,12 @@ namespace Application.Invoice
                 {
                     dto.DiscountSaveToDb = dto.DiscountPercent;
                     dto.DiscountPercent = dto.DiscountPercent;
-                    dto.InvoiceDiscountPercent = dto.InvoiceDiscount;
-                    dto.InvoiceDiscount = 0;
+                    //if (dto.InvoiceDiscount != 0 && dto.InvoiceDiscountPercent == 0)
+                    //    dto.InvoiceDiscountPercent = (dto.InvoiceDiscount * Convert.ToDouble(dto.Price)) / 100;
+
+                    //else
+                         dto.InvoiceDiscountPercent = dto.InvoiceDiscount;
+                         dto.InvoiceDiscount = 0;
                 }
 
             }

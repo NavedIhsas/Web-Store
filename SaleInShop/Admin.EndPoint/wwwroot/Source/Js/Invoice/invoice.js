@@ -586,7 +586,7 @@ function applyTotal(totalProductCount, totalFooter, totalDiscountAmount, totalIn
 }
 
 function addPreInvoiceProductToList(id, invoiceDetailsId, invoiceId, remainAmount, name, price, discount, tax, invoiceDiscount, invoiceDiscountPercent, discountSaveToDb, value, changeUser = false) {
-    
+
     manualInvoice = {
         invoiceId: invoiceId,
     }
@@ -633,7 +633,7 @@ function addPreInvoiceProductToList(id, invoiceDetailsId, invoiceId, remainAmoun
     else {
         var parse = JSON.parse(cookie);
         const found = parse.find(element => element.productId === id);
-        
+
         if (found !== undefined && changeUser == false) {
             document.getElementById("selectPreInvoice").disabled = true;
 
@@ -668,7 +668,7 @@ function addPreInvoiceProductToList(id, invoiceDetailsId, invoiceId, remainAmoun
 
 
 function addProductToList(id, invoiceDetailsId, invShareDiscount, name, price, discount, tax, invoiceDiscount, invoiceDiscountPercent, discountSaveToDb, value = 1, changeUser = false) {
-    
+
     var discountAmount = parseFloat((discount * price) / 100);
     var getTax = parseFloat(calculateTax(tax, price));
     var priceWithDiscount = Math.abs(parseFloat(((discount) * price) / 100) - price);
@@ -705,9 +705,9 @@ function addProductToList(id, invoiceDetailsId, invShareDiscount, name, price, d
         obj.push(product);
         setCookie(ProductListCookie, obj);
     }
-    
+
     else {
-        
+
         var parse = JSON.parse(cookie);
         //parse.invShareDiscount = invShareDiscount;
         const found = parse.find(element => element.productId === id);
@@ -912,6 +912,8 @@ function addAccountClub(id, accTypeId, name, discount, type, mobile, address, co
     };
 
     var cookie = getCookie(ProductListCookie);
+    
+
     if (cookie !== "") {
 
         $.ajax({
@@ -921,13 +923,10 @@ function addAccountClub(id, accTypeId, name, discount, type, mobile, address, co
                 showLoader()
             },
             success: function (result) {
-
                 if (result.isSucceeded) {
-                    
-                   // result.data.invShareDiscount = invShareDiscount;
+                    // result.data.invShareDiscount = invShareDiscount;
                     setCookie(ProductListCookie, result.data);
                     result.data.forEach(x => {
-                        
                         addProductToList(x.productId, invoiceDetailsId, invShareDiscount, x.name, x.price, x.discount, x.tax, x.invoiceDiscount, x.invoiceDiscountPercent, x.discountSaveToDb, x.value, true,);
                     })
 
@@ -1056,9 +1055,10 @@ function invoiceDetails(invoiceId) {
             showLoader()
         },
         success: function (result) {
+            
             if (result.isSucceeded) {
+
                 setCookie(ProductListCookie, result.data);
-                
                 updateInvoiceTable(result.data);
 
                 var account = result.data[0];
@@ -1066,7 +1066,7 @@ function invoiceDetails(invoiceId) {
                     invoiceId: account.invoiceId,
                 }
                 addAccountClub(account.accountId, account.accountTypeId, account.accountName ?? "", account.accountDiscount, account.accountType ?? "", account.mobile ?? "", account.address ?? "", account.accountCode ?? "", account.priceLevel, account.invoiceDiscount, account.invoiceDetailsId, account.invShareDiscount);
-
+                
                 $("#invoiceList").modal('hide');
             } else {
                 notify("top center", result.message, "error");
@@ -1090,7 +1090,7 @@ function updateTable(obj) {
     var r = manualInvoice.invoiceId;;
     var amount = 0, total = 0, priceWithDiscount = 0, paidAmount = 0, getTax = 0; amountFooter = 0; totalFooter = 0, totalDiscountAmount = 0;
     var totalPriceWithDiscount = 0, totalPaidAmount = 0, totalPaidAmountFooter = 0, totalGetTax = 0, rowNo = 0, accClbUid, totalCount = 0; totalInvoiceDiscount = 0;
-    var discountSaveToDb = 0, invoiceId, remainAmount = 0, invShareDiscount;
+    var discountSaveToDb = 0, invoiceId, remainAmount = 0, invShareDiscount, tax, taxPercent;
 
     table.clear().draw();
 
@@ -1099,12 +1099,14 @@ function updateTable(obj) {
         footer[0].parentNode.removeChild(footer[0]);
 
     obj.forEach(x => {
-        
+
         amount = parseFloat(x.price);
         total = parseFloat(x.total);
         totalInvoiceDiscount = x.invoiceDiscount;
         invShareDiscount = x.invShareDiscount,
             amountFooter += parseFloat(x.price);
+        tax = parseFloat(x.tax);
+        taxPercent = parseFloat(x.taxPercent);
         totalFooter += parseFloat(x.total);
         totalCount += parseFloat(x.value);
         discountSaveToDb = x.discountSaveToDb;
@@ -1119,11 +1121,16 @@ function updateTable(obj) {
             priceWithDiscount = Math.abs(parseFloat(((parseFloat(x.discountSaveToDb) * total) / 100) - total));
             discountAmount = parseFloat((parseFloat(x.discountSaveToDb) * total) / 100);
         }
-        debugger
-        if (x.taxPercent == "0")
-            getTax = x.tax;
-        else
-            getTax = calculateTax(x.taxPercent, total);
+        
+        if (taxPercent == 0 && tax !== 0) {
+            taxPercent = (tax * 100) / total
+        }
+
+        if (x.discount > 99) {
+            tax = tax * 0;
+            taxPercent = taxPercent *0;
+        }
+        getTax = calculateTax(taxPercent, total);
         paidAmount = Math.abs(parseFloat(priceWithDiscount + getTax));
         totalDiscountAmount += discountAmount;
         totalPriceWithDiscount += priceWithDiscount;
@@ -1172,7 +1179,7 @@ function updateTable(obj) {
     });
 
     totalInvoiceDiscount = ConvertPercentToAmount(totalPaidAmount, totalInvoiceDiscount);
-    
+
     totalPaidAmount -= totalInvoiceDiscount;
     totalPaidAmount = Math.abs(totalPaidAmount);
 
@@ -1185,7 +1192,7 @@ function updateTable(obj) {
     {
         // accUid: accClbUid,
         amount: amount,
-        total: total,
+        total: totalFooter,
         discountSaveToDb: discountSaveToDb,
         priceWithDiscount: priceWithDiscount,
         paidAmount: paidAmount,
@@ -1202,7 +1209,7 @@ function updateTable(obj) {
 
     };
 
-    
+
     setCookie(InvoiceCookie, invoice);
     var rows = table.rows().any();
     if (!rows)
@@ -1224,20 +1231,29 @@ function updateInvoiceTable(obj) {
         amount = parseFloat(x.price);
         total = parseFloat(x.total);
         invoiceDiscount = x.invoiceDiscount;
-        totalInvoiceDiscount = x.totalInvoiceDiscount;
         amountFooter += parseFloat(x.price);
         totalFooter += parseFloat(x.total);
         totalCount += parseFloat(x.value);
         invShareDiscount = x.invShareDiscount;
+        debugger
         if (invShareDiscount) {
+            totalInvoiceDiscount = x.totalInvoiceDiscount;
+
             priceWithDiscount = Math.abs(parseFloat(((parseFloat(x.discount) * total) / 100) - total));
             discountAmount = parseFloat((parseFloat(x.discount) * total) / 100);
+
         }
         else {
-            priceWithDiscount = Math.abs(parseFloat(((parseFloat(x.discountSaveToDb) * total) / 100) - total));
-            discountAmount = parseFloat((parseFloat(x.discountSaveToDb) * total) / 100);
+            var saveDb = x.discountSaveToDb;
+            totalInvoiceDiscount = x.totalInvoiceDiscount;
+            priceWithDiscount = Math.abs(parseFloat(((parseFloat(saveDb) * total) / 100) - total));
+            discountAmount = parseFloat((parseFloat(saveDb) * total) / 100);
+            var percent = ((x.totalPaidAmount * priceWithDiscount) / 100);
+            saveDb += percent;
+            priceWithDiscount = Math.abs(parseFloat(((parseFloat(saveDb) * total) / 100) - total));
+
         }
-        
+
         getTax = calculateTax(x.tax, total);
         paidAmount = parseFloat(x.paidAmount);
         invTotalTax = x.invTotalTax;
@@ -1246,7 +1262,8 @@ function updateInvoiceTable(obj) {
         totalPriceWithDiscount += priceWithDiscount;
         totalPaidAmount = x.totalPaidAmount;
         totalGetTax == getTax;
-
+        
+       
         const result =
             `
     <tr>
@@ -1255,7 +1272,7 @@ function updateInvoiceTable(obj) {
         <td>${x.value ?? ""}</td>
         <td>${parseFloat(x.price).toLocaleString()}</td>
         <td>${parseFloat(x.total).toLocaleString()}</td>
-        <td>${x.discountSaveToDb}</td>
+        <td>${saveDb}</td>
         <td>${priceWithDiscount.toLocaleString()}</td>
         <td>${getTax.toLocaleString()}</td>
         <td>${paidAmount.toLocaleString()}</td>
@@ -1289,9 +1306,14 @@ function updateInvoiceTable(obj) {
         //totalPaidAmount -= totalInvoiceDiscount;
         //totalPaidAmount = Math.abs(totalPaidAmount);
     });
+    debugger
+    if (!invShareDiscount) {
+        totalPaidAmount -= invoiceDiscount;
+        totalInvoiceDiscount = invoiceDiscount;
+    }
 
-    
-    totalPaidAmount -= invoiceDiscount;
+   
+
     applyTotal(totalCount, totalFooter, totalDiscountAmount, totalInvoiceDiscount, invTotalTax, totalPaidAmount)
     var invoice =
     {
