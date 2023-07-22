@@ -47,5 +47,9 @@ public partial class ProductLevel
 
     public virtual FiscalPeriod FisPeriodU { get; set; }
 
+    public virtual ICollection<ProductLevel> InversePrdLvlParentU { get; set; } = new List<ProductLevel>();
+
+    public virtual ProductLevel PrdLvlParentU { get; set; }
+
     public virtual ICollection<Product> Products { get; set; } = new List<Product>();
 }

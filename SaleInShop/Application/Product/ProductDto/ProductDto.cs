@@ -36,4 +36,5 @@ public class ProductDto
     public double SumQuantityUse { get; set; }
     public double? Quantity { get; set; }
     public double? Quantity2 { get; set; } = 0;
+    public int Row { get; set; }
 }

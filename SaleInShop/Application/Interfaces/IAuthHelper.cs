@@ -117,7 +117,7 @@ public class AuthHelper : IAuthHelper
 
     public int GetTaxBeforeDiscount()
     {
-        return Convert.ToInt32(_context.Settings.FirstOrDefault(x => x.SetKey == "TAX_BEFORE_DISCOUNT")?.SetValue);
+        return Convert.ToInt32(_context.Settings.FirstOrDefault(x => x.SetKey == ConstantParameter.ShareDiscountKey)?.SetValue);
     }
     public List<BusinessUnit> SelectBranch()
     {

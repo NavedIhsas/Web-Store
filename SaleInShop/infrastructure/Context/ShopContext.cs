@@ -21,6 +21,7 @@ public partial class ShopContext : DbContext, IShopContext
         _httpContext = httpContext;
     }
 
+
     public virtual DbSet<Account> Accounts { get; set; }
 
     public virtual DbSet<AccountClub> AccountClubs { get; set; }
@@ -248,6 +249,7 @@ public partial class ShopContext : DbContext, IShopContext
     public virtual DbSet<WorkStation> WorkStations { get; set; }
 
     public virtual DbSet<WorkYear> WorkYears { get; set; }
+
     public DbSet<SpPreInvoiceList> SpPreInvoiceLists { get; set; }
 
     public override int SaveChanges()
@@ -1180,6 +1182,8 @@ public partial class ShopContext : DbContext, IShopContext
             entity.HasKey(e => e.BankUid);
 
             entity.ToTable("Bank");
+
+            entity.HasIndex(e => e.Type, "IX_Bank_Type").IsUnique();
 
             entity.Property(e => e.BankUid)
                 .ValueGeneratedNever()
@@ -3732,6 +3736,10 @@ public partial class ShopContext : DbContext, IShopContext
             entity.HasOne(d => d.FisPeriodU).WithMany(p => p.ProductLevels)
                 .HasForeignKey(d => d.FisPeriodUid)
                 .HasConstraintName("FK_ProductLevel_FiscalPeriod");
+
+            entity.HasOne(d => d.PrdLvlParentU).WithMany(p => p.InversePrdLvlParentU)
+                .HasForeignKey(d => d.PrdLvlParentUid)
+                .HasConstraintName("FK_ProductLevel_ProductLevel");
         });
 
         modelBuilder.Entity<ProductLevelAccess>(entity =>

@@ -171,6 +171,8 @@ function getCookie(cname) {
 
 function getParseCookie(cname) {
     var stringify = getCookie(cname);
+    if (stringify == "")
+        return false;
     return JSON.parse(stringify);
 }
 

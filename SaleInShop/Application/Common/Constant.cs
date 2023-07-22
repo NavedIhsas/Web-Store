@@ -109,6 +109,9 @@ public static class ConstantParameter
     /// <returns></returns>
     public static int Amount = 1;
 
+
+    public static string ShareDiscountKey = new("TAX_BEFORE_DISCOUNT");
+
 }
 
 

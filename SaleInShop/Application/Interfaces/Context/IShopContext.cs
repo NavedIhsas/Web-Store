@@ -237,6 +237,7 @@ public interface IShopContext
 
     public  DbSet<WorkYear> WorkYears { get; set; }
 
+
     int SaveChanges(bool acceptAllChangesOnSuccess);
     int SaveChanges();
     public DatabaseFacade Database { get; }

@@ -176,6 +176,7 @@ namespace Application.Invoice
                 var map = _mapper.Map<Domain.ShopModels.Invoice>(single);
                 
                 map.InvDiscount2=single.TotalDiscountAmount;
+               
                 var shareDis = _authHelper.GetTaxBeforeDiscount();
                 if (shareDis == 1)
                 {
@@ -424,6 +425,12 @@ namespace Application.Invoice
             try
             {
                 var invoice = JsonConvert.DeserializeObject<CreateInvoice>(jsonInvoice);
+                var updateInvoice = _context.Invoices.Find(invoice.InvoiceId);
+                if (updateInvoice == null)
+                {
+                    _logger.LogError($"Invoice with id {invoice.Id} was not found");
+                    return result.Failed("خطای سمت سرور رخ داده است");
+                }
                 var other = JsonConvert.DeserializeObject<List<OtherPay>>(otherPay);
                 var account = JsonConvert.DeserializeObject<AccountClubDto>(cookie);
                 var addNew = new PaymentRecieptSheet
@@ -435,6 +442,8 @@ namespace Application.Invoice
                     PayRciptSheetDate = DateTime.Now,
                     AccClbUid = account.AccClbUid,
                 };
+                updateInvoice.InvStatusControl = addNew.PayRciptSheetTotalAmount >= updateInvoice.InvExtendedAmount;
+                _context.Invoices.Update(updateInvoice);
                 _context.PaymentRecieptSheets.Add(addNew);
                 _context.SaveChanges();
                 foreach (var pay in other)
@@ -446,6 +455,7 @@ namespace Application.Invoice
                     {
                         PayRciptDetUid = Guid.NewGuid(),
                         PayRciptSheetUid = addNew.PayRciptSheetUid,
+                        
                         //AccUid = null,
                         PayRciptDetTotalAmount = Convert.ToDecimal(pay.Amount.Replace(",", "")),
                         PayRciptDetDraft = null,
@@ -643,7 +653,7 @@ public class InvoiceDto
     public Guid Id { get; set; }
     public int Number { get; set; }
     public int TotalAmount { get; set; }
-    public DateTime CreationDate { get; set; }
+    public string CreationDate { get; set; }
     public Guid? AccClubId { get; set; }
     /// <summary>
     /// Account Club Name
@@ -654,7 +664,6 @@ public class InvoiceDto
     /// Account Club Code
     /// </summary>
     public string Code { get; set; }
-
 }
 
 
