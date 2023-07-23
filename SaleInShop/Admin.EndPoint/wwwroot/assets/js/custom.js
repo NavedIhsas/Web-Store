@@ -239,6 +239,7 @@ function reinitialise(dataTableId) {
 
 
 function showLoader() {
+    
    $("#requestLoader").removeClass("d-none");
 }
 function hideLoader() {

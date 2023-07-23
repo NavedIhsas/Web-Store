@@ -55,7 +55,7 @@ function DefualtValue(message,type) {
 $("#submitPrint").on('click', function (evnt) {
     evnt.preventDefault();
     var message = $("#message").val();
-    debugger
+    
     swal({
         title: message,
         text: "آیا مطمئن هستید که میخواهید ادامه دهید؟",
@@ -367,7 +367,6 @@ function getPreInvoiceProduct(evt, cityName) {
 
 }
 
-
 function updateValue(value, row, col, price, remain,detailsId) {
    
     result = false;
@@ -638,7 +637,7 @@ function addPreInvoiceProductToList(id, invoiceDetailsId, invoiceId, remainAmoun
 
 
 function addProductToList(id, invoiceDetailsId, invShareDiscount, name, price, discount, tax, invoiceDiscount, invoiceDiscountPercent, discountSaveToDb, value = 1, changeUser = false) {
-    debugger
+    
     DefualtValue(" این فاکتور هنوز تسویه نشده است! ", false);
 
     var discountAmount = parseFloat((discount * price) / 100);
@@ -710,7 +709,11 @@ function addProductToList(id, invoiceDetailsId, invShareDiscount, name, price, d
             setCookie(ProductListCookie, obj);
         }
     }
-    updateTable(obj);
+    
+
+    var parsAccount = getParseCookie(AccountClubCookie);
+    if (!parsAccount.fromDetails)
+        updateTable(obj);
     $("#productList").removeClass("d-none")
 }
 
@@ -865,7 +868,7 @@ function bindDatatable() {
         return `<center><a onClick="addAccountClub('${data.AccClbUid}','${data.AccClbTypUid}','${data.AccClbName ?? ""}','${data.AccClubDiscount}','${data.AccClubType ?? ""}','${data.AccClbMobile ?? ""}','${data.AccClbAddress ?? ""}','${data.AccClbCode ?? ""}','${data.AccTypePriceLevel}','${data.InvoiceDiscount}',false)" class="btn btn-warning btn-rounded btn-sm">انتخاب </a>&nbsp; `
     };
 }
-function addAccountClub(id, accTypeId, name, discount, type, mobile, address, code, accTypePriceLevel, invoiceDiscount, invoiceDetailsId, invShareDiscount) {
+function addAccountClub(id, accTypeId, name, discount, type, mobile, address, code, accTypePriceLevel, invoiceDiscount, invoiceDetailsId, invShareDiscount,fromDetails=false) {
 
     deleteCookie(AccountClubCookie);
     deleteCookie(UsePreInvoiceProduct);
@@ -883,6 +886,7 @@ function addAccountClub(id, accTypeId, name, discount, type, mobile, address, co
         accTypePriceLevel: accTypePriceLevel,
         invoiceDetailsId: invoiceDetailsId,
         invShareDiscount: invShareDiscount,
+        fromDetails: fromDetails,
     };
 
     var cookie = getCookie(ProductListCookie);
@@ -1040,7 +1044,7 @@ function invoiceDetails(invoiceId) {
                 manualInvoice = {
                     invoiceId: account.invoiceId,
                 }
-                addAccountClub(account.accountId, account.accountTypeId, account.accountName ?? "", account.accountDiscount, account.accountType ?? "", account.mobile ?? "", account.address ?? "", account.accountCode ?? "", account.priceLevel, account.invoiceDiscount, account.invoiceDetailsId, account.invShareDiscount);
+                addAccountClub(account.accountId, account.accountTypeId, account.accountName ?? "", account.accountDiscount, account.accountType ?? "", account.mobile ?? "", account.address ?? "", account.accountCode ?? "", account.priceLevel, account.invoiceDiscount, account.invoiceDetailsId, account.invShareDiscount,true);
                 
                 $("#invoiceList").modal('hide');
                 $("#invoiceTempList").modal('hide');
@@ -1111,7 +1115,7 @@ function updateTable(obj) {
         }
         getTax = calculateTax(taxPercent, total);
         paidAmount = Math.abs(parseFloat(priceWithDiscount + getTax));
-        debugger
+        
        
         totalDiscountAmount += discountAmount;
         totalPriceWithDiscount += priceWithDiscount;
@@ -1200,10 +1204,10 @@ function updateTable(obj) {
         $("#total").html(" ");
 }
 function updateInvoiceTable(obj) {
-
+    
     var amount = 0, total = 0, priceWithDiscount = 0, paidAmount = 0, getTax = 0; amountFooter = 0; totalFooter = 0, totalDiscountAmount = 0;
     var totalPriceWithDiscount = 0, totalPaidAmount = 0, totalGetTax = 0, rowNo = 0, accClbUid, totalCount = 0; totalInvoiceDiscount = 0;
-    var invTotalTax = 0, invoiceId, invShareDiscount, invoiceDiscount;
+    var invTotalTax = 0, invoiceId, invShareDiscount, invoiceDiscount, paidAmountInvoice, totalFooterPaidAmount = 0, tootalGetTaxForFooter=0;
     table.clear().draw();
 
     var footer = document.getElementsByTagName("tfoot");
@@ -1219,8 +1223,9 @@ function updateInvoiceTable(obj) {
         totalFooter += parseFloat(x.total);
         totalCount += parseFloat(x.value);
         invShareDiscount = x.invShareDiscount;
-        
+        paidAmountInvoice = x.paidAmountInvoice;
         if (invShareDiscount) {
+            var saveDb = x.discountSaveToDb;
             totalInvoiceDiscount = x.totalInvoiceDiscount;
 
             priceWithDiscount = Math.abs(parseFloat(((parseFloat(x.discount) * total) / 100) - total));
@@ -1236,9 +1241,11 @@ function updateInvoiceTable(obj) {
             saveDb += percent;
             priceWithDiscount = Math.abs(parseFloat(((parseFloat(saveDb) * total) / 100) - total));
         }
-
+       
         getTax = calculateTax(x.tax, total);
+        tootalGetTaxForFooter = getTax;
         paidAmount = parseFloat(x.paidAmount);
+        totalFooterPaidAmount += x.paidAmount;
         invTotalTax = x.invTotalTax;
         invoiceId = x.invoiceId;
         totalDiscountAmount += discountAmount;
@@ -1283,7 +1290,7 @@ function updateInvoiceTable(obj) {
         if (footer.length !== 0)
             footer[0].parentNode.removeChild(footer[0]);
 
-        $(".property-dataTable").append($('<tfoot />').append($("<tr> <td>مجموع:</td> <td></td><td>" + totalCount + "</td> <td>" + parseFloat(amountFooter).toLocaleString() + "</td> <td>" + parseFloat(totalFooter).toLocaleString() + "</td><td></td> <td>" + Math.abs(totalPriceWithDiscount).toLocaleString() + "</td> <td>" + Math.abs(totalGetTax).toLocaleString() + "</td> <td>" + Math.abs(totalPaidAmount).toLocaleString() + "</td> <tr>").clone()));
+        $(".property-dataTable").append($('<tfoot />').append($("<tr> <td>مجموع:</td> <td></td><td>" + totalCount + "</td> <td>" + parseFloat(amountFooter).toLocaleString() + "</td> <td>" + parseFloat(totalFooter).toLocaleString() + "</td><td></td> <td>" + Math.abs(totalPriceWithDiscount).toLocaleString() + "</td> <td>" + Math.abs(tootalGetTaxForFooter).toLocaleString() + "</td> <td>" + Math.abs(totalFooterPaidAmount).toLocaleString() + "</td> <tr>").clone()));
 
         // totalInvoiceDiscount = ConvertPercentToAmount(totalPaidAmount, totalInvoiceDiscount);
         //totalPaidAmount -= totalInvoiceDiscount;
@@ -1387,6 +1394,7 @@ $("#tempInvoice").on('click', function (evnt) {
 
 function checkStatus(status) {
 
+    
     $("#invoiceStatus").removeClass("d-none");
     $("#invoicePayStatus").removeClass("d-none");
     $("#invoiceType").removeClass("d-none");

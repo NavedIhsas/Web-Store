@@ -9,10 +9,14 @@ namespace SaleInWeb;
 public class Security : IPageFilter
 {
     private readonly IAuthHelper _authHelper;
+    private readonly ILogger<Security> _logger;
+    private readonly IConfiguration _configuration;
 
-    public Security(IAuthHelper authHelper)
+    public Security(IAuthHelper authHelper, ILogger<Security> logger, IConfiguration configuration)
     {
         _authHelper = authHelper;
+        _logger = logger;
+        _configuration = configuration;
     }
 
     public void OnPageHandlerSelected(PageHandlerSelectedContext context)
@@ -30,6 +34,9 @@ public class Security : IPageFilter
         {
             if (!_authHelper.BaseServerConnect())
             {
+                var saleInConnection = _configuration.GetConnectionString("saleInConnection");
+                _logger.LogError($"saleInConnection:{saleInConnection}");
+                _logger.LogError("ارتباط با سرور سالین برقرار نشد");
                 context.Result = new RedirectResult("Error?value=saleIn&handler=Server");
                 return;
             }
@@ -39,7 +46,12 @@ public class Security : IPageFilter
         }
 
         if (!_authHelper.ServerConnect())
+        {
+            _logger.LogError($"BranchConnection: {database}");
+            _logger.LogError("ارتباط با سرور شعبه برقرار نشد");
+
             context.Result = new RedirectResult("Error?value=branch&handler=Server");
+        }
     }
 
     public void OnPageHandlerExecuted(PageHandlerExecutedContext context)

@@ -1,113 +1,4 @@
-﻿const ProductListCookie = "productList";
-const AccountClubCookie = "AccountClubList";
-const CashPaymentCookie = "CashPayment";
-const InvoiceCookie = "Invoice";
-const OtherPayCookie = "OtherPay";
-const paymentSheetCookie = "paymentSheet";
-var manualInvoice = "";
-$(document).ready(function () {
-    $(".datePicker").persianDatepicker({
-        initialValueType: 'persian',
-        format: 'YYYY/MM/DD',
-        autoClose: true,
-    });
-    bindDatatable();
-    deleteAllCookies();
-    deleteCookie(ProductListCookie);
-    deleteCookie(AccountClubCookie);
-    deleteCookie(OtherPayCookie);
-    //document.getElementById("custom-menu").click();
-});
-
-
-const table = $('#property-dataTable').DataTable({
-    paging: false,
-    ordering: true,
-    info: false,
-    order: [[2, 'desc']],
-    searching: false,
-});
-
-const invoiceTable = $('.invoiceDet-dataTable').DataTable({
-    paging: false,
-    ordering: true,
-    info: false,
-    order: [[2, 'desc']],
-    searching: false,
-});
-
-const payTable = $('#dataTable-pay').DataTable({
-    paging: false,
-    ordering: true,
-    info: false,
-    order: [[2, 'desc']],
-    searching: false,
-});
-
-$("#submitPrintPreInvoice").on('click', function (evnt) {
-    evnt.preventDefault();
-
-    swal({
-        title: 'با تایید این عملیات پیش فاکتور شما تبدیل به فاکتور خواهد شد!',
-        text: "آیا مطمئن هستید که میخواهید ادامه دهید؟",
-        type: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'ادامه',
-        cancelButtonText: 'لغو',
-        padding: '2em',
-    }).then(function (result) {
-
-        if (result.value) {
-            $("#type").val("790C91B5-FACE-4CD4-AD8A-2A49ECA3A68B");
-            $("#isPre").val(true);
-
-            $.ajax({
-
-                url: '/Invoice/Invoice',
-                data: new FormData(document.forms.submitForm),
-                contentType: false,
-                processData: false,
-                type: 'POST',
-                headers: {
-                    RequestVerificationToken:
-                        $('input:hidden[name="__RequestVerificationToken"]').val()
-                },
-                beforeSend: function () {
-                    showLoader()
-                },
-
-                success: function (result) {
-
-                    if (result.isSucceeded) {
-                        checkStatus(result.data)
-                        swal(
-                            'موفق!',
-                            result.message,
-                            'success'
-                        );
-                    }
-                    else {
-                        swal(
-                            'خطا!',
-                            result.message,
-                            'error'
-                        )
-                    }
-                }
-                ,
-                error: function (error) {
-
-                    alert(error);
-                },
-
-                complete: function () {
-                    hideLoader()
-                }
-            })
-
-        }
-    })
-})
+﻿
 $("#submitPrint").on('click', function (evnt) {
     evnt.preventDefault();
 
@@ -171,6 +62,125 @@ $("#submitPrint").on('click', function (evnt) {
         }
     })
 })
+
+$("#tempInvoice").on('click', function (evnt) {
+    evnt.preventDefault();
+    swal({
+        title: 'این فاکتور به  فاکتور موقت تبدیل خواهشد است!',
+        text: "آیا مطمئن هستید که میخواهید ادامه دهید؟",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'ادامه',
+        cancelButtonText: 'لغو',
+        padding: '2em',
+    }).then(function (result) {
+
+        if (result.value) {
+
+            $("#type").val("09004CE6-3DAC-4EEB-AFE9-E1E7DDD8AD28");
+            $.ajax({
+
+                url: '/Invoice/Invoice',
+                data: new FormData(document.forms.submitForm),
+                contentType: false,
+                processData: false,
+                type: 'POST',
+                headers: {
+                    RequestVerificationToken:
+                        $('input:hidden[name="__RequestVerificationToken"]').val()
+                },
+                beforeSend: function () {
+                    showLoader()
+                },
+
+                success: function (result) {
+
+                    if (result.isSucceeded) {
+                        checkStatus(result.data)
+                        swal(
+                            'موفق!',
+                            result.message,
+                            'success'
+                        );
+                    }
+                    else {
+                        swal(
+                            'خطا!',
+                            result.message,
+                            'error'
+                        )
+                    }
+                }
+                ,
+                error: function (error) {
+
+                    alert(error);
+                }
+                ,
+                complete: function () {
+                    hideLoader()
+                }
+            })
+
+        }
+    })
+})
+
+
+const ProductListCookie = "productList";
+const AccountClubCookie = "AccountClubList";
+const CashPaymentCookie = "CashPayment";
+const InvoiceCookie = "Invoice";
+const OtherPayCookie = "OtherPay";
+const paymentSheetCookie = "paymentSheet";
+const UsePreInvoiceProduct = "UsePreInvoiceProduct";
+var manualInvoice = "";
+
+$(document).ready(function () {
+    $(".datePicker").persianDatepicker({
+        initialValueType: 'persian',
+        format: 'YYYY/MM/DD',
+        autoClose: true,
+    });
+    bindDatatable();
+    deleteAllCookies();
+    deleteCookie(ProductListCookie);
+    deleteCookie(AccountClubCookie);
+    deleteCookie(OtherPayCookie);
+    //document.getElementById("custom-menu").click();
+});
+
+
+const table = $('#property-dataTable').DataTable({
+    paging: false,
+    ordering: true,
+    info: false,
+    order: [[2, 'desc']],
+    searching: false,
+});
+
+const invoiceTable = $('.invoiceDet-dataTable').DataTable({
+    paging: false,
+    ordering: true,
+    info: false,
+    order: [[2, 'desc']],
+    searching: false,
+});
+
+const payTable = $('#dataTable-pay').DataTable({
+    paging: false,
+    ordering: true,
+    info: false,
+    order: [[2, 'desc']],
+    searching: false,
+});
+
+
+function DefualtValue(message, type) {
+    $("#message").val(message);
+    $("#type").val(type);
+}
+
 
 
 function getProductModal(evt, cityName, invoiceType) {
@@ -331,7 +341,11 @@ function getPreInvoiceProduct(evt, cityName) {
                     "sLengthMenu": "نتایج :  _MENU_",
                 },
                 initComplete: function () {
-
+                    var rowdata = getParseCookie(UsePreInvoiceProduct);
+                    if (rowdata)
+                        rowdata.forEach(x => {
+                            datatable.row(x.Row).data(x);
+                        })
                 },
 
                 "columns": [
@@ -353,16 +367,6 @@ function getPreInvoiceProduct(evt, cityName) {
                         "visible": true,
                     },
 
-                    {
-                        "data": "Quantity2",
-                        "autoWidth": false,
-                        "searchable": true,
-                        "width": "70px",
-                        render: function (data, show, full, row) {
-
-                            return dataTableInputValue(data, row.row, row.col, full);
-                        },
-                    },
 
                     {
                         "data": "SumQuantityUse",
@@ -387,16 +391,26 @@ function getPreInvoiceProduct(evt, cityName) {
                         },
                     },
 
+                    {
+                        "data": "Quantity2",
+                        "autoWidth": false,
+                        "searchable": true,
+                        "width": "70px",
+                        render: function (data, show, full, row) {
+
+                            return dataTableInputValue(data, row.row, row.col, full);
+                        },
+                    },
 
                     {
                         data: null,
                         "autoWidth": true,
                         "searchable": false,
                         "orderable": false,
-                        render: function (data, row, full) {
+                        render: function (data, show, full, row) {
                             if (full.Price == null)
                                 return "ابتدا قیمت را در این سطح تعریف کنید";
-                            return generateButton(data);
+                            return generateButton(data, row.row, row.col, full);
                         },
                     }
                 ]
@@ -408,41 +422,46 @@ function getPreInvoiceProduct(evt, cityName) {
     }
 
     function dataTableInputValue(data, row, col, full) {
-        return ` <input style="border:none;"  min="1" type="text" id="quantity" onkeypress="validate(event)" onInput="updateValue(${full.Quantity},'${row}','${col}','${full.Price}','${full.Remain}')" onchange="updateValue(${data},'${row}','${col}','${full.Price}','${full.Remain}')" class="form-control basic" value="${data ?? 1}"/>
+        return ` <input style="border:none;"  min="1" type="text" id="quantity_${full.InvoiceDetailsId}" onkeypress="validate(event)" onInput="updateValue(${full.Quantity},'${row}','${col}','${full.Price}','${full.RemainValue}')" onchange="updateValue(${data},'${row}','${col}','${full.Price}','${full.RemainValue}')" class="form-control basic" value="${data}"/>
+
     `
     }
 
-    function generateButton(data) {
-        return ` <button id="selectPreInvoice" onClick="addPreInvoiceProductToList('${data.PrdUid}','${data.InvoiceDetailsId}','${data.InvoiceId}','${data.RemainAmount}','${data.PrdName}','${data.Price}','${data.DiscountPercent}','${data.TaxValue}','${data.InvoiceDiscount}','${data.InvoiceDiscountPercent}','${data.DiscountSaveToDb}','${data.Quantity2}')" class="btn btn-success btn-sm btn-rounded" type="button"> انتخاب</button>
+    function generateButton(data, row, col, full) {
+        return ` <button id="selectPreInvoice" onClick="addPreInvoiceProductToList('${data.PrdUid}','${data.InvoiceDetailsId}','${data.InvoiceId}','${data.RemainAmount}','${data.PrdName}','${data.Price}','${data.DiscountPercent}','${data.TaxValue}','${data.InvoiceDiscount}','${data.InvoiceDiscountPercent}','${data.DiscountSaveToDb}','${data.Quantity2}',${full.Quantity},'${row}','${col}','${full.RemainValue}')" class="btn btn-success btn-sm btn-rounded" type="button"> انتخاب</button>
     `
     };
 
 }
 
+function updateValue(value, row, col, price, remain, detailsId) {
 
-function updateValue(value, row, col, price, remain) {
-
-
-
+    result = false;
     var quantity = parseInt(event.target.value);
+    var setValue = $("#quantity_" + detailsId).val();
 
-    if (isNaN(quantity))
+    if (isNaN(quantity) && detailsId != undefined && setValue == undefined)
         return false;
 
-    if (quantity === 0 || quantity === NaN) {
+    if (quantity === 0) {
         return false;
     }
+
+    if (setValue == "")
+        return false;
+
+    if (isNaN(quantity) && (setValue != undefined || setValue == ""))
+        quantity = setValue;
+
 
     if (value == 0)
         return false;
 
+    var remain1 = remain - quantity;
     remain = value - quantity;
-    var remain1 = value - quantity;
-
     quantityUse = quantity;
     if (remain1 < 0) {
         notify("top center", "مقدار وارد شده بیشتر از مقدار باقی مانده است", "error");
-        document.getElementById("selectPreInvoice").disabled = true;
         return false;
     }
     //var celldata = datatable.cell(row, col).data();
@@ -450,11 +469,21 @@ function updateValue(value, row, col, price, remain) {
 
     var rowdata = datatable.row(row).data();
 
-    rowdata.Remain = remain;
+    rowdata.RemainValue = remain;
     rowdata.Quantity2 = quantity;
     rowdata.SumQuantityUse = quantityUse;
+    rowdata.Row = row;
     datatable.row(row).data(rowdata);
-    document.getElementById("selectPreInvoice").disabled = false;
+    var rowDataList = getParseCookie(UsePreInvoiceProduct);
+    if (rowDataList)
+        rowDataList = rowDataList.filter(element => element.Row !== row);
+    else
+        rowDataList = [];
+    rowDataList.push(rowdata);
+
+    setCookie(UsePreInvoiceProduct, rowDataList);
+    result = true;
+    return result;
 }
 
 
@@ -585,7 +614,12 @@ function applyTotal(totalProductCount, totalFooter, totalDiscountAmount, totalIn
         `).removeClass("d-none");
 }
 
-function addPreInvoiceProductToList(id, invoiceDetailsId, invoiceId, remainAmount, name, price, discount, tax, invoiceDiscount, invoiceDiscountPercent, discountSaveToDb, value, changeUser = false) {
+function addPreInvoiceProductToList(id, invoiceDetailsId, invoiceId, remainAmount, name, price, discount, tax, invoiceDiscount, invoiceDiscountPercent, discountSaveToDb, value, value1, row, col, remain, changeUser = false,) {
+    DefualtValue("با تایید این عملیات پیش فاکتور شما تبدیل به فاکتور خواهد شد!", true);
+    var result = updateValue(value1, row, col, price, remain, invoiceDetailsId)
+
+    if (!result)
+        return false;
 
     manualInvoice = {
         invoiceId: invoiceId,
@@ -622,6 +656,7 @@ function addPreInvoiceProductToList(id, invoiceDetailsId, invoiceId, remainAmoun
         invoiceId: invoiceId,
         remainAmount: remainAmount,
         des: "",
+        isPre: true
     };
 
     var cookie = getCookie(ProductListCookie);
@@ -637,7 +672,8 @@ function addPreInvoiceProductToList(id, invoiceDetailsId, invoiceId, remainAmoun
         if (found !== undefined && changeUser == false) {
             document.getElementById("selectPreInvoice").disabled = true;
 
-            found.value = value;
+
+            found.value += value;
             found.total = found.value * price;
 
             var priceWithDiscount = Math.abs(parseFloat(((found.discount) * found.total) / 100) - found.total);
@@ -669,6 +705,8 @@ function addPreInvoiceProductToList(id, invoiceDetailsId, invoiceId, remainAmoun
 
 function addProductToList(id, invoiceDetailsId, invShareDiscount, name, price, discount, tax, invoiceDiscount, invoiceDiscountPercent, discountSaveToDb, value = 1, changeUser = false) {
 
+    DefualtValue(" این فاکتور هنوز تسویه نشده است! ", false);
+
     var discountAmount = parseFloat((discount * price) / 100);
     var getTax = parseFloat(calculateTax(tax, price));
     var priceWithDiscount = Math.abs(parseFloat(((discount) * price) / 100) - price);
@@ -698,6 +736,7 @@ function addProductToList(id, invoiceDetailsId, invShareDiscount, name, price, d
         invoiceDetailsId: invoiceDetailsId,
         invShareDiscount: invShareDiscount,
         des: "",
+        isPre: false,
     };
 
     var cookie = getCookie(ProductListCookie);
@@ -737,7 +776,11 @@ function addProductToList(id, invoiceDetailsId, invShareDiscount, name, price, d
             setCookie(ProductListCookie, obj);
         }
     }
-    updateTable(obj);
+    
+
+    var parsAccount = getParseCookie(AccountClubCookie);
+    if (!parsAccount.fromDetails)
+        updateTable(obj);
     $("#productList").removeClass("d-none")
 }
 
@@ -892,9 +935,10 @@ function bindDatatable() {
         return `<center><a onClick="addAccountClub('${data.AccClbUid}','${data.AccClbTypUid}','${data.AccClbName ?? ""}','${data.AccClubDiscount}','${data.AccClubType ?? ""}','${data.AccClbMobile ?? ""}','${data.AccClbAddress ?? ""}','${data.AccClbCode ?? ""}','${data.AccTypePriceLevel}','${data.InvoiceDiscount}',false)" class="btn btn-warning btn-rounded btn-sm">انتخاب </a>&nbsp; `
     };
 }
-function addAccountClub(id, accTypeId, name, discount, type, mobile, address, code, accTypePriceLevel, invoiceDiscount, invoiceDetailsId, invShareDiscount) {
+function addAccountClub(id, accTypeId, name, discount, type, mobile, address, code, accTypePriceLevel, invoiceDiscount, invoiceDetailsId, invShareDiscount, fromDetails = false) {
 
     deleteCookie(AccountClubCookie);
+    deleteCookie(UsePreInvoiceProduct);
 
     var accound = {
         accClbUid: id,
@@ -909,6 +953,7 @@ function addAccountClub(id, accTypeId, name, discount, type, mobile, address, co
         accTypePriceLevel: accTypePriceLevel,
         invoiceDetailsId: invoiceDetailsId,
         invShareDiscount: invShareDiscount,
+        fromDetails: fromDetails,
     };
 
     var cookie = getCookie(ProductListCookie);
@@ -1047,6 +1092,7 @@ function bindInvoiceDatatable(type, dataTableId) {
 
 
 function invoiceDetails(invoiceId) {
+    deleteCookie(UsePreInvoiceProduct);
 
     $.ajax({
         url: "?handler=invoiceDetails&InvoiceId=" + invoiceId,
@@ -1065,9 +1111,11 @@ function invoiceDetails(invoiceId) {
                 manualInvoice = {
                     invoiceId: account.invoiceId,
                 }
-                addAccountClub(account.accountId, account.accountTypeId, account.accountName ?? "", account.accountDiscount, account.accountType ?? "", account.mobile ?? "", account.address ?? "", account.accountCode ?? "", account.priceLevel, account.invoiceDiscount, account.invoiceDetailsId, account.invShareDiscount);
+                addAccountClub(account.accountId, account.accountTypeId, account.accountName ?? "", account.accountDiscount, account.accountType ?? "", account.mobile ?? "", account.address ?? "", account.accountCode ?? "", account.priceLevel, account.invoiceDiscount, account.invoiceDetailsId, account.invShareDiscount, true);
 
                 $("#invoiceList").modal('hide');
+                $("#invoiceTempList").modal('hide');
+
             } else {
                 notify("top center", result.message, "error");
                 return false;
@@ -1075,16 +1123,18 @@ function invoiceDetails(invoiceId) {
 
         },
         complete: function () {
-            hideLoader()
+            hideLoader();
         },
 
     })
 }
 //// Activate an inline edit on click of a table cell
 //table.on('click', 'tbody td:not(:first-child)', function (e) {
-//    
+//
 //    editor.inline(this);
 //});
+var finalPreAmount = 0;
+var finalAmount = 0;
 function updateTable(obj) {
 
     var r = manualInvoice.invoiceId;;
@@ -1132,11 +1182,17 @@ function updateTable(obj) {
         }
         getTax = calculateTax(taxPercent, total);
         paidAmount = Math.abs(parseFloat(priceWithDiscount + getTax));
+
+
         totalDiscountAmount += discountAmount;
         totalPriceWithDiscount += priceWithDiscount;
         totalPaidAmount += paidAmount;
         totalPaidAmountFooter += paidAmount;
         totalGetTax += getTax;
+        if (x.isPre)
+            finalPreAmount = totalPaidAmount;
+        else
+            finalAmount = totalPaidAmount;
         const result =
             `
     <tr>
@@ -1218,7 +1274,7 @@ function updateInvoiceTable(obj) {
 
     var amount = 0, total = 0, priceWithDiscount = 0, paidAmount = 0, getTax = 0; amountFooter = 0; totalFooter = 0, totalDiscountAmount = 0;
     var totalPriceWithDiscount = 0, totalPaidAmount = 0, totalGetTax = 0, rowNo = 0, accClbUid, totalCount = 0; totalInvoiceDiscount = 0;
-    var invTotalTax = 0, invoiceId, invShareDiscount, invoiceDiscount;
+    var invTotalTax = 0, invoiceId, invShareDiscount, invoiceDiscount, paidAmountInvoice, totalFooterPaidAmount = 0, tootalGetTaxForFooter = 0;
     table.clear().draw();
 
     var footer = document.getElementsByTagName("tfoot");
@@ -1226,7 +1282,7 @@ function updateInvoiceTable(obj) {
         footer[0].parentNode.removeChild(footer[0]);
 
     obj.forEach(x => {
-
+        
         amount = parseFloat(x.price);
         total = parseFloat(x.total);
         invoiceDiscount = x.invoiceDiscount;
@@ -1234,8 +1290,9 @@ function updateInvoiceTable(obj) {
         totalFooter += parseFloat(x.total);
         totalCount += parseFloat(x.value);
         invShareDiscount = x.invShareDiscount;
-
+        paidAmountInvoice = x.paidAmountInvoice;
         if (invShareDiscount) {
+            var saveDb = x.discountSaveToDb;
             totalInvoiceDiscount = x.totalInvoiceDiscount;
 
             priceWithDiscount = Math.abs(parseFloat(((parseFloat(x.discount) * total) / 100) - total));
@@ -1253,7 +1310,9 @@ function updateInvoiceTable(obj) {
         }
 
         getTax = calculateTax(x.tax, total);
+        tootalGetTaxForFooter += getTax;
         paidAmount = parseFloat(x.paidAmount);
+        totalFooterPaidAmount += x.paidAmount;
         invTotalTax = x.invTotalTax;
         invoiceId = x.invoiceId;
         totalDiscountAmount += discountAmount;
@@ -1298,7 +1357,7 @@ function updateInvoiceTable(obj) {
         if (footer.length !== 0)
             footer[0].parentNode.removeChild(footer[0]);
 
-        $(".property-dataTable").append($('<tfoot />').append($("<tr> <td>مجموع:</td> <td></td><td>" + totalCount + "</td> <td>" + parseFloat(amountFooter).toLocaleString() + "</td> <td>" + parseFloat(totalFooter).toLocaleString() + "</td><td></td> <td>" + Math.abs(totalPriceWithDiscount).toLocaleString() + "</td> <td>" + Math.abs(totalGetTax).toLocaleString() + "</td> <td>" + Math.abs(totalPaidAmount).toLocaleString() + "</td> <tr>").clone()));
+        $(".property-dataTable").append($('<tfoot />').append($("<tr> <td>مجموع:</td> <td></td><td>" + totalCount + "</td> <td>" + parseFloat(amountFooter).toLocaleString() + "</td> <td>" + parseFloat(totalFooter).toLocaleString() + "</td><td></td> <td>" + Math.abs(totalPriceWithDiscount).toLocaleString() + "</td> <td>" + Math.abs(tootalGetTaxForFooter).toLocaleString() + "</td> <td>" + Math.abs(totalFooterPaidAmount).toLocaleString() + "</td> <tr>").clone()));
 
         // totalInvoiceDiscount = ConvertPercentToAmount(totalPaidAmount, totalInvoiceDiscount);
         //totalPaidAmount -= totalInvoiceDiscount;
@@ -1401,6 +1460,7 @@ $("#tempInvoice").on('click', function (evnt) {
 
 
 function checkStatus(status) {
+
 
     $("#invoiceStatus").removeClass("d-none");
     $("#invoicePayStatus").removeClass("d-none");

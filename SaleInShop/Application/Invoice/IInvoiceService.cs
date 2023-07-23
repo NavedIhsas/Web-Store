@@ -26,7 +26,7 @@ namespace Application.Invoice
     {
         ResultDto<List<ProductSessionList>> ProductToList(Guid id);
         ResultDto RemoveFromProductList(Guid id);
-        ResultDto<InvoiceStatus> Create(Guid type,bool isPre);
+        ResultDto<InvoiceStatus> Create(Guid type, bool isPre);
         JsonResult GetInvoiceList(JqueryDatatableParam param);
         ResultDto<List<InvoiceDetailsDto>> InvoiceDetails(Guid invoiceId);
         ResultDto<List<ProductListDot>> ChangeAccountClub(int priceLevel);
@@ -106,20 +106,20 @@ namespace Application.Invoice
                 Id = invoiceId,
             };
 
-            var amountPay = _context.PaymentRecieptSheets.SingleOrDefault(x => x.InvUid == status.InvUid)?
-                .PayRciptSheetTotalAmount;
-            if (amountPay != null)
-            {
-                var remain = Math.Round((status.InvExtendedAmount - amountPay) ?? 0, MidpointRounding.ToEven);
-                if (remain > 0)
-                {
-                    dto.IsPaid = false;
-                    dto.RemainAmount = remain;
-                }
-                else
-                    dto.IsPaid = true;
-            }
-          
+            //var amountPay = _context.PaymentRecieptSheets.SingleOrDefault(x => x.InvUid == status.InvUid)?
+            //    .PayRciptSheetTotalAmount;
+            //if (amountPay != null)
+            //{
+            //    var remain = Math.Round((status.InvExtendedAmount - amountPay) ?? 0, MidpointRounding.ToEven);
+            //    if (remain > 0)
+            //    {
+            //        dto.IsPaid = false;
+            //        dto.RemainAmount = remain;
+            //    }
+            //    else
+            //        dto.IsPaid = true;
+            //}
+
 
             if (status is { InvStep: null or 0 })
                 dto.StatusSubmit = "ثبت اولیه";
@@ -127,11 +127,18 @@ namespace Application.Invoice
             else if (status.InvStep == 1)
                 dto.StatusSubmit = "در انتظار تایید";
 
+            else if (status.InvStep == 2)
+                dto.StatusSubmit = "تاییده شده";
+
+
             if (status.InvStatusControl == false)
                 dto.StatusPay = "تسویه نشده";
 
             else if (status is { InvStatusControl: null or false })
                 dto.StatusPay = "پرداخت نشده";
+
+            else if (status.InvStatusControl == true)
+                dto.StatusPay = "پرداخت شده";
 
             dto.InvoiceNumber = status.InvNumber;
             dto.InvoiceType = _context.SalesCategories.Find(status.SalCatUid)?.SalCatName;
@@ -174,14 +181,14 @@ namespace Application.Invoice
             {
 
                 var map = _mapper.Map<Domain.ShopModels.Invoice>(single);
-                
-                map.InvDiscount2=single.TotalDiscountAmount;
-               
+
+                map.InvDiscount2 = single.TotalDiscountAmount;
+
                 var shareDis = _authHelper.GetTaxBeforeDiscount();
                 if (shareDis == 1)
                 {
-                    var discountPercent =(single.TotalDiscountAmount * 100) / single.Total;
-                    map.InvPercentDiscount = Convert.ToDouble(Math.Round(discountPercent??0,MidpointRounding.ToEven));
+                    var discountPercent = (single.TotalDiscountAmount * 100) / single.Total;
+                    map.InvPercentDiscount = Convert.ToDouble(Math.Round(discountPercent ?? 0, MidpointRounding.ToEven));
                     map.InvShareDiscount = true;
                 }
                 map.AccClbUid = account.AccClbUid;
@@ -350,11 +357,12 @@ namespace Application.Invoice
                 DiscountSaveToDb = Convert.ToDecimal(x.InvDetPercentDiscount ?? 0),
                 InvShareDiscount = x.InvU.InvShareDiscount ?? false,
                 InvoiceDiscountPercent = x.InvDetShareDiscountPer ?? 0,
+                PaidAmountInvoice=x.InvU.InvExtendedAmount??0,
                 Status = status,
-               
+
             }).AsNoTracking().ToList();
 
-           
+
             return dto.Succeeded(result);
         }
 
@@ -418,7 +426,7 @@ namespace Application.Invoice
             var result = new ResultDto();
 
             var cookie = _authHelper.GetCookie("AccountClubList");
-           
+
             var jsonInvoice = _authHelper.GetCookie("Invoice");
             var otherPay = _authHelper.GetCookie("OtherPay");
             using var transaction = _context.Database.BeginTransaction();
@@ -443,6 +451,8 @@ namespace Application.Invoice
                     AccClbUid = account.AccClbUid,
                 };
                 updateInvoice.InvStatusControl = addNew.PayRciptSheetTotalAmount >= updateInvoice.InvExtendedAmount;
+                updateInvoice.InvStep = 2;
+                updateInvoice.InvExtendedAmount -= addNew.PayRciptSheetTotalAmount;
                 _context.Invoices.Update(updateInvoice);
                 _context.PaymentRecieptSheets.Add(addNew);
                 _context.SaveChanges();
@@ -455,7 +465,7 @@ namespace Application.Invoice
                     {
                         PayRciptDetUid = Guid.NewGuid(),
                         PayRciptSheetUid = addNew.PayRciptSheetUid,
-                        
+
                         //AccUid = null,
                         PayRciptDetTotalAmount = Convert.ToDecimal(pay.Amount.Replace(",", "")),
                         PayRciptDetDraft = null,
@@ -475,7 +485,7 @@ namespace Application.Invoice
             {
                 transaction.Rollback();
                 _logger.LogError($"An Error while submit payment sheet and payment Details {e}");
-               return result.Failed("خطای سمت سرور پیش آمده ، لطفا با پشتیبانی تماس بگیرید");
+                return result.Failed("خطای سمت سرور پیش آمده ، لطفا با پشتیبانی تماس بگیرید");
             }
         }
 
@@ -486,7 +496,8 @@ namespace Application.Invoice
 
             _contextAccessor.HttpContext.Request.Headers.TryGetValue("Cookie", out var values);
             var cookies = values.ToString().Split(';').ToList();
-            var result = cookies.Select(c => new {
+            var result = cookies.Select(c => new
+            {
                 Key = c.Split('=')[0].Trim(),
                 Value = c.Split('=')[1].Trim()
             }).ToList();
@@ -539,8 +550,8 @@ namespace Application.Invoice
                     //    dto.InvoiceDiscountPercent = (dto.InvoiceDiscount * Convert.ToDouble(dto.Price)) / 100;
 
                     //else
-                         dto.InvoiceDiscountPercent = dto.InvoiceDiscount;
-                         dto.InvoiceDiscount = 0;
+                    dto.InvoiceDiscountPercent = dto.InvoiceDiscount;
+                    dto.InvoiceDiscount = 0;
                 }
 
             }
@@ -645,6 +656,7 @@ public class InvoiceDetailsDto
     public double? InvoiceDiscountPercent { get; set; }
     public Guid? InvoiceId { get; set; }
     public decimal? PriceWidthDiscount { get; set; }
+    public decimal PaidAmountInvoice { get; set; }
 }
 
 
