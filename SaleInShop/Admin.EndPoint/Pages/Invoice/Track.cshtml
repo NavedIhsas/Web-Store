@@ -1,0 +1,130 @@
+﻿@page
+@model SaleInWeb.Pages.Invoice.TrackModel
+@{
+    ViewData["Title"] = "پیگری سفارشات";
+}
+<link href="~/assets/css/persian-datepicker.css" rel="stylesheet" />
+<link href="~/plugins/flatpickr/custom-flatpickr.css" rel="stylesheet" type="text/css">
+<link href="~/plugins/flatpickr/custom-flatpickr.css" rel="stylesheet" type="text/css">
+
+
+<div id="content" class="main-content">
+    <div class="layout-px-spacing">
+
+        <div class="page-header">
+            <div class="page-title">
+                <h3>لیست مشترکین</h3>
+            </div>
+        </div>
+
+        <div class="row layout-top-spacing" id="cancel-row">
+            <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
+                <div class="widget-content widget-content-area br-6">
+                    <div class="text-center">
+                        <div class="panel panel-default" id="productProcess">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="panel panel-default text-center">
+                                        <div class="panel-heading text-center">
+                                            <h4 class="panel-title text-center">بازه زمانی مورد نظر خود را وارد کنید</h4>
+                                        </div>
+                                        <div class="panel-body">
+                                            <form class="form-inline">
+                                                <div class="col-md-12">
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <label for="fromDate" class="pl-10">از تاریخ</label>
+                                                                <input id="fromDate" name="fromDate" class="form-control flatpickr datePicker flatpickr-input active" placeholder="تاریخ شروع" type="text" required="">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <label for="toDate" class="pl-10">تا تاریخ</label>
+                                                                <input id="toDate" name="toDate" class="form-control flatpickr datePicker flatpickr-input active" placeholder="تاریخ پایان" type="text" required="">
+                                                            </div>
+                                                        </div>
+                                                      
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12 pt-3">
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <label for="fromDate" class="pl-10">از ساعت</label>
+                                                                <input id="fromHours" name="fromDate" class="form-control flatpickr timePicker flatpickr-input active" placeholder="تاریخ شروع" type="text" required="">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <label for="toDate" class="pl-10">تا ساعت</label>
+                                                                <input id="toHours" name="toDate" class="form-control flatpickr timePicker flatpickr-input active" placeholder="تاریخ پایان" type="text" required="">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="m-t-10 pull-left m-b-10 m-l-10" style="flot:left !importand">
+                                                    <button id="ProductProcessBtn" onclick="ProductProcessGrid()" type="button" class="btn btn-success btn-rounded btn-sm waves-effect waves-light m-l-10">جستجو</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="table-responsive mb-4 mt-4">
+                        <table id="dataTable_1" class="table table-hover table-bordered cell-border row-border" style="width:100%">
+                            <thead>
+                            <tr>
+                                <th>نام</th>
+                                <th>شماره اشتراک</th>
+                                <th>تاریخ تولد</th>
+                                <th>نوع مشترک</th>
+                                <th>درصد تخفیف</th>
+                                <th>رتبه مشترک</th>
+                                <th>موبایل</th>
+                                <th>جنسیت</th>
+                                <th>عملیات</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts
+{
+    <script src="~/assets/js/datepicker/persian-datepicker.min.js"></script>
+    <script src="~/assets/js/datepicker/persian-date.min.js"></script>
+    
+    <script>
+        $(document).ready(function () {
+            $(".datePicker").persianDatepicker({
+
+                initialValueType: 'persian',
+                observer: true,
+            
+                format: 'L  dddd',
+                autoClose: true,
+            });
+            
+            $(".timePicker").persianDatepicker({
+
+                initialValueType: 'persian',
+                observer: true,
+                onlyTimePicker: true,
+                format: 'LT',
+                autoClose: true,
+            });
+        });
+    </script>
+}

@@ -38,6 +38,12 @@
     margin-right: 0 !important;
 }
 
+.pr-10{
+    padding-right:10px !important;
+}
+.pl-10{
+    padding-left:10px !important;
+}
 .mb-5{
     margin-bottom:5px !important;
 }

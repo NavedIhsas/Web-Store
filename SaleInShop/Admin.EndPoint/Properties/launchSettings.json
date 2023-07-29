@@ -3,6 +3,7 @@
     "Admin.EndPoint": {
       "commandName": "Project",
       "launchBrowser": true,
+      "launchUrl": "Invoice/Track",
 
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -14,6 +15,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
+      "launchUrl": "Invoice/Track",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -21,6 +23,7 @@
     "Profile 1": {
       "commandName": "IISExpress",
       "launchBrowser": true,
+      "launchUrl": "Invoice/Track",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
