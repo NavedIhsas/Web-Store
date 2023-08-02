@@ -1,4 +1,6 @@
 ﻿@page
+@using Application.Common
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model SaleInWeb.Pages.Invoice.TrackModel
 @{
     ViewData["Title"] = "پیگری سفارشات";
@@ -25,48 +27,55 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="panel panel-default text-center">
-                                        <div class="panel-heading text-center">
+                                        <div class="panel-heading text-center pb-4">
                                             <h4 class="panel-title text-center">بازه زمانی مورد نظر خود را وارد کنید</h4>
                                         </div>
                                         <div class="panel-body">
-                                            <form class="form-inline">
-                                                <div class="col-md-12">
-                                                    <div class="row">
-                                                        <div class="col-md-4">
-                                                            <div class="form-group">
-                                                                <label for="fromDate" class="pl-10">از تاریخ</label>
-                                                                <input id="fromDate" name="fromDate" class="form-control flatpickr datePicker flatpickr-input active" placeholder="تاریخ شروع" type="text" required="">
+                                            <form method="get" class="">
+                                                <div class="row">
+                                                    <div class="col col-md-9" style="right:20%">
+
+                                                        <div class="col-md-12 ">
+                                                            <div class="row">
+                                                                <div class="col-md-4 form-inline">
+                                                                    <div class="form-group">
+                                                                        <label for="fromDate" class="pl-10">از تاریخ</label>
+                                                                        <input id="fromDate" asp-for="Model.FromDate" class="form-control flatpickr datePicker flatpickr-input active" placeholder="تاریخ شروع" type="text" required="">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-4 form-inline">
+                                                                    <div class="form-group">
+                                                                        <label for="toDate" class="pl-10">تا تاریخ</label>
+                                                                        <input id="toDate" asp-for="Model.ToDate" class="form-control flatpickr datePicker flatpickr-input active" placeholder="تاریخ پایان" type="text" required="">
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-4">
-                                                            <div class="form-group">
-                                                                <label for="toDate" class="pl-10">تا تاریخ</label>
-                                                                <input id="toDate" name="toDate" class="form-control flatpickr datePicker flatpickr-input active" placeholder="تاریخ پایان" type="text" required="">
+                                                        <div class="col-md-12 pt-3">
+                                                            <div class="row">
+                                                                <div class="col-md-4 form-inline">
+                                                                    <div class="form-group">
+                                                                        <label for="fromDate" class="pl-10">از ساعت</label>
+                                                                        <input id="fromHours" asp-for="Model.FromHours" class="form-control flatpickr timePicker flatpickr-input active" placeholder="تاریخ شروع" type="text" required="">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-4 form-inline">
+                                                                    <div class="form-group">
+                                                                        <label for="toDate" class="pl-10">تا ساعت</label>
+                                                                        <input id="toHours" asp-for="Model.ToHours" class="form-control flatpickr timePicker flatpickr-input active" placeholder="تاریخ پایان" type="text" required="">
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                      
                                                     </div>
-                                                </div>
-                                                <div class="col-md-12 pt-3">
-                                                    <div class="row">
-                                                        <div class="col-md-4">
-                                                            <div class="form-group">
-                                                                <label for="fromDate" class="pl-10">از ساعت</label>
-                                                                <input id="fromHours" name="fromDate" class="form-control flatpickr timePicker flatpickr-input active" placeholder="تاریخ شروع" type="text" required="">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <div class="form-group">
-                                                                <label for="toDate" class="pl-10">تا ساعت</label>
-                                                                <input id="toHours" name="toDate" class="form-control flatpickr timePicker flatpickr-input active" placeholder="تاریخ پایان" type="text" required="">
-                                                            </div>
+                                                    <div class="col col-md-3">
+                                                        <div class="m-t-10 pull-left m-b-10 m-l-10" style="flot:left !importand">
+                                                            <button id="Search" type="button" class="btn btn-success btn-rounded btn-sm waves-effect waves-light m-l-10">جستجو</button>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="m-t-10 pull-left m-b-10 m-l-10" style="flot:left !importand">
-                                                    <button id="ProductProcessBtn" onclick="ProductProcessGrid()" type="button" class="btn btn-success btn-rounded btn-sm waves-effect waves-light m-l-10">جستجو</button>
                                                 </div>
                                             </form>
+
                                         </div>
                                     </div>
                                 </div>
@@ -75,17 +84,17 @@
 
                     </div>
                     <div class="table-responsive mb-4 mt-4">
-                        <table id="dataTable_1" class="table table-hover table-bordered cell-border row-border" style="width:100%">
+                        <table id="track-dataTable" class="Current-color table table-striped table-bordered">
                             <thead>
                             <tr>
-                                <th>نام</th>
-                                <th>شماره اشتراک</th>
-                                <th>تاریخ تولد</th>
-                                <th>نوع مشترک</th>
-                                <th>درصد تخفیف</th>
-                                <th>رتبه مشترک</th>
-                                <th>موبایل</th>
-                                <th>جنسیت</th>
+                                    <th>شماره فاکتور</th>
+                                    <th>تاریخ</th>
+                                <th>ساعت</th>
+                                <th>وضعیت پرداخت</th>
+                                <th>مانده</th>
+                                <th>مشتری</th>
+                                <th>کد مشترک</th>
+                                <th>مبلغ فاکتور</th>
                                 <th>عملیات</th>
                             </tr>
                             </thead>
@@ -101,22 +110,108 @@
 
 
 
+
+
+<div class="modal fade" id="otherPaymentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h5 class="modal-title text-center">روش های پرداخت </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="row">
+
+                <div class="form-group col-md-3 ">
+                    <p type="text" class="form-control form-control-sm " style="height:30px !Important; border:none;" id="">شناسه پرداخت: <span id="invoiceNumberPay"></span></p>
+                </div>
+                <div class="form-group col-md-3 ">
+                    <p type="text" class="form-control form-control-sm " style="height:30px !Important; border:none;" id=""> نام مشترک: <span id="AccountClubNamePay"></span></p>
+                </div>
+
+                <div class="form-group col-md-3 ">
+                    <p type="text" class="form-control form-control-sm " style="height:30px !Important; border:none;" id=""> تاریخ: <span id="">@DateTime.Now.ToFarsi()</span></p>
+                </div>
+            </div>
+            <div class="row layout-top-spacing" id="">
+                <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
+                    <div class="widget-content  br-6">
+                        <div class="row col col-md-12">
+                            <button type="button" id="manualPayment" class="btn btn-success btn-sm btn-rounded pull-left invoicePay d-none">پرداخت نقدی</button>
+                            <button type="button" id="cashPayment" class="btn btn-primary btn-sm btn-rounded pull-left d-none invoicePay">پرداخت با کارتخوان</button>
+                            <button type="button" id="otherPayment" class="btn btn-warning btn-sm btn-rounded pull-left d-none invoicePay">باشگاه</button>
+                            <button type="button" class="btn btn-info btn-sm btn-rounded pull-left" id="tempInvoice">اعتباری</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-inline row p-4">
+                    <label class="text-dark">مبلغ:</label>
+                    <input id="amountPay" type="text" value="" class="form-control text-dark ml-2" required />
+                    <label class="text-dark">بانک:</label>
+                    <select id="bank" type="text" class="form-control text-dark ml-2" required>
+                        <option value="0">-انتخاب کنید-</option>
+                    </select>
+
+                    <label class="text-dark">پوز:</label>
+                    <select id="pose" type="text" class="form-control text-dark ml-2" required>
+                        <option value="0">-انتخاب کنید-</option>
+                    </select>
+                    <button id="cardReader" type="button" class="btn btn-info btn-sm">کارتخوان</button>
+                </div>
+
+
+                <div class="col-md-12 col-sm-12 col-xs-12 table-responsive" id="">
+                    <table id="dataTable-pay" class="Current-color table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>ردیف</th>
+                                <th>شرح</th>
+                                <th>مبلغ </th>
+                                <th>نوع پرداخت</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+
+                    <div id="otherPaytotal" class="row d-none"></div>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
+                    <div class="widget-content  br-6">
+                        <div class="row col col-md-12 pull-left">
+                            <button type="button" class="btn btn-info btn-sm btn-rounded" id="finallyPayment">تایید و پرداخت</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
 @section Scripts
-{
+    {
     <script src="~/assets/js/datepicker/persian-datepicker.min.js"></script>
     <script src="~/assets/js/datepicker/persian-date.min.js"></script>
-    
+    <script src="~/source/js/invoice/track.js"></script>
+    <script src="~/source/js/invoice/invoice.js"></script>
     <script>
         $(document).ready(function () {
             $(".datePicker").persianDatepicker({
 
                 initialValueType: 'persian',
                 observer: true,
-            
                 format: 'L  dddd',
                 autoClose: true,
             });
-            
+
             $(".timePicker").persianDatepicker({
 
                 initialValueType: 'persian',

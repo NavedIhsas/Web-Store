@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Globalization;
+using System.Net.Http;
 using System.Text.Json;
 using Application.BaseData;
 using Application.BaseData.Dto;
@@ -8,6 +10,7 @@ using Application.Interfaces.Context;
 using Application.Product;
 using Application.Product.ProductDto;
 using AutoMapper;
+using AutoMapper.Configuration.Annotations;
 using Domain.SaleInModels;
 using Domain.ShopModels;
 using Microsoft.AspNetCore.Http;
@@ -16,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using NodaTime;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using PaymentRecieptDetail = Domain.ShopModels.PaymentRecieptDetail;
 using PaymentRecieptSheet = Domain.ShopModels.PaymentRecieptSheet;
@@ -35,6 +39,7 @@ namespace Application.Invoice
         List<SelectListBankPose> SelectListBank();
         FinallyPaymentDto FinallyPaymentList();
         ResultDto FinallyPayment(FinallyPaidDto data);
+        JsonResult GetTrackInvoice(JqueryTrackDataTableParam model);
     }
 
     public class InvoiceService : IInvoiceService
@@ -106,19 +111,24 @@ namespace Application.Invoice
                 Id = invoiceId,
             };
 
-            //var amountPay = _context.PaymentRecieptSheets.SingleOrDefault(x => x.InvUid == status.InvUid)?
-            //    .PayRciptSheetTotalAmount;
-            //if (amountPay != null)
-            //{
-            //    var remain = Math.Round((status.InvExtendedAmount - amountPay) ?? 0, MidpointRounding.ToEven);
-            //    if (remain > 0)
-            //    {
-            //        dto.IsPaid = false;
-            //        dto.RemainAmount = remain;
-            //    }
-            //    else
-            //        dto.IsPaid = true;
-            //}
+            var amountPay = _context.PaymentRecieptSheets.SingleOrDefault(x => x.InvUid == status.InvUid)?
+                .PayRciptSheetTotalAmount;
+            if (amountPay != null)
+            {
+                var remain = Math.Round((status.InvExtendedAmount - amountPay) ?? 0, MidpointRounding.ToEven);
+                if (remain > 0)
+                {
+                    dto.IsPaid = false;
+                    dto.RemainAmount = remain;
+                }
+                else
+                    dto.IsPaid = true;
+            }
+            else
+            {
+                dto.RemainAmount = status.InvExtendedAmount??0;
+                dto.IsPaid = false;
+            }
 
 
             if (status is { InvStep: null or 0 })
@@ -357,7 +367,7 @@ namespace Application.Invoice
                 DiscountSaveToDb = Convert.ToDecimal(x.InvDetPercentDiscount ?? 0),
                 InvShareDiscount = x.InvU.InvShareDiscount ?? false,
                 InvoiceDiscountPercent = x.InvDetShareDiscountPer ?? 0,
-                PaidAmountInvoice=x.InvU.InvExtendedAmount??0,
+                PaidAmountInvoice = x.InvU.InvExtendedAmount ?? 0,
                 Status = status,
 
             }).AsNoTracking().ToList();
@@ -560,8 +570,111 @@ namespace Application.Invoice
 
         }
 
+        public JsonResult GetTrackInvoice(JqueryTrackDataTableParam param)
+        {
+            var fromTime = param.FromHours.ToGeorgianTime();
+            var toTime = param.ToHours.ToGeorgianTime();
+
+          var fromDate=  TrackInvoiceDateToGeorgianDateTime(param.FromDate, fromTime.Hours, fromTime.Minutes);
+          var toDate=  TrackInvoiceDateToGeorgianDateTime(param.ToDate, toTime.Hours, toTime.Minutes);
+         var list= _context.Invoices.Where(x => x.InvDate >= fromDate && x.InvDate <= toDate);
+
+            if (!string.IsNullOrEmpty(param.SSearch))
+            {
+                list = list.Where(x =>
+                    x.InvNumber.Contains(param.SSearch.ToLower())
+                    || x.AccClbU.AccClbName.ToLower().Contains(param.SSearch.ToLower())
+                    || x.AccClbU.AccClbCode.ToLower().Contains(param.SSearch.ToLower())
+                    //|| x.InvDate.ToFarsi().Contains(param.SSearch.ToLower())
+                    || x.InvExtendedAmount.ToString().ToLower().Contains(param.SSearch.ToLower()));
+            }
+
+            var sortColumnIndex = Convert.ToInt32(_contextAccessor.HttpContext.Request.Query["iSortCol_0"]);
+            var sortDirection = _contextAccessor.HttpContext.Request.Query["sSortDir_0"];
+
+            switch (sortColumnIndex)
+            {
+                case 2:
+                    list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbU.AccClbName) : list.OrderByDescending(c => c.AccClbU.AccClbName);
+                    break;
+                case 3:
+                    list = sortDirection == "asc" ? list.OrderBy(c => c.AccClbU.AccClbCode) : list.OrderByDescending(c => c.AccClbU.AccClbCode);
+                    break;
+                case 0:
+                    list = sortDirection == "asc" ? list.OrderBy(c => c.InvNumber) : list.OrderByDescending(c => c.InvNumber);
+                    break;
+                case 1:
+                    list = sortDirection == "asc" ? list.OrderBy(c => c.InvDate) : list.OrderByDescending(c => c.InvDate);
+                    break;
+                case 4:
+                    list = sortDirection == "asc" ? list.OrderBy(c => c.InvExtendedAmount) : list.OrderByDescending(c => c.InvExtendedAmount);
+                    break;
 
 
+                default:
+                    {
+                        string OrderingFunction(Domain.ShopModels.Invoice e) => sortColumnIndex == 0 ? e.InvDate.ToString() : e.InvNumber;
+                        IOrderedEnumerable<Domain.ShopModels.Invoice> rr = null;
+                        rr = sortDirection == "asc"
+                            ? list.AsEnumerable().OrderBy((Func<Domain.ShopModels.Invoice, string>)OrderingFunction)
+                            : list.AsEnumerable().OrderByDescending((Func<Domain.ShopModels.Invoice, string>)OrderingFunction);
+
+                        list = rr.AsQueryable();
+                        break;
+                    }
+            }
+
+            IQueryable<Domain.ShopModels.Invoice> displayResult;
+            if (param.IDisplayLength != 0)
+                displayResult = list.Skip(param.IDisplayStart)
+                .Take(param.IDisplayLength);
+            else displayResult = list;
+            var totalRecords = list.Count();
+            List<TrackInvoiceDto> map;
+            try
+            {
+                map = _mapper.Map<List<TrackInvoiceDto>>(displayResult.ToList());
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            var result = (new
+            {
+                param.SEcho,
+                iTotalRecords = totalRecords,
+                iTotalDisplayRecords = totalRecords,
+                aaData = map
+            });
+
+            foreach (var invoiceDto in result.aaData)
+            {
+               var status= GetStatus(invoiceDto.Id);
+               invoiceDto.PaidStatus = status.IsPaid;
+               invoiceDto.Remain = status.RemainAmount.ToString("#,0#");
+
+
+            }
+            return new JsonResult(result, new JsonSerializerOptions { PropertyNamingPolicy = null });
+        }
+
+
+        private  DateTime TrackInvoiceDateToGeorgianDateTime( string persianDate, int hours, int min)
+        {
+            
+                var day = 1;
+                if (string.IsNullOrWhiteSpace(persianDate)) return new DateTime();
+                persianDate = persianDate.ToEnglishNumber();
+                var year = Convert.ToInt32(persianDate[..4]);
+                var month = Convert.ToInt32(persianDate.Substring(5, 2));
+                if (persianDate.Length > 7)
+                    day = Convert.ToInt32(persianDate.Substring(8, 2));
+                var persianDte = new LocalDate(year, month, day, CalendarSystem.PersianArithmetic);
+                var gregorianDate = persianDte.WithCalendar(CalendarSystem.Gregorian);
+                return Convert.ToDateTime(gregorianDate.Year + "/" + gregorianDate.Month + "/" + gregorianDate.Day+" "+hours+":"+min);
+        }
     }
 }
 
@@ -666,6 +779,7 @@ public class InvoiceDto
     public int Number { get; set; }
     public int TotalAmount { get; set; }
     public string CreationDate { get; set; }
+    public string CreationTime { get; set; }
     public Guid? AccClubId { get; set; }
     /// <summary>
     /// Account Club Name
@@ -676,6 +790,29 @@ public class InvoiceDto
     /// Account Club Code
     /// </summary>
     public string Code { get; set; }
+}
+
+
+public class TrackInvoiceDto
+{
+    public Guid Id { get; set; }
+    public int Number { get; set; }
+    public int TotalAmount { get; set; }
+    public string CreationDate { get; set; }
+    public string CreationTime { get; set; }
+    public Guid? AccClubId { get; set; }
+    /// <summary>
+    /// Account Club Name
+    /// </summary>
+    public string Name { get; set; }
+
+    /// <summary>
+    /// Account Club Codes
+    /// </summary>
+    public string Code { get; set; }
+
+    public bool PaidStatus { get; set; }
+    public string Remain { get; set; }
 }
 
 
@@ -751,6 +888,16 @@ public class InvoiceMapping : Profile
             .ForMember(x => x.AccClubId, opt => opt.MapFrom(x => x.AccClbUid))
             .ForMember(x => x.CreationDate, opt => opt.MapFrom(x => x.InvDate.ToFarsi()))
             .ForMember(x => x.Number, opt => opt.MapFrom(x => x.InvNumber))
+            .ForMember(x => x.Id, opt => opt.MapFrom(x => x.InvUid));
+
+         this.CreateMap<Domain.ShopModels.Invoice, TrackInvoiceDto>()
+            .ForMember(x => x.TotalAmount, opt => opt.MapFrom(x => x.InvExtendedAmount))
+            .ForMember(x => x.Name, opt => opt.MapFrom(x => x.AccClbU.AccClbName))
+            .ForMember(x => x.Code, opt => opt.MapFrom(x => x.AccClbU.AccClbCode))
+            .ForMember(x => x.AccClubId, opt => opt.MapFrom(x => x.AccClbUid))
+            .ForMember(x => x.CreationDate, opt => opt.MapFrom(x => x.InvDate.ToFarsi()))
+            .ForMember(x => x.Number, opt => opt.MapFrom(x => x.InvNumber))
+            .ForMember(x => x.CreationTime, opt => opt.MapFrom(x => x.InvDate.Value.ToString("HH:m")))
             .ForMember(x => x.Id, opt => opt.MapFrom(x => x.InvUid));
 
 

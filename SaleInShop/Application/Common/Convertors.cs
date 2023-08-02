@@ -123,7 +123,9 @@ namespace Application.Common
             {
                 throw new Exception($"The persian Date {persianDate}  was not converted to georgian", e);
             }
-        }
+        }  
+        
+      
         public static TimeSpan ToGeorgianTime(this string time)
         {
             try
